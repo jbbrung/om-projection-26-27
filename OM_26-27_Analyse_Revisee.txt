@@ -1,0 +1,216 @@
+================================================================================
+OM 2026/2027 — ANALYSE RÉVISÉE
+Weah RB, Meïté retour, arbitrages cas par cas
+================================================================================
+
+
+1. EFFECTIF RESTANT MIS À JOUR
+--------------------------------------------------------------------------------
+
+Poste                    | Joueurs confirmés                                  | Nb
+-------------------------|----------------------------------------------------|----
+Gardien                  | De Lange, Van Neck                                 |  2
+Défenseur central        | Aguerd, Medina, Meïté (retour prêt → reste)        |  3
+Latéral droit            | Weah (reconverti, signing bonus déjà versé)        |  1
+Latéral gauche           | Emerson                                            |  1
+Milieu défensif          | Kondogbia (à arbitrer), Nnadi                      |  2
+Milieu central           | Timber                                             |  1
+Milieu offensif          | Abdelli                                            |  1
+Ailier gauche            | Paixão                                             |  1
+Ailier droit             | —                                                  |  0
+Avant-centre             | Gouiri                                             |  1
+-------------------------|----------------------------------------------------|----
+SOUS-TOTAL NOYAU "SÛR"   |                                                    | 13
+
++ 4 cas à arbitrer : Maupay, Aubameyang, Hamed Traoré, Angel Gomes
++ 1 cas pivot : Kondogbia (33 ans, fin de contrat probable)
+
+→ Pour atteindre 22 joueurs : il manque 9 joueurs, dont 5-6 recrues nettes
+  selon les arbitrages.
+
+
+2. ARBITRAGE DES 4 CAS "QUE FAIRE ?" + KONDOGBIA
+--------------------------------------------------------------------------------
+
+Joueur        | Salaire chargé | Décision recommandée                | Rationnel
+--------------|---------------:|-------------------------------------|----------
+Maupay        | ~3,0 M€        | 🟢 GARDER                           | Doublure CF crédible, ratio coût/utilité excellent. Backup Gouiri à 3 M€ chargé = aubaine.
+Aubameyang    | ~6,0 M€        | 🟠 RUPTURE CONVENTIONNELLE          | À 6 M€ chargé pour ~1500 min, c'est 4 K€/min. Indemnité 3-4 M€ one-shot vs 6 M€/an récurrent → gain net dès la 1re année. Si refus : prêt MLS/Arabie avec 80 % salaire pris.
+Hamed Traoré  | ~5,5 M€        | 🟠 PRÊT PAYANT AVEC SALAIRE PRIS    | Vendu impossible (VM 15 M€ vs salaire 320 K€). Prêt Serie A/Süper Lig avec 70-80 % du salaire pris → économie nette 4 M€/an.
+Angel Gomes   | ~4,0 M€        | 🔴 NE PAS LEVER L'OPTION D'ACHAT    | Si OA obligatoire, vendre 8 M€ comme prévu. Si optionnelle : laisser partir. Économie nette 4 M€.
+Kondogbia     | ~7,6 M€        | 🔴 NE PAS PROLONGER → départ libre  | Salaire disproportionné (3e plus haut OM) pour ~1000 min. -7,6 M€ sans coût. Remplacé par recrue à 4 M€ chargé.
+
+
+BILAN DES ARBITRAGES
+Décision                                          | Économie chargée | Cash
+--------------------------------------------------|-----------------:|----------
+Maupay reste                                      | 0                | 0
+Auba rupture conventionnelle (indemnité 3 M€)     | -6 M€/an         | -3 M€ one-shot
+Hamed prêt salaire pris                           | -4 M€/an         | 0
+Gomes : pas d'OA OU vente 8 M€                    | -4 M€/an         | +0 ou +8 M€
+Kondogbia fin de contrat                          | -7,6 M€/an       | 0
+--------------------------------------------------|-----------------:|----------
+TOTAL                                             | -21,6 M€/an      | +5 à +13 M€
+
+
+3. MASSE SALARIALE DU NOYAU RÉVISÉ
+--------------------------------------------------------------------------------
+
+Joueur                           | Chargé annuel (M€)
+---------------------------------|--------------------:
+Aguerd                           | 6,8
+Medina                           | 5,5
+Meïté                            | 2,5
+Weah                             | 5,0
+Emerson                          | 3,4
+Timber                           | 5,5
+Abdelli                          | 1,9
+Paixão                           | 6,0
+Gouiri                           | 4,8
+Maupay (maintenu)                | 3,0
+Nnadi/De Lange/Van Neck/jeunes   | 4,0
+Staff sportif                    | 6,0
+---------------------------------|--------------------:
+SOUS-TOTAL NOYAU (13 + Maupay)   | 54 M€
+
+
+4. PLAN DE RECRUTEMENT RÉVISÉ — 8 POSTES SEULEMENT
+--------------------------------------------------------------------------------
+
+Postes éliminés vs version précédente :
+  - RB (Weah)
+  - DC doublure (Meïté)
+  - ST doublure (Maupay)
+Soit -3 recrues.
+
+#  | Poste                    | Profil                              | Salaire brut max | Indemnité cible
+---|--------------------------|-------------------------------------|------------------|-----------------
+1  | Gardien n°1              | Top L1 / européen confirmé          | 4 M€ brut        | 15-18 M€
+2  | DC cadre (rempl. Balerdi)| International 25-28 ans             | 4 M€             | 15 M€
+3  | Sentinelle n°6           | Box-to-box agressif                 | 4 M€             | 18 M€
+4  | Ailier droit cadre       | 25-28 ans, profil but               | 5 M€ (plafond)   | 25-30 M€
+5  | Avant-centre titulaire   | Buteur 15+ buts                     | 5 M€ (plafond)   | 22-28 M€
+6  | LB doublure Emerson      | Jeune                               | 1,5 M€           | 5 M€ ou prêt
+7  | CM relayeur (Nadir parti)| Jeune international                 | 2,5 M€           | 10 M€
+8  | LW doublure Paixão       | Jeune                               | 2 M€             | 8 M€
+---|--------------------------|-------------------------------------|------------------|-----------------
+   | TOTAUX                   |                                     | 28 M€ brut       | ~120 M€
+   |                          |                                     | (≈ 40 M€ chargé) |
+
+→ Effectif final : 13 noyau + Maupay + 8 recrues = 22 joueurs ✅
+
+
+5. MASSE SALARIALE CHARGÉE 26/27 FINALE
+--------------------------------------------------------------------------------
+
+Noyau confirmé (13 j.) ........................... 54 M€
++ Hamed Traoré* (en attente prêt) ................. 1,5 M€  (20 % résiduels OM)
++ Aubameyang (rupture conv. 06/26) ................ 0 M€
++ Angel Gomes (départ) ............................ 0 M€
++ Kondogbia (départ libre 06/26) .................. 0 M€
++ 8 recrues (≈ 40 M€ chargé total) ................ 40 M€
+                                                   --------
+= MASSE SALARIALE CHARGÉE 26/27 ................... ≈ 95-97 M€ ✅
+  Ratio MS/produits ............................... 51 % 🟢
+
+* Si OM ne réussit pas le prêt Hamed et le garde sur le banc : +4 M€ → 99-101 M€,
+  toujours dans la cible.
+
+
+6. COMPTE DE RÉSULTAT 26/27 — VERSION DÉFINITIVE
+--------------------------------------------------------------------------------
+
+Poste (M€)                                | 24/25 réel | 26/27 plan révisé
+------------------------------------------|-----------:|------------------:
+Droits AV (L1 + intl + L1+)               |       31,9 |               28
+Sponsors & pub                            |       71,7 |               75
+Recettes matches (L1 + 4 EL)              |       30,3 |               38
+Autres produits (EL ~22 M€ + activités)   |       54,8 |               45
+------------------------------------------|-----------:|------------------:
+TOTAL PRODUITS HORS MUTATION              |        189 |              186
+Masse salariale chargée                   |        154 |               96
+Amort. mutations                          |         42 |               38
+Honoraires agents                         |         15 |               16
+Autres charges (dont indemnité Auba 3 M€) |        104 |              105
+------------------------------------------|-----------:|------------------:
+TOTAL CHARGES HORS MUTATION               |        315 |              255
+Résultat hors mutation                    |       -126 |              -69
+Résultat opérations mutation              |        +27 |              +85
+Résultat financier + exceptionnel         |         -5 |               -5
+------------------------------------------|-----------:|------------------:
+🟢 RÉSULTAT NET ESTIMÉ                    |       -105 |          ≈ +11 M€
+
+
+DÉCOMPOSITION PLUS-VALUES (+85 M€)
+Cession                                     | Cash net OM | Plus-value
+--------------------------------------------|------------:|------------:
+Greenwood (80 M€ × 65 %)                    |        45 M€|        +30
+Balerdi (VNC ~2 M€)                         |        25 M€|        +23
+Højbjerg (VNC ~13 M€)                       |        15 M€|         +2
+Egan-Riley (libre)                          |       7,5 M€|        +7,5
+Rulli (libre 2024)                          |         5 M€|         +5
+OA Garcia + Harit                           |        11 M€|        +11
+Loft réaliste (Cornelius, Moumbagna, Gomes) |         9 M€|        +6,5
+--------------------------------------------|------------:|------------:
+TOTAL                                       |       117 M€|        +85 M€
+
+
+7. BILAN MERCATO CASH
+--------------------------------------------------------------------------------
+
+Flux                                              | Montant
+--------------------------------------------------|----------:
+Cash entrant ventes (plan complet à 80 %)         |   +95 M€
+Cash sortant achats (120 M€ recrues à 70 %)       |   -85 M€
+Indemnité rupture Aubameyang                      |    -3 M€
+--------------------------------------------------|----------:
+SOLDE NET MERCATO                                 |    +7 M€
+
+→ Balance mercato positive = signal fort DNCG, premier vrai exercice de gestion
+  saine depuis 2017.
+
+
+8. CONFORMITÉ RÉGLEMENTAIRE FINALE
+--------------------------------------------------------------------------------
+
+Norme                              | Seuil      | OM 26/27 révisé           | Statut
+-----------------------------------|------------|---------------------------|--------
+DNCG (résultat net)                | > -30 M€   | +11 M€                    | ✅ Très confortable
+UEFA Squad Cost Rule               | < 70 %     | (96+38+16)/(186+85) = 55 %| ✅ Largement OK
+Football Earnings Rule (3 ans)     | < -60 M€   | -105 -50 +11 = -144 M€    | 🟠 Settlement Agreement UEFA (amende ≈ 5-10 M€, pas exclusion)
+Balance mercato                    | équilibre  | +7 M€                     | ✅
+
+
+✅ VERDICT FINAL
+================================================================================
+
+Le plan révisé est encore meilleur :
+
+1. ✅ Effectif 22 joueurs cohérents (13 noyau + Maupay + 8 recrues ciblées)
+2. ✅ Masse salariale 96 M€ chargée (ratio 51 %, niveau 23/24)
+3. ✅ Résultat net positif (+11 M€) — premier depuis 7 ans
+4. ✅ Balance mercato positive (+7 M€)
+5. ✅ DNCG + UEFA SCR validés sans réserve
+
+
+LES 5 DISCIPLINES À TENIR ABSOLUMENT
+--------------------------------------------------------------------------------
+1. 🎯 Auba : aller au bout de la rupture conventionnelle, ne pas prolonger.
+2. 🎯 Kondogbia : pas de prolongation. Départ libre 06/2026 = 7,6 M€ économisés
+      sans coût.
+3. 🎯 Hamed Traoré : prêt avec 80 % du salaire pris (négocier dur en Serie A).
+4. 🎯 Greenwood : viser 80 M€ minimum brut → 45 M€ net OM. En dessous, refuser.
+5. 🎯 Plafond 5 M€ brut/an sur les 2 stars recrutées (RW + ST). Aucune exception.
+
+
+Dans ce scénario, l'OM termine 26/27 avec :
+  - un résultat net positif
+  - une masse salariale alignée sur ses revenus
+  - un effectif compétitif pour l'EL
+  - une marge pour 27/28
+
+C'est un plan de redressement crédible et exécutable.
+
+================================================================================
+Document généré le 27 avril 2026
+================================================================================
