@@ -415,9 +415,11 @@
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 14px;
     line-height: 1.15;
   }
+  .section h2 .h2-title { flex: 1 1 auto; min-width: 0; }
 
   .section h2::before {
     content: '';
@@ -990,17 +992,60 @@
     text-decoration: underline;
   }
 
+  /* Overflow menu mobile (⋯) — caché par défaut sur desktop */
+  .h2-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    padding: 4px 10px;
+    margin-left: auto;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+    align-self: center;
+  }
+  .h2-menu-btn:hover { background: var(--bg-soft); color: var(--om-blue); }
+  .h2-menu-btn[aria-expanded="true"] { color: var(--om-blue); background: var(--bg-soft); }
+  .h2-menu {
+    display: none;
+  }
+
   @media (max-width: 720px) {
-    .h2-actions {
-      flex: 0 0 100%;
-      margin-left: 0;
-      margin-top: 10px;
-      gap: 8px;
-      justify-content: flex-start;
+    /* On masque les liens reset inline, on affiche le menu compact à la place */
+    .h2-actions { display: none; }
+    .h2-menu-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; min-height: 36px; }
+    .h2-menu {
+      position: absolute;
+      right: 12px;
+      margin-top: 44px;
+      background: var(--card);
+      border: 1px solid var(--border-md);
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      padding: 6px;
+      min-width: 200px;
+      z-index: 30;
     }
-    .reset-positions-link {
-      font-size: 11px;
+    .h2-menu[hidden] { display: none; }
+    .h2-menu:not([hidden]) { display: flex; flex-direction: column; gap: 2px; }
+    .h2-menu-item {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 10px 12px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 6px;
+      white-space: nowrap;
     }
+    .h2-menu-item:hover { background: var(--bg-soft); color: var(--om-blue); }
+    /* H2 devient relative pour ancrer le menu */
+    .section h2 { position: relative; }
   }
 
   /* ADD FORM */
@@ -2188,7 +2233,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 4px 10px;
-      padding: 14px 4px;
+      padding: 14px 12px 14px 4px;
       border-bottom: 1px solid var(--border);
       border-left: none;
     }
@@ -2357,9 +2402,13 @@
     }
     .player-mobile-meta .sep { margin: 0 5px; opacity: 0.5; }
 
-    /* Subtotal row : bloc résumé avec uniquement label + Brut */
+    /* Subtotal row : flex label gauche / VNC droite (plus de float qui déborde) */
     .group-block table tbody tr.subtotal-row {
-      display: block;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px 12px;
       padding: 10px 12px;
       background: var(--bg-soft);
       border: none;
@@ -2368,8 +2417,12 @@
       font-size: 12px;
     }
     .group-block table tbody tr.subtotal-row td {
-      display: inline;
+      display: block;
       padding: 0;
+    }
+    .group-block table tbody tr.subtotal-row td:nth-child(1) {
+      flex: 1 1 auto;
+      min-width: 0;
     }
     .group-block table tbody tr.subtotal-row td:nth-child(2),
     .group-block table tbody tr.subtotal-row td:nth-child(3),
@@ -2377,9 +2430,11 @@
     .group-block table tbody tr.subtotal-row td:nth-child(6),
     .group-block table tbody tr.subtotal-row td:nth-child(7) { display: none; }
     .group-block table tbody tr.subtotal-row td:nth-child(5) {
-      float: right;
+      flex: 0 0 auto;
       font-weight: 700;
       color: var(--om-blue-strong);
+      text-align: right;
+      white-space: nowrap;
     }
     .group-block table tbody tr.subtotal-row td:nth-child(5)::before {
       content: 'VNC ';
@@ -2843,6 +2898,11 @@
         <span class="h2-actions-sep" aria-hidden="true">·</span>
         <button id="reset-mercato-btn" class="reset-positions-link" type="button">↻ Réinitialiser le mercato</button>
       </span>
+      <button type="button" class="h2-menu-btn" id="h2-menu-btn" aria-label="Actions" aria-haspopup="true" aria-expanded="false">⋯</button>
+      <div class="h2-menu" id="h2-menu" role="menu" hidden>
+        <button type="button" class="h2-menu-item" data-action="reset-positions" role="menuitem">↻ Réinitialiser les postes</button>
+        <button type="button" class="h2-menu-item" data-action="reset-mercato" role="menuitem">↻ Réinitialiser le mercato</button>
+      </div>
     </h2>
     <div id="squad-container"></div>
   </div>
@@ -4372,6 +4432,32 @@ document.getElementById('reset-mercato-btn').addEventListener('click', () => {
   if (!hasDepartures && !hasArrivals) return;
   resetAll();
 });
+
+// ---- Overflow menu mobile (⋯) pour les actions reset du H2 ----
+(function setupH2Menu() {
+  const btn = document.getElementById('h2-menu-btn');
+  const menu = document.getElementById('h2-menu');
+  if (!btn || !menu) return;
+  const close = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  menu.querySelectorAll('.h2-menu-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const action = item.dataset.action;
+      close();
+      if (action === 'reset-positions') document.getElementById('reset-positions-btn').click();
+      else if (action === 'reset-mercato') document.getElementById('reset-mercato-btn').click();
+    });
+  });
+  document.addEventListener('click', e => {
+    if (!menu.hidden && !menu.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
 
 // ---- Modal ajout recrue : event listeners ----
 document.querySelectorAll('#arrival-modal .arr-type-card').forEach(card => {
