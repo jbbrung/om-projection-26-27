@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OM 26/27 — Simulateur Mercato</title>
+<script>
+  // Theme init — exécuté en <head> pour éviter le flash de thème incorrect
+  (function() {
+    try {
+      var saved = localStorage.getItem('om-theme');
+      var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
@@ -44,6 +54,70 @@
     --serif: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     --condensed: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     --display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+    /* Decor overlay (grille) — utilisé par body::before, theme-aware */
+    --decor-grid: rgba(11, 97, 172, 0.06);
+    --decor-ring: rgba(11, 97, 172, 0.05);
+    --hero-saison-color: var(--om-navy);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  /* DARK MODE — palette anthracite, on garde le bleu OM comme accent */
+  /* Overrides ciblés dark mode pour éléments avec couleurs hardcodées
+     (badge youth cream, verdict ok vert sombre, logo OM navy → blanc) */
+  [data-theme="dark"] .om-logo {
+    filter: brightness(0) invert(1);
+    opacity: 0.94;
+  }
+  [data-theme="dark"] .transfer-type-badge.youth {
+    background: rgba(250, 200, 0, 0.16);
+    color: #FFCB47;
+    border-color: rgba(250, 200, 0, 0.4);
+  }
+  [data-theme="dark"] .arr-preview-verdict.ok {
+    color: #5BD992;
+    border-left-color: #5BD992;
+  }
+  [data-theme="dark"] .syn-reset-btn:hover {
+    color: #FF6680;
+    border-color: #FF6680;
+  }
+
+  [data-theme="dark"] {
+    --om-blue: #3D8FE8;
+    --om-blue-strong: #5BA3F0;
+    --om-blue-dark: #2A75CC;
+    --om-navy: #B8D4F0;
+    --om-blue-soft: rgba(61, 143, 232, 0.14);
+    --om-blue-tint: rgba(61, 143, 232, 0.06);
+    --om-rgb: 61, 143, 232;
+
+    --green: #2ED670;
+    --green-soft: rgba(46, 214, 112, 0.12);
+    --red: #FF4D67;
+    --red-soft: rgba(255, 77, 103, 0.14);
+    --orange: #FFB23D;
+
+    --bg: #0E1116;
+    --bg-soft: #161B22;
+    --card: #161B22;
+    --card-warm: #1C2128;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --border-md: rgba(255, 255, 255, 0.16);
+    --border-soft: rgba(255, 255, 255, 0.05);
+    --border-blue: rgba(61, 143, 232, 0.35);
+
+    --text: #E6EDF3;
+    --text-dim: #ADBAC7;
+    --muted: #768390;
+    --muted-soft: #545D68;
+
+    --decor-grid: rgba(184, 212, 240, 0.04);
+    --decor-ring: rgba(61, 143, 232, 0.06);
+    --hero-saison-color: var(--om-blue);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
@@ -70,8 +144,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(var(--om-rgb), 0.055) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(var(--om-rgb), 0.055) 1px, transparent 1px);
+      linear-gradient(var(--decor-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--decor-grid) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -110,7 +184,7 @@
   header {
     position: relative;
     z-index: 2;
-    background: #FFFFFF;
+    background: var(--card);
     padding: 64px 48px;
     border-bottom: 1px solid var(--border);
     overflow: hidden;
@@ -118,6 +192,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Theme toggle — bouton discret, position absolue top-right du header */
+  .theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
+    z-index: 3;
+  }
+  .theme-toggle:hover {
+    color: var(--om-blue);
+    border-color: var(--om-blue);
+    background: var(--bg-soft);
+    transform: rotate(15deg);
+  }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--om-blue);
+    outline-offset: 2px;
+  }
+  .theme-toggle svg { display: block; }
+  /* Affiche lune en light, soleil en dark */
+  .theme-toggle .theme-icon-moon { display: block; }
+  .theme-toggle .theme-icon-sun { display: none; }
+  [data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
+  [data-theme="dark"] .theme-toggle .theme-icon-sun { display: block; }
+
+  @media (max-width: 720px) {
+    .theme-toggle {
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+    }
+    .theme-toggle svg { width: 16px; height: 16px; }
   }
 
   /* Lettres décoratives bleues qui débordent (style "OLYMPIQUE / LIGUE 1" om.fr) */
@@ -696,7 +816,7 @@
   .move-menu {
     position: absolute;
     z-index: 100;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border-md);
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
@@ -897,7 +1017,7 @@
     font-size: 13px;
     text-align: right;
     font-variant-numeric: tabular-nums;
-    background: white;
+    background: var(--card);
     font-family: var(--sans);
   }
 
@@ -1142,7 +1262,7 @@
     align-items: center;
     gap: 8px;
     padding: 9px 18px;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border-blue);
     border-radius: 999px;
     color: var(--om-blue);
@@ -1235,7 +1355,7 @@
   }
 
   .oa-panel table {
-    background: white;
+    background: var(--card);
     border-radius: 8px;
     overflow: hidden;
   }
@@ -1277,7 +1397,7 @@
   }
 
   .modal-card {
-    background: white;
+    background: var(--card);
     border-radius: 16px;
     padding: 36px 36px 28px;
     width: 460px;
@@ -1470,7 +1590,7 @@
     margin-bottom: 16px;
   }
   .arr-type-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--border);
     border-radius: 10px;
@@ -1575,7 +1695,7 @@
     gap: 6px;
   }
   .youth-prospect-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--border);
     border-radius: 8px;
@@ -1691,7 +1811,7 @@
     font-weight: 500;
     color: var(--text);
     font-family: var(--sans);
-    background: white;
+    background: var(--card);
     text-align: left;
     letter-spacing: 0;
     text-transform: none;
@@ -1741,7 +1861,7 @@
     border-radius: 6px;
     line-height: 1.4;
     border-left: 3px solid var(--border);
-    background: white;
+    background: var(--card);
     color: var(--muted);
   }
   .arr-preview-verdict.ok {
@@ -2138,7 +2258,7 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     .mds-kpi {
-      background: white;
+      background: var(--card);
       padding: 9px 14px 10px;
       display: flex;
       flex-direction: column;
@@ -2761,6 +2881,10 @@
   </div>
   <span class="hero-deco hero-deco-left" aria-hidden="true">26</span>
   <span class="hero-deco hero-deco-right" aria-hidden="true">27</span>
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Basculer en mode sombre" title="Basculer le thème">
+    <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
 </header>
 
 <!-- Sticky strip mobile : MS chargée + Balance toujours visibles pendant la scroll de l'effectif. -->
@@ -4561,6 +4685,10 @@ async function exportMercatoPng() {
   const originalLabel = btn.querySelector('span:last-child').textContent;
   btn.querySelector('span:last-child').textContent = 'Génération…';
 
+  // Force le rendu en light mode pour l'export (partage externe = lisibilité universelle)
+  const wasDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (wasDark) document.documentElement.removeAttribute('data-theme');
+
   try {
     const a = computeAggregates();
     const balance = a.balance;
@@ -4630,10 +4758,45 @@ async function exportMercatoPng() {
   } finally {
     btn.disabled = false;
     btn.querySelector('span:last-child').textContent = originalLabel;
+    // Restaure le dark mode si actif avant l'export
+    if (wasDark) document.documentElement.setAttribute('data-theme', 'dark');
   }
 }
 
 document.getElementById('export-mercato-btn').addEventListener('click', exportMercatoPng);
+
+// ---- Theme toggle (light / dark) ----
+(function setupTheme() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const updateLabel = () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btn.setAttribute('aria-label', isDark ? 'Passer en mode clair' : 'Passer en mode sombre');
+    btn.setAttribute('title', isDark ? 'Mode clair' : 'Mode sombre');
+  };
+  updateLabel();
+  btn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem('om-theme', 'light'); } catch (e) {}
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      try { localStorage.setItem('om-theme', 'dark'); } catch (e) {}
+    }
+    updateLabel();
+  });
+  // Suivre les changements du système si rien n'est forcé
+  try {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', e => {
+      if (localStorage.getItem('om-theme')) return; // user choice prevails
+      if (e.matches) document.documentElement.setAttribute('data-theme', 'dark');
+      else document.documentElement.removeAttribute('data-theme');
+      updateLabel();
+    });
+  } catch (e) {}
+})();
 
 loadState();
 updateArrivalFormVisibility();
