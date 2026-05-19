@@ -1875,7 +1875,63 @@
     color: var(--text-dim);
     letter-spacing: 0;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
   }
+
+  /* Tooltip discret ⓘ — pédagogique, ne force pas l'attention */
+  .syn-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: help;
+    line-height: 1;
+    transition: color 0.15s;
+    position: relative;
+  }
+  .syn-info:hover, .syn-info:focus { color: var(--om-blue); outline: none; }
+  .syn-info::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--card);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0;
+    padding: 8px 11px;
+    border-radius: 6px;
+    width: max-content;
+    max-width: 240px;
+    white-space: normal;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s 0.05s;
+    z-index: 50;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .syn-info::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 3px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--text);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s 0.05s;
+  }
+  .syn-info:hover::after, .syn-info:focus::after,
+  .syn-info:hover::before, .syn-info:focus::before { opacity: 1; }
   .syn-input-wrap {
     display: grid;
     grid-template-columns: 70px 24px;
@@ -2989,7 +3045,10 @@
         <span class="syn-input-wrap"><input type="number" id="target-ms" value="95" step="1" min="0"><em>M€</em></span>
       </label>
       <label class="syn-input-row">
-        <span>Coefficient charges</span>
+        <span>
+          Coefficient charges
+          <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="Multiplicateur charges patronales et sociales (~1,40 = standard Ligue 1). MS chargée = MS brute × coef.">ⓘ</span>
+        </span>
         <span class="syn-input-wrap"><input type="number" id="coef-charges" value="1.40" step="0.01" min="1"><em></em></span>
       </label>
       <label class="syn-input-row">
@@ -4562,7 +4621,7 @@ async function exportMercatoPng() {
     // Téléchargement
     const link = document.createElement('a');
     const dateSlug = new Date().toISOString().slice(0, 10);
-    link.download = `OM_Mercato_26-27_${dateSlug}.png`;
+    link.download = `mercato_by_gesputtij_${dateSlug}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
