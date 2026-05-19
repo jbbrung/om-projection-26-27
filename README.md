@@ -4,7 +4,7 @@ Simulateur de mercato et projection budgétaire pour la saison 2026/2027 de l'Ol
 
 ## Contenu
 
-- **`OM_26-27_Simulateur.html`** — Simulateur interactif (single-file HTML, à ouvrir dans un navigateur). Permet de :
+- **`index.html`** — Simulateur interactif (single-file HTML, à ouvrir dans un navigateur ou déployé sur `mercato.gesputtij.me`). Permet de :
   - simuler les départs et leurs prix de cession (avec droits de revente)
   - ajouter des recrues (achat ferme, prêt sec, prêt + OA optionnelle/obligatoire)
   - voir en temps réel l'impact sur la masse salariale chargée, la balance mercato, le compte de résultat et la conformité DNCG/UEFA SCR
@@ -14,7 +14,7 @@ Simulateur de mercato et projection budgétaire pour la saison 2026/2027 de l'Ol
 
 ## Usage
 
-Ouvrir `OM_26-27_Simulateur.html` dans un navigateur. L'état est persisté localement via `localStorage`.
+Ouvrir `index.html` dans un navigateur, ou utiliser la version déployée sur `mercato.gesputtij.me`. L'état est persisté localement via `localStorage`.
 
 ## Hypothèses par défaut
 
