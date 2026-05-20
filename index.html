@@ -1571,19 +1571,6 @@
   }
 
   /* Bouton "Réinitialiser les postes" en lien discret dans le h2 */
-  /* Container des actions discrètes alignées à droite du h2 */
-  .h2-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-  .h2-actions-sep {
-    color: var(--border-md);
-    font-weight: 400;
-    user-select: none;
-  }
   .reset-positions-link {
     background: none;
     border: none;
@@ -1670,38 +1657,15 @@
   }
   .flat-view-toggle:hover { color: var(--om-blue); }
 
-  /* Overflow menu mobile (⋯) — caché par défaut sur desktop */
-  .h2-menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    padding: 4px 10px;
-    margin-left: auto;
-    font-size: 22px;
-    line-height: 1;
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.15s, color 0.15s;
-    align-self: center;
-  }
-  .h2-menu-btn:hover { background: var(--bg-soft); color: var(--om-blue); }
-  .h2-menu-btn[aria-expanded="true"] { color: var(--om-blue); background: var(--bg-soft); }
-  .h2-menu {
-    display: none;
-  }
-
   @media (max-width: 720px) {
-    /* On masque les liens reset inline, on affiche le menu compact à la place */
-    .h2-actions { display: none; }
-    .h2-menu-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; min-height: 36px; }
-    /* Contrôles de tri condensés sur mobile */
+    /* Contrôles condensés sur mobile : Vue détaillée + Réinit. postes sur leur propre ligne */
     .h2-controls {
       flex: 0 0 100%;
       margin-left: 0;
       margin-top: 12px;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: space-between;
     }
     .flat-view-toggle {
       font-size: 13px;
@@ -1714,35 +1678,12 @@
       border-color: var(--border-blue);
       color: var(--om-blue);
     }
-    .h2-menu {
-      position: absolute;
-      right: 12px;
-      margin-top: 44px;
-      background: var(--card);
-      border: 1px solid var(--border-md);
-      border-radius: 10px;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-      padding: 6px;
-      min-width: 200px;
-      z-index: 30;
-    }
-    .h2-menu[hidden] { display: none; }
-    .h2-menu:not([hidden]) { display: flex; flex-direction: column; gap: 2px; }
-    .h2-menu-item {
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 10px 12px;
-      font-family: var(--sans);
+    .h2-controls .reset-positions-link {
       font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-      border-radius: 6px;
-      white-space: nowrap;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
     }
-    .h2-menu-item:hover { background: var(--bg-soft); color: var(--om-blue); }
-    /* H2 devient relative pour ancrer le menu */
-    .section h2 { position: relative; }
   }
 
   /* ADD FORM */
@@ -3111,34 +3052,23 @@
     /* La cellule cession ne s'affiche que sur les départs (sinon = clutter) */
     .group-block table tbody tr:not(.departing) td:nth-child(11) { display: none; }
 
-    /* En cession : méta conservé (fin de contrat + salaire = info clé pour le DS),
-       sans strikethrough, hauteur alignée avec la cession à droite */
+    /* En cession : méta conservé (fin de contrat + salaire = info clé pour le DS), sans strikethrough */
     .group-block table tbody tr.departing .player-mobile-meta {
       text-decoration: none;
       opacity: 0.85;
-      display: flex;
-      align-items: center;
-      min-height: 30px;
-    }
-    /* tr en cession : ancrage pour la cession positionnée en absolu */
-    .group-block table tbody tr.departing {
-      position: relative;
     }
 
-    /* Cell 11 — Cession : positionnée en absolu en bas à droite,
-       alignée verticalement avec la ligne méta */
+    /* Cell 11 — Cession : ligne dédiée en bas du card mobile, alignée à droite */
     .group-block table tbody td:nth-child(11) {
-      position: absolute;
-      right: 4px;
-      bottom: 14px;
-      flex: none;
-      width: auto;
-      padding: 0;
-      margin: 0;
-      border-top: none;
+      flex: 0 0 100%;
+      order: 5;
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 8px;
+      padding: 8px 0 2px 0;
+      margin-top: 4px;
+      border-top: 1px dashed var(--border-soft);
       font-size: 11px;
       color: var(--muted);
     }
@@ -3703,14 +3633,8 @@
           <input type="checkbox" id="detail-view-toggle">
           <span>Vue détaillée</span>
         </label>
+        <button id="reset-positions-btn" class="reset-positions-link" type="button">↻ <span class="show-desktop">Réinitialiser les postes</span><span class="show-mobile">Réinit. postes</span></button>
       </span>
-      <span class="h2-actions">
-        <button id="reset-positions-btn" class="reset-positions-link" type="button">↻ Réinitialiser les postes</button>
-      </span>
-      <button type="button" class="h2-menu-btn" id="h2-menu-btn" aria-label="Actions" aria-haspopup="true" aria-expanded="false">⋯</button>
-      <div class="h2-menu" id="h2-menu" role="menu" hidden>
-        <button type="button" class="h2-menu-item" data-action="reset-positions" role="menuitem">↻ Réinitialiser les postes</button>
-      </div>
     </h2>
     <div id="squad-container"></div>
   </div>
@@ -5977,31 +5901,6 @@ document.getElementById('reset-mercato-btn').addEventListener('click', () => {
     document.body.classList.toggle('has-detail-view', state.detailView);
     saveState();
   });
-})();
-
-// ---- Overflow menu mobile (⋯) pour les actions reset du H2 ----
-(function setupH2Menu() {
-  const btn = document.getElementById('h2-menu-btn');
-  const menu = document.getElementById('h2-menu');
-  if (!btn || !menu) return;
-  const close = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    const open = menu.hidden;
-    menu.hidden = !open;
-    btn.setAttribute('aria-expanded', String(open));
-  });
-  menu.querySelectorAll('.h2-menu-item').forEach(item => {
-    item.addEventListener('click', () => {
-      const action = item.dataset.action;
-      close();
-      if (action === 'reset-positions') document.getElementById('reset-positions-btn').click();
-    });
-  });
-  document.addEventListener('click', e => {
-    if (!menu.hidden && !menu.contains(e.target) && e.target !== btn) close();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 })();
 
 // ---- Modal ajout recrue : event listeners ----
