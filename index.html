@@ -237,6 +237,221 @@
     .theme-toggle svg { width: 16px; height: 16px; }
   }
 
+  /* Bouton "?" — partage le style du theme-toggle, positionné à sa gauche */
+  .header-icon-btn {
+    position: absolute;
+    top: 20px;
+    right: 64px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--muted);
+    font-family: var(--condensed);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
+    z-index: 3;
+    line-height: 1;
+  }
+  .header-icon-btn:hover {
+    color: var(--om-blue);
+    border-color: var(--om-blue);
+    background: var(--bg-soft);
+    transform: scale(1.06);
+  }
+  .header-icon-btn:focus-visible {
+    outline: 2px solid var(--om-blue);
+    outline-offset: 2px;
+  }
+  @media (max-width: 720px) {
+    .header-icon-btn { top: 14px; right: 54px; width: 32px; height: 32px; font-size: 15px; }
+  }
+
+  /* HELP OVERLAY (onboarding) */
+  .help-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    animation: helpFadeIn 0.18s ease-out;
+  }
+  .help-overlay[hidden] { display: none; }
+  @keyframes helpFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .help-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border-md);
+    border-radius: 14px;
+    padding: 32px 28px 24px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+    animation: helpSlideUp 0.22s ease-out;
+  }
+  @keyframes helpSlideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .help-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .help-close:hover { background: var(--bg-soft); color: var(--text); }
+  .help-eyebrow {
+    font-family: var(--condensed);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--om-blue);
+    margin-bottom: 6px;
+  }
+  .help-title {
+    font-family: var(--condensed);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+  }
+  .help-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .help-steps li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .help-step-num {
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--om-blue-soft);
+    color: var(--om-blue);
+    font-family: var(--condensed);
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .help-step-title {
+    font-family: var(--sans);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .help-step-desc {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+  .help-step-desc strong { color: var(--text); font-weight: 600; }
+  .help-cta {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--om-blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--condensed);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .help-cta:hover { background: var(--om-blue-strong); transform: translateY(-1px); }
+  @media (max-width: 720px) {
+    .help-card { padding: 28px 20px 20px; }
+    .help-title { font-size: 19px; }
+    .help-step-desc { font-size: 12.5px; }
+  }
+
+  /* TOAST STACK (feedback cession) */
+  .toast-stack {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--card);
+    border: 1px solid var(--border-md);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    min-width: 220px;
+    max-width: 320px;
+    animation: toastIn 0.22s ease-out, toastOut 0.3s ease-in 2.4s forwards;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .toast.departure { border-left-color: var(--red); }
+  .toast.arrival { border-left-color: var(--green); }
+  .toast-name { font-weight: 600; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .toast-delta { font-family: var(--condensed); font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+  .toast.departure .toast-delta { color: var(--red); }
+  .toast.arrival .toast-delta { color: var(--green); }
+  @keyframes toastIn {
+    from { transform: translateX(24px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes toastOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(24px); opacity: 0; }
+  }
+  @media (max-width: 720px) {
+    .toast-stack { bottom: 80px; right: 12px; left: 12px; align-items: stretch; }
+    .toast { min-width: 0; max-width: none; }
+  }
+
+  /* Pulse flash on departure/arrival row */
+  @keyframes rowFlash {
+    0% { background: transparent; }
+    25% { background: var(--om-blue-soft); }
+    100% { background: transparent; }
+  }
+  tr.row-flash > td { animation: rowFlash 0.8s ease-out; }
+
   /* Lettres décoratives bleues qui débordent (style "OLYMPIQUE / LIGUE 1" om.fr) */
   .hero-deco {
     position: absolute;
@@ -3447,11 +3662,52 @@
   </div>
   <span class="hero-deco hero-deco-left" aria-hidden="true">26</span>
   <span class="hero-deco hero-deco-right" aria-hidden="true">27</span>
+  <button type="button" id="help-toggle" class="header-icon-btn header-icon-help" aria-label="Comment utiliser le simulateur" title="Comment ça marche ?">?</button>
   <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Basculer en mode sombre" title="Basculer le thème">
     <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
     <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
 </header>
+
+<!-- ONBOARDING : modal d'aide rapide -->
+<div class="help-overlay" id="help-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="help-title">
+  <div class="help-card">
+    <button type="button" class="help-close" id="help-close" aria-label="Fermer l'aide">×</button>
+    <div class="help-eyebrow">Mode d'emploi</div>
+    <h3 id="help-title" class="help-title">Construis ton mercato OM 26/27</h3>
+    <ol class="help-steps">
+      <li>
+        <span class="help-step-num">1</span>
+        <div>
+          <div class="help-step-title">Fais partir un joueur</div>
+          <div class="help-step-desc">Coche la case à gauche d'un joueur dans l'effectif : tu choisis vente, prêt sortant ou levée d'OA. Le salaire est immédiatement retiré de la masse salariale.</div>
+        </div>
+      </li>
+      <li>
+        <span class="help-step-num">2</span>
+        <div>
+          <div class="help-step-title">Signe une recrue</div>
+          <div class="help-step-desc">Clique <strong>+ Ajouter une recrue</strong>. Choisis le type (transfert sec, prêt, jeune du centre), entre nom, salaire, prix. La balance mercato se met à jour.</div>
+        </div>
+      </li>
+      <li>
+        <span class="help-step-num">3</span>
+        <div>
+          <div class="help-step-title">Construis ton onze type</div>
+          <div class="help-step-desc">Clique un slot du terrain pour assigner un titulaire, puis une doublure. Les jeunes du centre apparaissent dans la rotation.</div>
+        </div>
+      </li>
+      <li>
+        <span class="help-step-num">4</span>
+        <div>
+          <div class="help-step-title">Exporte et partage</div>
+          <div class="help-step-desc">Bouton <strong>⤓ Exporter</strong> en haut du onze type : une carte 1:1 prête à coller sur Twitter / Instagram.</div>
+        </div>
+      </li>
+    </ol>
+    <button type="button" class="help-cta" id="help-got-it">C'est parti</button>
+  </div>
+</div>
 
 <!-- Sticky strip mobile : MS chargée + Balance toujours visibles pendant la scroll de l'effectif. -->
 <div class="mobile-decision-strip" aria-label="Synthèse rapide du scénario">
@@ -3851,6 +4107,9 @@
   </div>
 </footer>
 
+<!-- Toast container : feedback cession / arrivée -->
+<div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
 <script>
 // ============================================================
 // DONNÉES INITIALES — EFFECTIF OM 26/27
@@ -3878,7 +4137,7 @@ const SQUAD = [
   { id: 'weah', name: 'Timothy Weah', position: 'RM', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 20.0, monthlySalary: 380, transferCost: 15.4, annualAmort: 3.85, vnc: 15.40, oaArrival: true },
   { id: 'greenwood', name: 'Mason Greenwood', position: 'RW', group: 'Offensifs', age: 24, contractEnd: '30/06/2029', tmValue: 55.0, monthlySalary: 455, transferCost: 25.8, annualAmort: 5.25, vnc: 15.74, resaleRights: 0.60 },
   { id: 'paixao', name: 'Igor Paixão', position: 'LW', group: 'Offensifs', age: 25, contractEnd: '30/06/2030', tmValue: 35.0, monthlySalary: 425, transferCost: 30.0, annualAmort: 6.10, vnc: 24.41 },
-  { id: 'traore', name: 'Hamed Traoré', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 333, transferCost: 7.5, annualAmort: 1.88, vnc: 7.50, oaArrival: true },
+  { id: 'traore', name: 'Hamed Traoré', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 333, transferCost: 7.5, annualAmort: 1.88, vnc: 7.50, oaArrival: true, resaleRights: 0.50 },
   { id: 'gomes', name: 'Angel Gomes', position: 'AM', group: 'Offensifs', age: 25, contractEnd: '30/06/2028', tmValue: 12.0, monthlySalary: 333, transferCost: 0, annualAmort: 0, vnc: 0, loanedOutOA: { club: 'Wolves', price: 8.0 } },
   { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 28, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 126, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25 },
   { id: 'abdelli', name: 'Himad Abdelli', position: 'AM', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 7.0, monthlySalary: 75, transferCost: 2.75, annualAmort: 0.62, vnc: 2.49 },
@@ -4335,6 +4594,7 @@ function appendPlayerRow(tbody, p, coef) {
   const movedBadge = isMoved ? ` <span class="moved-badge" title="Reclassé depuis ${p.group}">Reclassé</span>` : '';
 
   const tr = document.createElement('tr');
+  tr.dataset.playerId = p.id;
   if (loanOut) tr.classList.add('loan-out-row');
   else if (isDeparting) tr.classList.add('departing');
 
@@ -4443,6 +4703,11 @@ function bindSquadControls(container) {
         delete state.departing[id];
         saveState();
         renderAll();
+        const player = SQUAD.find(x => x.id === id);
+        if (player) {
+          showCessionToast(player, 'arrival');
+          flashPlayerRow(id);
+        }
       }
     });
   });
@@ -5848,19 +6113,24 @@ function closeCessionModal() {
 
 function confirmCessionModal() {
   if (!currentModalPlayerId) return closeCessionModal();
+  const player = SQUAD.find(x => x.id === currentModalPlayerId);
   if (currentModalMode === 'loan-out') {
     state.departing[currentModalPlayerId] = { mode: 'loan-out', price: 0 };
   } else if (currentModalMode === 'sale-oa') {
-    const p = SQUAD.find(x => x.id === currentModalPlayerId);
-    const oaPrice = (p && p.loanedOutOA) ? p.loanedOutOA.price : 0;
+    const oaPrice = (player && player.loanedOutOA) ? player.loanedOutOA.price : 0;
     state.departing[currentModalPlayerId] = { mode: 'sale', price: oaPrice, oaExercised: true };
   } else {
     const val = parseFloat(document.getElementById('modal-input').value) || 0;
     state.departing[currentModalPlayerId] = { mode: 'sale', price: val };
   }
+  const flashedId = currentModalPlayerId;
   saveState();
   closeCessionModal();
   renderAll();
+  if (player) {
+    showCessionToast(player, 'departure');
+    flashPlayerRow(flashedId);
+  }
 }
 
 document.querySelectorAll('.modal-mode-selector .mode-btn').forEach(btn => {
@@ -6414,6 +6684,65 @@ document.getElementById('export-compo-btn').addEventListener('click', exportComp
     }
     updateLabel();
   });
+})();
+
+// ---- Toast feedback (cession / arrivée) ----
+function showCessionToast(player, kind) {
+  // kind: 'departure' (joueur coché = part) | 'arrival' (joueur décoché = revient)
+  const stack = document.getElementById('toast-stack');
+  if (!stack || !player) return;
+  const sign = kind === 'departure' ? '−' : '+';
+  const salary = player.monthlySalary || 0;
+  const toast = document.createElement('div');
+  toast.className = `toast ${kind}`;
+  toast.innerHTML = `
+    <span class="toast-name">${player.name}</span>
+    <span class="toast-delta">${sign}${salary} k€/mois</span>
+  `;
+  stack.appendChild(toast);
+  // L'animation toastOut termine à 2.7s — on retire l'élément à 2.8s
+  setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2800);
+}
+
+function flashPlayerRow(playerId) {
+  // RenderAll vient de recréer les rows. On laisse 1 frame pour que la nouvelle row existe.
+  requestAnimationFrame(() => {
+    const row = document.querySelector(`tr[data-player-id="${playerId}"]`);
+    if (!row) return;
+    row.classList.remove('row-flash'); // reset si re-déclenché
+    // Force un reflow pour que l'animation redémarre
+    void row.offsetWidth;
+    row.classList.add('row-flash');
+    setTimeout(() => row.classList.remove('row-flash'), 850);
+  });
+}
+
+// ---- Onboarding (modal d'aide) ----
+(function setupHelp() {
+  const btn = document.getElementById('help-toggle');
+  const overlay = document.getElementById('help-overlay');
+  const closeBtn = document.getElementById('help-close');
+  const cta = document.getElementById('help-got-it');
+  if (!btn || !overlay) return;
+  const HELP_SEEN_KEY = 'om-help-seen-v1';
+  const open = () => { overlay.hidden = false; };
+  const close = () => {
+    overlay.hidden = true;
+    try { localStorage.setItem(HELP_SEEN_KEY, '1'); } catch (e) {}
+  };
+  btn.addEventListener('click', open);
+  closeBtn && closeBtn.addEventListener('click', close);
+  cta && cta.addEventListener('click', close);
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) close();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !overlay.hidden) close();
+  });
+  // Premier passage : auto-show
+  try {
+    if (!localStorage.getItem(HELP_SEEN_KEY)) open();
+  } catch (e) {}
 })();
 
 loadState();
