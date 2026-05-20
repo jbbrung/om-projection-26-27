@@ -1808,6 +1808,9 @@
     letter-spacing: 0.12em;
   }
   .btn-export.btn-export-inline .export-icon { font-size: 13px; }
+  .btn-share { background: transparent; border-color: var(--border-md); color: var(--text-dim); }
+  .btn-share:hover { background: var(--text); color: var(--bg); border-color: var(--text); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
+  .btn-share .export-icon { font-weight: 700; }
   .export-icon {
     font-size: 16px;
     line-height: 1;
@@ -2766,6 +2769,35 @@
     background: var(--text-dim);
   }
 
+  /* Économie réalisée vs MS 25/26 (baseline 112.6 M€) */
+  .syn-eco {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-soft);
+    font-family: var(--sans);
+    font-size: 12px;
+  }
+  .syn-eco[hidden] { display: none; }
+  .syn-eco-pct {
+    font-family: var(--condensed);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .syn-eco-pct.saving { color: var(--green); }
+  .syn-eco-pct.overrun { color: var(--red); }
+  .syn-eco-pct.flat { color: var(--text-dim); }
+  .syn-eco-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
   @media (max-width: 1280px) {
     .container.with-aside { grid-template-columns: 1fr; }
     .synthesis-panel {
@@ -3719,6 +3751,10 @@
             <span class="show-desktop">Exporter le mercato (1:1)</span>
             <span class="show-mobile">Exporter</span>
           </button>
+          <button id="share-x-btn" class="btn-export btn-export-inline btn-share" title="Partager sur X (Twitter) avec la photo" hidden>
+            <span class="export-icon" aria-hidden="true">𝕏</span>
+            <span>Partager</span>
+          </button>
         </span>
       </h2>
       <div class="pitch-layout">
@@ -3767,6 +3803,10 @@
       <div class="syn-gauge">
         <div class="syn-gauge-fill under" id="syn-ms-gauge" style="width: 0%"></div>
         <div class="syn-gauge-marker" id="syn-ms-marker" style="left: 100%"></div>
+      </div>
+      <div class="syn-eco" id="syn-eco" hidden>
+        <span class="syn-eco-pct" id="syn-eco-pct">—</span>
+        <span class="syn-eco-label" id="syn-eco-label">vs MS 25/26 (112.6 M€)</span>
       </div>
     </div>
 
@@ -3886,6 +3926,9 @@ const YOUTH_PROSPECTS = [
   { id: 'valero', name: 'Antoine Valero', position: 'CF', group: 'Avants-centres', age: 17, tmValue: 0 },
 ];
 const YOUTH_DEFAULT_SALARY = 20;
+
+// MS chargée réelle 25/26 — baseline pour calculer l'économie réalisée par le mercato 26/27
+const MS_2526_BASELINE = 112.6;
 
 const GROUPS_ORDER = ['Gardiens', 'Défenseurs', 'Latéraux', 'Milieux', 'Offensifs', 'Avants-centres'];
 
@@ -5596,6 +5639,28 @@ function updateSynthesis(a, target, produits) {
   // Marqueur cible désactivé : la fin de la barre = la cible elle-même.
   document.getElementById('syn-ms-marker').style.display = 'none';
 
+  // Économie réalisée vs MS chargée 25/26 (baseline réelle, hors cible budgétaire)
+  const ecoBox = document.getElementById('syn-eco');
+  const ecoPct = document.getElementById('syn-eco-pct');
+  const ecoLabel = document.getElementById('syn-eco-label');
+  const ecoAbs = MS_2526_BASELINE - ms;
+  const ecoRatio = (ecoAbs / MS_2526_BASELINE) * 100;
+  ecoBox.hidden = false;
+  ecoPct.classList.remove('saving', 'overrun', 'flat');
+  if (Math.abs(ecoRatio) < 0.5) {
+    ecoPct.textContent = '=';
+    ecoPct.classList.add('flat');
+    ecoLabel.textContent = `Aligné sur MS 25/26 (${MS_2526_BASELINE} M€)`;
+  } else if (ecoRatio > 0) {
+    ecoPct.textContent = `−${ecoRatio.toFixed(1)} %`;
+    ecoPct.classList.add('saving');
+    ecoLabel.textContent = `vs MS 25/26 · économie ${ecoAbs.toFixed(1)} M€`;
+  } else {
+    ecoPct.textContent = `+${Math.abs(ecoRatio).toFixed(1)} %`;
+    ecoPct.classList.add('overrun');
+    ecoLabel.textContent = `vs MS 25/26 · surcoût ${Math.abs(ecoAbs).toFixed(1)} M€`;
+  }
+
   // 2. Balance mercato
   document.getElementById('syn-cessions').textContent = a.totalOmCash.toFixed(1) + ' M€';
   document.getElementById('syn-acq').textContent = (a.arrTransfer + a.oaTransferCost).toFixed(1) + ' M€';
@@ -5937,8 +6002,10 @@ document.getElementById('arrival-modal').addEventListener('keydown', e => {
 // • Bilan 1200×675 (Twitter 16:9 sans crop) — balance + top mouvements
 // ============================================================
 
-// Wrapper hors-écran réutilisable (light-mode forcé, position fixed, html2canvas + download)
-async function runExport({ btn, build, filename }) {
+// Wrapper hors-écran réutilisable (light-mode forcé, position fixed, html2canvas)
+// Par défaut télécharge le PNG. Si `consume` est fourni, il reçoit le blob + filename
+// et décide quoi en faire (ex: navigator.share).
+async function runExport({ btn, build, filename, consume }) {
   if (typeof html2canvas === 'undefined') {
     alert('Bibliothèque d\'export non chargée.');
     return;
@@ -5955,7 +6022,6 @@ async function runExport({ btn, build, filename }) {
   try {
     wrapper = build();
     document.body.appendChild(wrapper);
-    // Laisse le browser flusher le layout + décoder le background image notebook
     await new Promise(r => setTimeout(r, 120));
     const canvas = await html2canvas(wrapper, {
       scale: 2,
@@ -5963,13 +6029,25 @@ async function runExport({ btn, build, filename }) {
       logging: false,
       useCORS: true,
     });
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    if (!blob) throw new Error('canvas.toBlob() returned null');
+    if (consume) {
+      await consume(blob, filename);
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
   } catch (err) {
-    console.error('Export PNG failed:', err);
-    alert('Erreur export PNG :\n\n' + (err && err.message ? err.message : String(err)) + '\n\nStack:\n' + (err && err.stack ? err.stack.split('\n').slice(0, 5).join('\n') : 'n/a'));
+    if (err && err.name === 'AbortError') {
+      // L'utilisateur a annulé le menu de partage natif — pas une erreur
+    } else {
+      console.error('Export PNG failed:', err);
+      alert('Erreur export PNG :\n\n' + (err && err.message ? err.message : String(err)));
+    }
   } finally {
     if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
     btn.disabled = false;
@@ -6321,6 +6399,44 @@ async function exportCompoPng() {
 }
 
 document.getElementById('export-compo-btn').addEventListener('click', exportCompoPng);
+
+// ---- Partager sur X (Web Share API + files) ----
+// Disponible uniquement sur iOS Safari / Android Chrome avec support fichiers.
+// Desktop : pas de fallback → bouton caché.
+function canShareMercatoFile() {
+  if (!navigator.canShare) return false;
+  try {
+    const test = new File([new Uint8Array([0])], 'p.png', { type: 'image/png' });
+    return navigator.canShare({ files: [test] });
+  } catch (e) {
+    return false;
+  }
+}
+
+async function shareCompoX() {
+  const btn = document.getElementById('share-x-btn');
+  const tweetText = 'Mon #mercatOM parfait — powered by @gesputtij\nhttps://mercato.gesputtij.me';
+  await runExport({
+    btn,
+    build: buildCompoCard,
+    filename: `mercato_parfait_${exportDateSlug()}.png`,
+    consume: async (blob, filename) => {
+      const file = new File([blob], filename, { type: 'image/png' });
+      if (!navigator.canShare({ files: [file] })) {
+        throw new Error('Partage avec photo non supporté sur cet appareil.');
+      }
+      await navigator.share({ files: [file], text: tweetText });
+    },
+  });
+}
+
+(function setupShareX() {
+  const btn = document.getElementById('share-x-btn');
+  if (!btn) return;
+  if (!canShareMercatoFile()) return; // reste hidden
+  btn.hidden = false;
+  btn.addEventListener('click', shareCompoX);
+})();
 
 // ---- Theme toggle (light / dark) ----
 (function setupTheme() {
