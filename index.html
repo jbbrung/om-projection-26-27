@@ -1391,6 +1391,14 @@
     background: rgba(249, 156, 0, 0.12);
     color: var(--orange);
   }
+  .loan-out-badge.has-oa-opt {
+    background: rgba(32, 121, 189, 0.14);
+    color: var(--om-blue);
+  }
+  .loan-out-badge.has-oa-mand {
+    background: rgba(0, 61, 121, 0.18);
+    color: var(--om-blue-dark);
+  }
 
   /* Arrivées : highlight bleu OM (style "ligne soi" om.fr) */
   tbody tr.new-arrival td:first-child {
@@ -2259,6 +2267,48 @@
     font-size: 12px;
     color: var(--muted);
     margin-top: 8px;
+  }
+
+  .modal-loan-oa-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-left: 2px solid var(--om-blue);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .modal-loan-oa-toggle input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+  }
+  .modal-loan-oa-fields {
+    margin-top: 12px;
+    padding-left: 14px;
+    border-left: 2px solid var(--om-blue-soft);
+  }
+  .modal-loan-oa-radios {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .modal-loan-oa-radios label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--text);
+    margin: 0;
+  }
+  .modal-loan-oa-radios input[type="radio"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
   }
 
   .modal-vnc {
@@ -3755,6 +3805,22 @@
         Salaire retiré des comptes OM pour 26/27. Pas d'indemnité, pas de plus-value.
         Le joueur reste un actif OM (VNC + amortissement conservés).
       </div>
+      <label class="modal-loan-oa-toggle">
+        <input type="checkbox" id="modal-loan-oa-check">
+        <span>Avec option d'achat négociée</span>
+      </label>
+      <div id="modal-loan-oa-fields" class="modal-loan-oa-fields" style="display:none;">
+        <label for="modal-loan-oa-price">Prix de l'OA (M€)</label>
+        <input type="number" id="modal-loan-oa-price" step="0.5" min="0" placeholder="0">
+        <div class="modal-loan-oa-radios" role="radiogroup">
+          <label><input type="radio" name="modal-loan-oa-kind" value="optional" checked> Optionnelle</label>
+          <label><input type="radio" name="modal-loan-oa-kind" value="mandatory"> Obligatoire</label>
+        </div>
+        <div class="modal-hint" style="margin-top: 8px;">
+          Obligatoire = engagement futur capitalisé (impact 27/28).
+          Optionnelle = indicatif, levée incertaine.
+        </div>
+      </div>
     </div>
 
     <div class="modal-rights-warning" id="modal-rights" style="display:none;"></div>
@@ -4070,6 +4136,9 @@
       <div class="syn-row">
         <span>dont OA obligatoires</span><span id="syn-oa">0.0 M€</span>
       </div>
+      <div class="syn-row" id="syn-loan-future-row" hidden>
+        <span>Engagement futur entrant 27/28</span><span id="syn-loan-future">0.0 M€</span>
+      </div>
       <div class="syn-row syn-total" id="syn-balance-row">
         <span>Solde</span><span id="syn-balance">0.0 M€</span>
       </div>
@@ -4139,7 +4208,7 @@ const SQUAD = [
   { id: 'paixao', name: 'Igor Paixão', position: 'LW', group: 'Offensifs', age: 25, contractEnd: '30/06/2030', tmValue: 35.0, monthlySalary: 425, transferCost: 30.0, annualAmort: 6.10, vnc: 24.41 },
   { id: 'traore', name: 'Hamed Traoré', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 333, transferCost: 7.5, annualAmort: 1.88, vnc: 7.50, oaArrival: true, resaleRights: 0.50 },
   { id: 'gomes', name: 'Angel Gomes', position: 'AM', group: 'Offensifs', age: 25, contractEnd: '30/06/2028', tmValue: 12.0, monthlySalary: 333, transferCost: 0, annualAmort: 0, vnc: 0, loanedOutOA: { club: 'Wolves', price: 8.0 } },
-  { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 28, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 126, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25 },
+  { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 28, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 126, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25, loanedOutOA: { club: 'Istanbul Başakşehir', price: 5.0 } },
   { id: 'abdelli', name: 'Himad Abdelli', position: 'AM', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 7.0, monthlySalary: 75, transferCost: 2.75, annualAmort: 0.62, vnc: 2.49 },
   // ATTAQUE
   { id: 'gouiri', name: 'Amine Gouiri', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2029', tmValue: 28.0, monthlySalary: 380, transferCost: 19.0, annualAmort: 4.30, vnc: 12.91 },
@@ -4227,7 +4296,7 @@ const MIN_PER_GROUP = {
   'Avants-centres': 2,
 };
 
-// Helpers pour le nouveau modèle de départ : { mode: 'sale' | 'loan-out', price }
+// Helpers pour le nouveau modèle de départ : { mode: 'sale' | 'loan-out', price, loanOA?: { price, mandatory } }
 function depPrice(dep) {
   if (dep == null) return 0;
   if (typeof dep === 'number') return dep;
@@ -4242,6 +4311,15 @@ function isSale(dep)    { return depMode(dep) === 'sale'; }
 function isLoanOut(dep) { return depMode(dep) === 'loan-out'; }
 function isOaExercised(dep) {
   return dep && typeof dep === 'object' && dep.oaExercised === true;
+}
+// OA négociée au moment d'un prêt sortant : { price, mandatory } | null
+function getLoanOA(dep) {
+  if (!dep || typeof dep !== 'object' || dep.mode !== 'loan-out') return null;
+  return dep.loanOA || null;
+}
+function loanOutFutureIncome(dep) {
+  const oa = getLoanOA(dep);
+  return oa && oa.mandatory ? (oa.price || 0) : 0;
 }
 
 // Groupe effectif d'un joueur (override utilisateur > groupe d'origine)
@@ -4582,7 +4660,20 @@ function appendPlayerRow(tbody, p, coef) {
   const omCash = omCashFromCession(p, cession);
   const plusValue = (isDeparting && !loanOut) ? (omCash - p.vnc) : 0;
   const rightsBadge = rights < 1 ? ` <span class="rights-badge" title="OM possède ${Math.round(rights*100)}% des droits">${Math.round(rights*100)}%</span>` : '';
-  const loanBadge = loanOut ? ` <span class="loan-out-badge" title="Joueur prêté — salaire retiré, mais OM conserve l'actif (VNC + amortissement)">Prêt sortant</span>` : '';
+  const loanOa = getLoanOA(dep);
+  let loanBadge = '';
+  if (loanOut) {
+    if (loanOa) {
+      const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
+      const lbl = loanOa.mandatory ? `Prêt + OA obl. ${loanOa.price.toFixed(1)} M€` : `Prêt + OA opt. ${loanOa.price.toFixed(1)} M€`;
+      const tip = loanOa.mandatory
+        ? `Prêt sortant avec OA obligatoire de ${loanOa.price.toFixed(1)} M€ — engagement futur entrant 27/28`
+        : `Prêt sortant avec OA optionnelle de ${loanOa.price.toFixed(1)} M€ — info indicative`;
+      loanBadge = ` <span class="loan-out-badge ${cls}" title="${tip}">${lbl}</span>`;
+    } else {
+      loanBadge = ` <span class="loan-out-badge" title="Joueur prêté — salaire retiré, mais OM conserve l'actif (VNC + amortissement)">Prêt sortant</span>`;
+    }
+  }
   const oaExercised = isOaExercised(dep);
   const oaBadge = oaExercised
     ? ` <span class="oa-exercised-badge" title="${p.loanedOutOA ? p.loanedOutOA.club + ' a levé l\'OA — ' + p.loanedOutOA.price.toFixed(1) + ' M€' : 'OA levée'}">OA levée</span>`
@@ -4928,7 +5019,17 @@ function renderDepartures() {
     }
 
     const rightsBadge = (!loanOut && rights < 1) ? ` <span class="rights-badge">${Math.round(rights*100)}%</span>` : '';
-    const loanBadge = loanOut ? ` <span class="loan-out-badge">Prêt sortant</span>` : '';
+    const loanOa = getLoanOA(dep);
+    let loanBadge = '';
+    if (loanOut) {
+      if (loanOa) {
+        const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
+        const lbl = loanOa.mandatory ? `Prêt + OA obl. ${loanOa.price.toFixed(1)} M€` : `Prêt + OA opt. ${loanOa.price.toFixed(1)} M€`;
+        loanBadge = ` <span class="loan-out-badge ${cls}">${lbl}</span>`;
+      } else {
+        loanBadge = ` <span class="loan-out-badge">Prêt sortant</span>`;
+      }
+    }
     const oaExercised = isOaExercised(dep);
     const oaBadge = oaExercised ? ` <span class="oa-exercised-badge" title="${p.loanedOutOA ? p.loanedOutOA.club + ' a levé l\'OA' : 'OA levée'}">OA levée</span>` : '';
 
@@ -5411,6 +5512,9 @@ function computeAggregates() {
     return s + (p ? p.monthlySalary * 12 / 1000 * coef : 0);
   }, 0);
 
+  // Engagements futurs entrants — OA obligatoires négociées sur prêts sortants (cash IN 27/28)
+  const loanOutFutureIn = loanOutIds.reduce((s, id) => s + loanOutFutureIncome(state.departing[id]), 0);
+
   // Arrivals (manuelles) — cash et amort dépendent du type (achat ferme vs prêt)
   const arrMonthly = state.arrivals.reduce((s, a) => s + a.monthlySalary, 0);
   const arrBrut = arrMonthly * 12 / 1000;
@@ -5439,6 +5543,7 @@ function computeAggregates() {
     saleCount: saleIds.length, loanOutCount: loanOutIds.length,
     arrMonthly, arrBrut, arrCharged, arrTransfer, arrAmort, arrFutureCommit, arrVnc,
     oaTransferCost,
+    loanOutFutureIn,
     finalCharged, finalAmort, finalEffectif,
     balance,
   };
@@ -5923,6 +6028,13 @@ function updateSynthesis(a, target, produits) {
   document.getElementById('syn-cessions').textContent = a.totalOmCash.toFixed(1) + ' M€';
   document.getElementById('syn-acq').textContent = (a.arrTransfer + a.oaTransferCost).toFixed(1) + ' M€';
   document.getElementById('syn-oa').textContent = a.oaTransferCost.toFixed(1) + ' M€';
+  const synLoanFutureRow = document.getElementById('syn-loan-future-row');
+  if (a.loanOutFutureIn > 0) {
+    synLoanFutureRow.hidden = false;
+    document.getElementById('syn-loan-future').textContent = '+ ' + a.loanOutFutureIn.toFixed(1) + ' M€';
+  } else {
+    synLoanFutureRow.hidden = true;
+  }
   const balance = a.balance;
   const balRow = document.getElementById('syn-balance-row');
   document.getElementById('syn-balance').textContent = (balance >= 0 ? '+' : '') + balance.toFixed(1) + ' M€';
@@ -6099,6 +6211,15 @@ function openCessionModal(playerId) {
     oaBtn.style.display = 'none';
   }
 
+  // Reset des champs OA négociée pour prêt sortant
+  const loanOaCheck = document.getElementById('modal-loan-oa-check');
+  const loanOaFields = document.getElementById('modal-loan-oa-fields');
+  const loanOaPrice = document.getElementById('modal-loan-oa-price');
+  loanOaCheck.checked = false;
+  loanOaFields.style.display = 'none';
+  loanOaPrice.value = '';
+  document.querySelector('input[name="modal-loan-oa-kind"][value="optional"]').checked = true;
+
   // Reset to sale mode by default each time
   setModalMode('sale');
 
@@ -6115,7 +6236,15 @@ function confirmCessionModal() {
   if (!currentModalPlayerId) return closeCessionModal();
   const player = SQUAD.find(x => x.id === currentModalPlayerId);
   if (currentModalMode === 'loan-out') {
-    state.departing[currentModalPlayerId] = { mode: 'loan-out', price: 0 };
+    const dep = { mode: 'loan-out', price: 0 };
+    const oaCheck = document.getElementById('modal-loan-oa-check');
+    if (oaCheck && oaCheck.checked) {
+      const oaPrice = parseFloat(document.getElementById('modal-loan-oa-price').value) || 0;
+      const kindEl = document.querySelector('input[name="modal-loan-oa-kind"]:checked');
+      const mandatory = kindEl && kindEl.value === 'mandatory';
+      if (oaPrice > 0) dep.loanOA = { price: oaPrice, mandatory };
+    }
+    state.departing[currentModalPlayerId] = dep;
   } else if (currentModalMode === 'sale-oa') {
     const oaPrice = (player && player.loanedOutOA) ? player.loanedOutOA.price : 0;
     state.departing[currentModalPlayerId] = { mode: 'sale', price: oaPrice, oaExercised: true };
@@ -6135,6 +6264,13 @@ function confirmCessionModal() {
 
 document.querySelectorAll('.modal-mode-selector .mode-btn').forEach(btn => {
   btn.addEventListener('click', () => setModalMode(btn.dataset.mode));
+});
+
+document.getElementById('modal-loan-oa-check').addEventListener('change', e => {
+  document.getElementById('modal-loan-oa-fields').style.display = e.target.checked ? '' : 'none';
+  if (e.target.checked) {
+    setTimeout(() => document.getElementById('modal-loan-oa-price').focus(), 30);
+  }
 });
 
 document.getElementById('modal-cancel').addEventListener('click', () => {
