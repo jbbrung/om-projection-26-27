@@ -1808,9 +1808,6 @@
     letter-spacing: 0.12em;
   }
   .btn-export.btn-export-inline .export-icon { font-size: 13px; }
-  .btn-share { background: transparent; border-color: var(--border-md); color: var(--text-dim); }
-  .btn-share:hover { background: var(--text); color: var(--bg); border-color: var(--text); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
-  .btn-share .export-icon { font-weight: 700; }
   .export-icon {
     font-size: 16px;
     line-height: 1;
@@ -3750,10 +3747,6 @@
             <span class="export-icon">⤓</span>
             <span class="show-desktop">Exporter le mercato (1:1)</span>
             <span class="show-mobile">Exporter</span>
-          </button>
-          <button id="share-x-btn" class="btn-export btn-export-inline btn-share" title="Partager sur X (Twitter) avec la photo" hidden>
-            <span class="export-icon" aria-hidden="true">𝕏</span>
-            <span>Partager</span>
           </button>
         </span>
       </h2>
@@ -6399,44 +6392,6 @@ async function exportCompoPng() {
 }
 
 document.getElementById('export-compo-btn').addEventListener('click', exportCompoPng);
-
-// ---- Partager sur X (Web Share API + files) ----
-// Disponible uniquement sur iOS Safari / Android Chrome avec support fichiers.
-// Desktop : pas de fallback → bouton caché.
-function canShareMercatoFile() {
-  if (!navigator.canShare) return false;
-  try {
-    const test = new File([new Uint8Array([0])], 'p.png', { type: 'image/png' });
-    return navigator.canShare({ files: [test] });
-  } catch (e) {
-    return false;
-  }
-}
-
-async function shareCompoX() {
-  const btn = document.getElementById('share-x-btn');
-  const tweetText = 'Mon #mercatOM parfait — powered by @gesputtij\nhttps://mercato.gesputtij.me';
-  await runExport({
-    btn,
-    build: buildCompoCard,
-    filename: `mercato_parfait_${exportDateSlug()}.png`,
-    consume: async (blob, filename) => {
-      const file = new File([blob], filename, { type: 'image/png' });
-      if (!navigator.canShare({ files: [file] })) {
-        throw new Error('Partage avec photo non supporté sur cet appareil.');
-      }
-      await navigator.share({ files: [file], text: tweetText });
-    },
-  });
-}
-
-(function setupShareX() {
-  const btn = document.getElementById('share-x-btn');
-  if (!btn) return;
-  if (!canShareMercatoFile()) return; // reste hidden
-  btn.hidden = false;
-  btn.addEventListener('click', shareCompoX);
-})();
 
 // ---- Theme toggle (light / dark) ----
 (function setupTheme() {
