@@ -374,6 +374,42 @@
     line-height: 1.45;
   }
   .help-step-desc strong { color: var(--text); font-weight: 600; }
+
+  /* Variant compact pour la modal d'aide recrue */
+  .arr-help-intro {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin: 0 0 18px;
+  }
+  .arr-help-intro strong { color: var(--text); font-weight: 600; }
+  .arr-help-intro em { font-style: normal; color: var(--om-blue); font-weight: 600; }
+  .arr-help-block { margin-bottom: 16px; }
+  .arr-help-block-title {
+    font-family: var(--condensed);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--om-blue);
+    margin-bottom: 8px;
+  }
+  .arr-help-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .arr-help-list li {
+    padding: 4px 0 4px 12px;
+    border-left: 2px solid var(--border-soft);
+    margin-bottom: 4px;
+  }
+  .arr-help-list strong { color: var(--text); font-weight: 600; }
+
   .help-cta {
     display: block;
     width: 100%;
@@ -1767,6 +1803,30 @@
   .subtotal-row td.numeric { text-align: right; }
   .side-by-side .subtotal-row td { padding: 14px 8px; }
 
+  /* Hint salaire moyen sortants — sous le tableau, hors layout table */
+  .dep-salary-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border-left: 2px solid var(--om-blue);
+  }
+  .dep-salary-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .dep-salary-val {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
   /* GRAND TOTAL */
   .grand-total {
     background: var(--text);
@@ -2668,6 +2728,26 @@
     color: var(--red);
     border-left-color: var(--red);
   }
+
+  /* Bouton ? d'aide à côté du CTA Arrivées */
+  .arr-help-btn {
+    margin-left: auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-md);
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    padding: 0;
+  }
+  .arr-help-btn + .arr-cta-btn { margin-left: 8px; }
+  .arr-help-btn:hover { color: var(--om-blue); border-color: var(--om-blue); background: var(--om-blue-soft); }
 
   /* CTA "+ Ajouter une recrue" dans le h2 Transferts Arrivées */
   .arr-cta-btn {
@@ -3759,6 +3839,37 @@
   </div>
 </div>
 
+<!-- HELP OVERLAY : guide saisie recrue (manuel, pas d'API) -->
+<div class="help-overlay" id="arr-help-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="arr-help-title">
+  <div class="help-card">
+    <button type="button" class="help-close" id="arr-help-close" aria-label="Fermer l'aide">×</button>
+    <div class="help-eyebrow">Saisie manuelle</div>
+    <h3 id="arr-help-title" class="help-title">Comment ajouter une recrue</h3>
+    <p class="arr-help-intro">
+      Cet outil n'est connecté à <strong>aucune API</strong> (Transfermarkt, Capology…). Tu saisis tout à la main — c'est <em>ta projection</em>, pas un oracle. La qualité de la sortie dépend directement de tes inputs.
+    </p>
+    <div class="arr-help-block">
+      <div class="arr-help-block-title">Ce qu'il te faut sous la main</div>
+      <ul class="arr-help-list">
+        <li><strong>Nom complet</strong> · prénom + nom à taper</li>
+        <li><strong>Salaire mensuel brut</strong> en k€ · multiplié × 1,40 (charges France) pour la MS chargée</li>
+        <li><strong>Prix de transfert</strong> en M€ · uniquement pour les achats fermes</li>
+        <li><strong>Durée du contrat</strong> en années · sert à étaler l'amortissement comptable</li>
+        <li><strong>Prix OA</strong> en M€ · si prêt avec option d'achat</li>
+      </ul>
+    </div>
+    <div class="arr-help-block">
+      <div class="arr-help-block-title">Où trouver ces valeurs</div>
+      <ul class="arr-help-list">
+        <li><strong>Valeur marchande</strong> · Transfermarkt (indicatif)</li>
+        <li><strong>Salaires</strong> · Capology, L'Équipe, presse spécialisée</li>
+        <li><strong>Transfert + durée</strong> · annonce club ou rumeurs presse</li>
+      </ul>
+    </div>
+    <button type="button" class="help-cta" id="arr-help-ok">Compris</button>
+  </div>
+</div>
+
 <!-- Sticky strip mobile : MS chargée + Balance toujours visibles pendant la scroll de l'effectif. -->
 <div class="mobile-decision-strip" aria-label="Synthèse rapide du scénario">
   <div class="mds-kpi">
@@ -4023,12 +4134,17 @@
         </tfoot>
       </table>
       </div>
+      <div class="dep-salary-hint" id="dep-salary-row" hidden>
+        <span class="dep-salary-label">Salaire moyen sortants</span>
+        <span class="dep-salary-val" id="dep-salary-avg">— k€/mois</span>
+      </div>
     </div>
 
     <!-- ARRIVALS (OA obligatoires + manuelles) -->
     <div class="section section-arrivals">
       <h2>
         <span class="h2-title">Arrivées <span class="h2-count" id="arr-count"></span></span>
+        <button type="button" class="arr-help-btn" id="arr-help-btn" aria-label="Comment ajouter une recrue ?" title="Comment remplir une recrue ?">?</button>
         <button type="button" class="arr-cta-btn" onclick="openArrivalModal()">+ Ajouter une recrue</button>
       </h2>
       <div class="table-scroll">
@@ -4152,11 +4268,6 @@
         <span class="syn-ind-value" id="syn-ind-dncg">—</span>
       </div>
       <div class="syn-indicator">
-        <span class="syn-dot" id="syn-dot-scr"></span>
-        <span class="syn-ind-label">UEFA SCR &lt; 70 %</span>
-        <span class="syn-ind-value" id="syn-ind-scr">—</span>
-      </div>
-      <div class="syn-indicator">
         <span class="syn-dot" id="syn-dot-balance"></span>
         <span class="syn-ind-label">Balance mercato équilibrée</span>
         <span class="syn-ind-value" id="syn-ind-balance">—</span>
@@ -4170,7 +4281,7 @@
   <div class="om-footer-inner">
     <span class="om-footer-eyebrow">Olympique de Marseille</span>
     <span class="om-footer-sep">·</span>
-    <span>Simulation interne — document de travail</span>
+    <span>© <a href="https://x.com/gesputtij" target="_blank" rel="noopener">@gesputtij</a></span>
     <span class="om-footer-sep">·</span>
     <span>Saison 2026 — 2027</span>
   </div>
@@ -4998,6 +5109,7 @@ function renderDepartures() {
     document.getElementById('dep-cession-total').textContent = '0 M€';
     document.getElementById('dep-omcash-total').textContent = '0 M€';
     document.getElementById('dep-plusvalue-total').textContent = '0 M€';
+    document.getElementById('dep-salary-row').hidden = true;
     return;
   }
 
@@ -5047,6 +5159,15 @@ function renderDepartures() {
   document.getElementById('dep-cession-total').textContent = totCession.toFixed(2) + ' M€';
   document.getElementById('dep-omcash-total').textContent = totOmCash.toFixed(2) + ' M€';
   document.getElementById('dep-plusvalue-total').textContent = fmtM(totPV, true);
+
+  // Salaire mensuel moyen des sortants — narratif "qualité du ménage"
+  const salarySum = departingIds.reduce((s, id) => {
+    const p = SQUAD.find(x => x.id === id);
+    return s + (p ? p.monthlySalary : 0);
+  }, 0);
+  const avgSalary = Math.round(salarySum / departingIds.length);
+  document.getElementById('dep-salary-row').hidden = false;
+  document.getElementById('dep-salary-avg').textContent = avgSalary.toLocaleString('fr-FR') + ' k€/mois';
 }
 
 // ============================================================
@@ -5666,32 +5787,31 @@ function createSlotElement(def, player, backupPlayer) {
   }
   slot.innerHTML = html;
 
-  // Chip doublure : visible uniquement si le titulaire est assigné
-  if (filled) {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = `slot-backup-chip ${backupPlayer ? 'filled' : 'empty'}`;
-    chip.setAttribute('data-backup-for', def.id);
-    if (backupPlayer) {
-      chip.title = `Doublure : ${backupPlayer.data.name}`;
-      chip.setAttribute('aria-label', `Modifier la doublure (${backupPlayer.data.name})`);
-      const last = backupPlayer.data.name.split(' ').filter(Boolean).pop();
-      chip.innerHTML = `<span class="chip-dot">●</span><span>${last}</span>`;
-    } else {
-      chip.title = 'Ajouter une doublure au même poste';
-      chip.setAttribute('aria-label', `Ajouter une doublure pour ${def.label}`);
-      chip.innerHTML = `<span class="chip-dot">+</span><span>Doublure</span>`;
-    }
-    chip.addEventListener('click', e => {
-      e.stopPropagation();
-      openLineupPicker(def.id + '_b');
-    });
-    // Empêche le mousedown/touchstart de remonter au slot (qui démarrerait un drag)
-    const swallow = e => e.stopPropagation();
-    chip.addEventListener('mousedown', swallow);
-    chip.addEventListener('touchstart', swallow, { passive: true });
-    slot.appendChild(chip);
+  // Chip doublure : toujours visible (permet de définir la doublure
+  // sans avoir encore assigné le titulaire)
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = `slot-backup-chip ${backupPlayer ? 'filled' : 'empty'}`;
+  chip.setAttribute('data-backup-for', def.id);
+  if (backupPlayer) {
+    chip.title = `Doublure : ${backupPlayer.data.name}`;
+    chip.setAttribute('aria-label', `Modifier la doublure (${backupPlayer.data.name})`);
+    const last = backupPlayer.data.name.split(' ').filter(Boolean).pop();
+    chip.innerHTML = `<span class="chip-dot">●</span><span>${last}</span>`;
+  } else {
+    chip.title = 'Ajouter une doublure au même poste';
+    chip.setAttribute('aria-label', `Ajouter une doublure pour ${def.label}`);
+    chip.innerHTML = `<span class="chip-dot">+</span><span>Doublure</span>`;
   }
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    openLineupPicker(def.id + '_b');
+  });
+  // Empêche le mousedown/touchstart de remonter au slot (qui démarrerait un drag)
+  const swallow = e => e.stopPropagation();
+  chip.addEventListener('mousedown', swallow);
+  chip.addEventListener('touchstart', swallow, { passive: true });
+  slot.appendChild(chip);
 
   return slot;
 }
@@ -6080,16 +6200,6 @@ function updateSynthesis(a, target, produits) {
   if (resultatNet >= -30) dncgDot.classList.add('ok');
   else if (resultatNet >= -50) dncgDot.classList.add('warn');
   else dncgDot.classList.add('danger');
-
-  // UEFA SCR : (MS + amort + agents) / (produits + plus-values) < 70%
-  const scrRatio = (ms + a.finalAmort + agents) / Math.max(produits + Math.max(pv, 0), 1) * 100;
-  const scrDot = document.getElementById('syn-dot-scr');
-  const scrVal = document.getElementById('syn-ind-scr');
-  scrDot.classList.remove('ok', 'warn', 'danger');
-  scrVal.textContent = scrRatio.toFixed(1) + ' %';
-  if (scrRatio < 70) scrDot.classList.add('ok');
-  else if (scrRatio < 80) scrDot.classList.add('warn');
-  else scrDot.classList.add('danger');
 
   // Balance : positif → toujours OK (cession nette = bénéfique).
   // Négatif : toléré jusqu'à -15 M€, à surveiller jusqu'à -30 M€, hors norme au-delà.
@@ -6879,6 +6989,26 @@ function flashPlayerRow(playerId) {
   try {
     if (!localStorage.getItem(HELP_SEEN_KEY)) open();
   } catch (e) {}
+})();
+
+// ---- Help modal : guide saisie recrue (manuel uniquement) ----
+(function setupArrHelp() {
+  const btn = document.getElementById('arr-help-btn');
+  const overlay = document.getElementById('arr-help-overlay');
+  const closeBtn = document.getElementById('arr-help-close');
+  const ok = document.getElementById('arr-help-ok');
+  if (!btn || !overlay) return;
+  const open = () => { overlay.hidden = false; };
+  const close = () => { overlay.hidden = true; };
+  btn.addEventListener('click', open);
+  closeBtn && closeBtn.addEventListener('click', close);
+  ok && ok.addEventListener('click', close);
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) close();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !overlay.hidden) close();
+  });
 })();
 
 loadState();
