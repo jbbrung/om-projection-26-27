@@ -2983,6 +2983,132 @@
     border-color: #b91c1c;
   }
 
+  /* Reset scénario — bouton discret + modal dédiée (évite le menu coincé dans la sidebar) */
+  .syn-inputs .scenario-reset-btn { margin-top: 12px; }
+  .scenario-reset-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .scenario-reset-btn:hover {
+    color: var(--om-blue);
+    border-color: var(--border-blue);
+    background: var(--om-blue-tint);
+  }
+  .reset-modal-card {
+    max-width: 560px;
+  }
+  .reset-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .reset-modal-header h3 {
+    margin: 0 0 4px;
+  }
+  .reset-modal-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .reset-modal-close {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .reset-modal-close:hover {
+    color: var(--text);
+    border-color: var(--border-md);
+  }
+  .reset-action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .reset-action-card {
+    min-height: 112px;
+    text-align: left;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    font-family: var(--sans);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .reset-action-card:hover:not(:disabled) {
+    border-color: var(--border-blue);
+    background: var(--om-blue-tint);
+    transform: translateY(-1px);
+  }
+  .reset-action-card:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
+  .reset-action-title {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .reset-action-desc {
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+  .reset-action-icon {
+    margin-top: auto;
+    color: var(--om-blue);
+    font-weight: 800;
+  }
+  .reset-danger-row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .reset-action-card.danger {
+    min-height: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+  .reset-action-card.danger .reset-action-title,
+  .reset-action-card.danger .reset-action-icon { color: var(--red); }
+  .reset-action-card.danger:hover:not(:disabled) {
+    border-color: var(--red);
+    background: var(--red-soft);
+  }
+  @media (max-width: 640px) {
+    .reset-action-grid { grid-template-columns: 1fr; }
+    .reset-action-card { min-height: 0; }
+  }
+
   .syn-label {
     font-family: var(--condensed);
     font-size: 10px;
@@ -3151,7 +3277,7 @@
     /* Strip sticky compense la sidebar non-sticky */
     .mobile-decision-strip {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr auto;
       gap: 1px;
       position: sticky;
       top: 0;
@@ -3197,6 +3323,34 @@
       margin-top: 1px;
       letter-spacing: 0;
       line-height: 1.3;
+    }
+    .mds-reset {
+      background: var(--card);
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+    }
+    .mds-reset-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--border-md);
+      background: var(--card);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .mds-reset-btn:hover {
+      color: var(--om-blue);
+      border-color: var(--border-blue);
+      background: var(--om-blue-tint);
     }
   }
   @media (max-width: 480px) {
@@ -3882,6 +4036,48 @@
     <div class="mds-value" id="mds-balance">—</div>
     <div class="mds-detail" id="mds-balance-detail">—</div>
   </div>
+  <div class="mds-reset">
+    <button type="button" class="mds-reset-btn" data-reset-menu-trigger aria-label="Réinitialiser le scénario">↻</button>
+  </div>
+</div>
+
+<!-- MODAL RÉINITIALISATION SCÉNARIO -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-card reset-modal-card">
+    <div class="reset-modal-header">
+      <div>
+        <h3>Réinitialiser quoi ?</h3>
+        <p class="reset-modal-subtitle">Choisis la partie du scénario à remettre à zéro. Le reste sera conservé.</p>
+      </div>
+      <button type="button" class="reset-modal-close" id="reset-modal-close" aria-label="Fermer">✕</button>
+    </div>
+    <div class="reset-action-grid">
+      <button type="button" class="reset-action-card" data-reset-action="positions">
+        <span class="reset-action-title">Postes & suppléances</span>
+        <span class="reset-action-desc">Reclassements et postes secondaires.</span>
+        <span class="reset-action-icon">↻</span>
+      </button>
+      <button type="button" class="reset-action-card" data-reset-action="mercato">
+        <span class="reset-action-title">Mercato</span>
+        <span class="reset-action-desc">Départs et arrivées ajoutées.</span>
+        <span class="reset-action-icon">↻</span>
+      </button>
+      <button type="button" class="reset-action-card" data-reset-action="lineup">
+        <span class="reset-action-title">Onze type</span>
+        <span class="reset-action-desc">Titulaires, doublures et placement terrain.</span>
+        <span class="reset-action-icon">↻</span>
+      </button>
+    </div>
+    <div class="reset-danger-row">
+      <button type="button" class="reset-action-card danger" data-reset-action="everything">
+        <span>
+          <span class="reset-action-title">Tout réinitialiser</span><br>
+          <span class="reset-action-desc">Mercato, postes, suppléances et onze type.</span>
+        </span>
+        <span class="reset-action-icon">↻</span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL CESSION -->
@@ -3993,17 +4189,25 @@
         </label>
         <label class="arr-form-row" id="lbl-position">Poste
           <select id="arr-position">
-            <option value="GK">Gardien</option>
-            <option value="DC">Défenseur central</option>
-            <option value="LB">Latéral gauche</option>
-            <option value="RB">Latéral droit</option>
-            <option value="DM">Milieu défensif</option>
-            <option value="CM">Milieu central</option>
-            <option value="AM">Milieu offensif</option>
-            <option value="LW">Ailier gauche</option>
-            <option value="RW">Ailier droit</option>
-            <option value="RM">Milieu droit</option>
-            <option value="CF" selected>Avant-centre</option>
+            <optgroup label="Gardiens">
+              <option value="GK">GB — Gardien</option>
+            </optgroup>
+            <optgroup label="Défenseurs">
+              <option value="DC">DC — Défenseur central</option>
+            </optgroup>
+            <optgroup label="Latéraux">
+              <option value="LB">DL — Latéral</option>
+            </optgroup>
+            <optgroup label="Milieux">
+              <option value="CM">MC — Milieu</option>
+            </optgroup>
+            <optgroup label="Offensifs">
+              <option value="AM">MO — Milieu offensif</option>
+              <option value="LW">AI — Ailier</option>
+            </optgroup>
+            <optgroup label="Avants-centres">
+              <option value="CF" selected>BU — Avant-centre</option>
+            </optgroup>
           </select>
         </label>
         <label class="arr-form-row" id="lbl-salary">Salaire mensuel (k€)
@@ -4090,22 +4294,12 @@
   <div class="section">
     <h2>
       <span class="h2-title">Effectif sous contrat 26/27</span>
-      <span class="h2-controls">
-        <label class="flat-view-toggle">
-          <input type="checkbox" id="detail-view-toggle">
-          <span>Vue détaillée</span>
-        </label>
-        <button id="reset-positions-btn" class="reset-positions-link" type="button">↻ <span class="show-desktop">Réinitialiser les postes</span><span class="show-mobile">Réinit. postes</span></button>
-      </span>
     </h2>
     <div id="squad-container"></div>
   </div>
 
   <!-- DÉPARTS + ARRIVÉES (côte à côte) -->
   <div id="mercato-export-target">
-  <div class="mercato-actions" id="mercato-actions-bar" hidden>
-    <button id="reset-mercato-btn" class="reset-positions-link" type="button">↻ Réinitialiser le mercato</button>
-  </div>
   <div class="side-by-side">
 
     <!-- DEPARTURES -->
@@ -4180,7 +4374,6 @@
         <span class="h2-title">Onze type <span class="h2-count" id="lineup-count"></span></span>
         <span class="h2-controls">
           <span class="formation-picker" id="formation-picker" role="tablist" aria-label="Choix de formation"></span>
-          <button id="reset-lineup-all-btn" class="reset-positions-link" type="button" hidden>↻ Réinitialiser le onze</button>
           <button id="export-compo-btn" class="btn-export btn-export-inline" title="Export 1:1 — onze type + bilan mercato (Twitter / Insta)">
             <span class="export-icon">⤓</span>
             <span class="show-desktop">Exporter le mercato (1:1)</span>
@@ -4225,6 +4418,7 @@
         <span>Budget estimé</span>
         <span class="syn-input-wrap"><input type="number" id="produits" value="200" step="5" min="0"><em>M€</em></span>
       </label>
+      <button type="button" class="scenario-reset-btn" data-reset-menu-trigger>↻ Réinitialiser…</button>
     </div>
 
     <div class="syn-section">
@@ -5232,11 +5426,20 @@ function renderYouthPicker() {
   });
 }
 
+function canonicalArrivalPosition(position) {
+  // Le formulaire recrue utilise les mêmes familles que l'effectif :
+  // GB / DC / DL / MC / MO / AI / BU. On mappe donc les côtés et variantes.
+  if (position === 'RB') return 'LB';      // DL
+  if (position === 'DM') return 'CM';      // MC
+  if (position === 'RW' || position === 'RM') return 'LW'; // AI
+  return position;
+}
+
 function selectYouthProspect(id) {
   const p = YOUTH_PROSPECTS.find(x => x.id === id);
   if (!p) return;
   document.getElementById('arr-name').value = p.name;
-  document.getElementById('arr-position').value = p.position;
+  document.getElementById('arr-position').value = canonicalArrivalPosition(p.position);
   document.getElementById('arr-salary').value = YOUTH_DEFAULT_SALARY;
   // Marqueur visuel + tracking du prospect choisi
   document.querySelectorAll('.youth-prospect-card').forEach(c => c.classList.remove('active'));
@@ -5956,12 +6159,16 @@ function getCandidatesForSlot(slotDef) {
   return candidates;
 }
 
-// Slots où le joueur est déjà assigné (pour blocage / déplacement)
+// Slots où le joueur est déjà assigné.
+// Un même joueur peut volontairement apparaître plusieurs fois dans le onze
+// (ex : titulaire à droite + doublure à gauche). On garde donc tous les slots.
+function findSlotsOfPlayer(playerId) {
+  if (!playerId) return [];
+  return Object.keys(state.lineup).filter(sid => state.lineup[sid] === playerId);
+}
+
 function findSlotOfPlayer(playerId) {
-  for (const sid in state.lineup) {
-    if (state.lineup[sid] === playerId) return sid;
-  }
-  return null;
+  return findSlotsOfPlayer(playerId)[0] || null;
 }
 
 let _activeSlotId = null;
@@ -6022,9 +6229,10 @@ function renderLineupPickerList(filterText) {
   list.innerHTML = candidates.map(c => {
     const p = c.data;
     const isArrival = c.kind === 'arrival';
-    const assignedSlot = findSlotOfPlayer(p.id);
-    const isAssignedHere = assignedSlot === _activeSlotId;
-    const isAssignedElsewhere = assignedSlot && !isAssignedHere;
+    const assignedSlots = findSlotsOfPlayer(p.id);
+    const isAssignedHere = state.lineup[_activeSlotId] === p.id;
+    const assignedElsewhere = assignedSlots.filter(sid => sid !== _activeSlotId);
+    const isAssignedElsewhere = assignedElsewhere.length > 0;
 
     const initials = p.name.split(' ').filter(Boolean).slice(-2).map(s => s[0]).join('').toUpperCase();
     const metaParts = [];
@@ -6037,11 +6245,14 @@ function renderLineupPickerList(filterText) {
       metaParts.push(`<span>${p.age} ans</span>`);
       metaParts.push(`<span>${p.tmValue.toFixed(1)} M€</span>`);
       if (isAssignedElsewhere) {
-        const otherResolved = resolveSlotDef(assignedSlot);
-        const lbl = otherResolved
-          ? (otherResolved.isBackup ? `Doubl. ${otherResolved.def.label}` : otherResolved.def.label)
-          : assignedSlot;
-        metaParts.push(`<span style="color: var(--om-blue);">→ ${lbl}</span>`);
+        const labels = assignedElsewhere.slice(0, 2).map(sid => {
+          const otherResolved = resolveSlotDef(sid);
+          return otherResolved
+            ? (otherResolved.isBackup ? `Doubl. ${otherResolved.def.label}` : otherResolved.def.label)
+            : sid;
+        });
+        const suffix = assignedElsewhere.length > 2 ? ` +${assignedElsewhere.length - 2}` : '';
+        metaParts.push(`<span style="color: var(--om-blue);">Déjà placé : ${labels.join(', ')}${suffix}</span>`);
       }
     }
 
@@ -6063,11 +6274,9 @@ function renderLineupPickerList(filterText) {
 
 function assignPlayerToSlot(playerId) {
   if (!_activeSlotId || !playerId) return;
-  // Si le joueur est déjà assigné ailleurs, on le déplace (on libère l'autre slot)
-  const previousSlot = findSlotOfPlayer(playerId);
-  if (previousSlot && previousSlot !== _activeSlotId) {
-    delete state.lineup[previousSlot];
-  }
+  // On autorise volontairement les doublons : un joueur peut être titulaire
+  // à un poste et doublure ailleurs, ou couvrir plusieurs postes sur le terrain.
+  // Assigner ici ne libère donc plus ses autres slots.
   state.lineup[_activeSlotId] = playerId;
   saveState();
   closeLineupPicker();
@@ -6420,6 +6629,7 @@ function renderAll() {
   renderLineup();
   updateAggregates();
   syncMercatoActions();
+  syncResetMenus();
 }
 
 function syncMercatoActions() {
@@ -6432,12 +6642,99 @@ function syncMercatoActions() {
 // ============================================================
 // RESET
 // ============================================================
-function resetAll() {
-  if (!confirm('Réinitialiser toutes les simulations (départs + arrivées) ?')) return;
+function hasMercatoState() {
+  return Object.keys(state.departing).length > 0 || state.arrivals.length > 0;
+}
+
+function hasPositionState() {
+  return Object.keys(state.groupOverrides).length > 0 || Object.keys(state.secondaryGroups).length > 0;
+}
+
+function hasLineupState() {
+  return Object.keys(state.lineup).length > 0 || Object.keys(state.lineupPositions).length > 0;
+}
+
+function hasAnyResettableState() {
+  return hasMercatoState() || hasPositionState() || hasLineupState();
+}
+
+function resetPositionsState(confirmFirst = true) {
+  if (!hasPositionState()) return;
+  if (confirmFirst && !confirm('Réinitialiser les postes et suppléances ?\n\nCela remettra les joueurs dans leur groupe initial et supprimera les postes secondaires.')) return;
+  state.groupOverrides = {};
+  state.secondaryGroups = {};
+  saveState();
+  renderAll();
+}
+
+function resetMercatoState(confirmFirst = true) {
+  if (!hasMercatoState()) return;
+  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera tous les départs et toutes les arrivées ajoutées. Les recrues supprimées disparaîtront aussi du onze type.')) return;
+  const removedArrivalIds = new Set(state.arrivals.map(a => a.id));
+  Object.keys(state.lineup).forEach(slotId => {
+    if (removedArrivalIds.has(state.lineup[slotId])) delete state.lineup[slotId];
+  });
   state.departing = {};
   state.arrivals = [];
   saveState();
   renderAll();
+}
+
+function resetLineupState(confirmFirst = true) {
+  if (!hasLineupState()) return;
+  if (confirmFirst && !confirm('Réinitialiser le onze type ?\n\nCela supprimera titulaires, doublures et placements personnalisés sur le terrain. Le mercato sera conservé.')) return;
+  state.lineup = {};
+  state.lineupPositions = {};
+  saveState();
+  renderAll();
+}
+
+function resetEverythingState() {
+  if (!hasAnyResettableState()) return;
+  if (!confirm('Tout réinitialiser ?\n\nCela supprimera mercato, postes personnalisés, suppléances et onze type.')) return;
+  state.departing = {};
+  state.arrivals = [];
+  state.groupOverrides = {};
+  state.secondaryGroups = {};
+  state.lineup = {};
+  state.lineupPositions = {};
+  saveState();
+  renderAll();
+}
+
+// Compat : l'ancien resetAll ne concernait en réalité que le mercato.
+function resetAll() {
+  resetMercatoState(true);
+}
+
+function openResetModal() {
+  syncResetMenus();
+  document.getElementById('reset-modal')?.classList.add('active');
+}
+
+function closeResetModal() {
+  document.getElementById('reset-modal')?.classList.remove('active');
+}
+
+function syncResetMenus() {
+  const enabled = {
+    positions: hasPositionState(),
+    mercato: hasMercatoState(),
+    lineup: hasLineupState(),
+    everything: hasAnyResettableState(),
+  };
+  document.querySelectorAll('[data-reset-action]').forEach(btn => {
+    const action = btn.getAttribute('data-reset-action');
+    btn.disabled = !enabled[action];
+  });
+}
+
+function handleResetAction(action) {
+  closeResetModal();
+  if (action === 'positions') resetPositionsState(true);
+  else if (action === 'mercato') resetMercatoState(true);
+  else if (action === 'lineup') resetLineupState(true);
+  else if (action === 'everything') resetEverythingState();
 }
 
 // ============================================================
@@ -6446,22 +6743,21 @@ function resetAll() {
 document.getElementById('target-ms').addEventListener('input', updateAggregates);
 document.getElementById('produits').addEventListener('input', updateAggregates);
 
-document.getElementById('reset-positions-btn').addEventListener('click', () => {
-  const hasOverrides = Object.keys(state.groupOverrides).length > 0;
-  const hasSecondary = Object.keys(state.secondaryGroups).length > 0;
-  if (!hasOverrides && !hasSecondary) return;
-  if (!confirm('Réinitialiser tous les changements de poste et suppléances ?')) return;
-  state.groupOverrides = {};
-  state.secondaryGroups = {};
-  saveState();
-  renderAll();
+document.querySelectorAll('[data-reset-menu-trigger]').forEach(btn => {
+  btn.addEventListener('click', openResetModal);
 });
-
-document.getElementById('reset-mercato-btn').addEventListener('click', () => {
-  const hasDepartures = Object.keys(state.departing).length > 0;
-  const hasArrivals = state.arrivals.length > 0;
-  if (!hasDepartures && !hasArrivals) return;
-  resetAll();
+document.querySelectorAll('[data-reset-action]').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    handleResetAction(btn.getAttribute('data-reset-action'));
+  });
+});
+document.getElementById('reset-modal-close')?.addEventListener('click', closeResetModal);
+document.getElementById('reset-modal')?.addEventListener('click', e => {
+  if (e.target.id === 'reset-modal') closeResetModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeResetModal();
 });
 
 // ---- Vue détaillée : toggle Annuel brut + Amort./an (cachés par défaut) ----
