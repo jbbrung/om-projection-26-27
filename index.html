@@ -3393,8 +3393,30 @@
     border-bottom: 1px solid var(--border-blue);
     display: flex;
     align-items: center;
-    gap: 9px;
+    justify-content: space-between;
+    gap: 12px;
   }
+  .syn-eyebrow-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+  }
+  .syn-reset-link {
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--condensed);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .syn-reset-link:hover { color: var(--red); }
   .syn-logo {
     width: 22px;
     height: 22px;
@@ -5206,9 +5228,11 @@
   </div><!-- /main-col -->
 
   <aside class="synthesis-panel" aria-label="Synthèse du scénario">
-    <div class="syn-eyebrow"><img class="syn-logo" src="om-logo.png" alt=""><span>Budget 26/27</span></div>
+    <div class="syn-eyebrow">
+      <span class="syn-eyebrow-title"><img class="syn-logo" src="om-logo.png" alt=""><span>Budget 26/27</span></span>
+      <button type="button" class="syn-reset-link" data-reset-menu-trigger>↻ Réinitialiser</button>
+    </div>
     <div class="syn-status" id="syn-status">Scénario à compléter</div>
-    <button type="button" class="scenario-reset-btn" data-reset-menu-trigger>↻ Réinitialiser</button>
 
     <details class="syn-section syn-inputs">
       <summary>
