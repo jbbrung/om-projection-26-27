@@ -934,12 +934,21 @@
   .lineup-hero-stats .hero-stat.balance .hero-stat-val.pos { color: #b9eccf; }
 
 
-  /* Doublure : chip discret sous le titulaire (au même poste) */
+  /* Profondeur de poste : remplaçant + solution d'appoint */
+  .slot-depth-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 5px;
+    max-width: 100%;
+  }
   .slot-backup-chip {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-top: 5px;
+    margin-top: 0;
     padding: 2px 8px;
     border-radius: 999px;
     font-family: var(--sans);
@@ -972,6 +981,21 @@
     font-size: 9px;
     opacity: 0.8;
   }
+  .slot-appoint-chip.empty {
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+  }
+  .slot-appoint-chip.empty .chip-dot {
+    font-size: 14px;
+    line-height: 1;
+  }
+  .slot-appoint-chip.filled {
+    color: var(--text);
+    background: var(--bg-soft);
+    border-color: var(--border-md);
+  }
 
   /* Helpers — affichage conditionnel desktop / mobile (breakpoint 720) */
   .show-mobile { display: none; }
@@ -986,6 +1010,7 @@
   }
   @media (max-width: 720px) {
     .slot-backup-chip { font-size: 9.5px; padding: 2px 7px; }
+    .slot-appoint-chip.empty { width: 23px; height: 23px; padding: 0; }
   }
 
   /* Modal sélection joueur — lineup picker */
@@ -1151,7 +1176,7 @@
     background: repeating-linear-gradient(180deg, #E8F0E2 0 10%, #EFF5EA 10% 20%);
     border: 1px solid #C8D4C0;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
   }
   [data-theme="dark"] .pitch {
     background: repeating-linear-gradient(180deg, #1A2419 0 10%, #1F2A1E 10% 20%);
@@ -1197,6 +1222,43 @@
   }
   .pitch-goal.top { top: 0; border-top: none; }
   .pitch-goal.bottom { bottom: 0; border-bottom: none; }
+
+  /* Sticker coach — collé sur la carte, hors interaction terrain */
+  .staff-sticker {
+    position: absolute;
+    height: auto;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.24));
+    opacity: 0.98;
+  }
+  .director-sticker {
+    top: -8px;
+    right: -16px;
+    width: 90px;
+    z-index: 5;
+    transform: rotate(5deg);
+    transform-origin: 55% 85%;
+  }
+  .coach-sticker {
+    top: -16px;
+    right: 48px;
+    width: 104px;
+    z-index: 4;
+    transform: rotate(-7deg);
+    transform-origin: 55% 85%;
+  }
+  @media (max-width: 720px) {
+    .director-sticker {
+      width: 66px;
+      top: -8px;
+      right: -14px;
+    }
+    .coach-sticker {
+      width: 74px;
+      top: -12px;
+      right: 32px;
+    }
+  }
 
   /* Slot joueur — pattern FIFA-card : cercle de poste + bandeau nom */
   .slot {
@@ -3978,7 +4040,7 @@
         <span class="help-step-num">3</span>
         <div>
           <div class="help-step-title">Construis ton onze type</div>
-          <div class="help-step-desc">Clique un slot du terrain pour assigner un titulaire, puis une doublure. Les jeunes du centre apparaissent dans la rotation.</div>
+          <div class="help-step-desc">Clique un slot du terrain pour assigner un titulaire, puis un remplaçant. Le petit <strong>+</strong> ajoute un troisième choix en solution d'appoint si besoin.</div>
         </div>
       </li>
       <li>
@@ -4064,7 +4126,7 @@
       </button>
       <button type="button" class="reset-action-card" data-reset-action="lineup">
         <span class="reset-action-title">Onze type</span>
-        <span class="reset-action-desc">Titulaires, doublures et placement terrain.</span>
+        <span class="reset-action-desc">Titulaires, remplaçants, appoints et placement terrain.</span>
         <span class="reset-action-icon">↻</span>
       </button>
     </div>
@@ -4384,7 +4446,10 @@
       <div class="pitch-layout">
         <div class="pitch-col">
           <div class="pitch-wrap">
-            <div class="pitch" id="pitch" aria-label="Terrain"></div>
+            <div class="pitch" id="pitch" aria-label="Terrain">
+              <img class="staff-sticker director-sticker" src="director-sticker.png" alt="Directeur sportif" aria-hidden="true">
+              <img class="staff-sticker coach-sticker" src="coach-sticker.png" alt="Coach" aria-hidden="true">
+            </div>
           </div>
         </div>
         <aside class="lineup-hero" id="lineup-hero" aria-label="Synthèse compo">
@@ -4688,38 +4753,6 @@ const FORMATIONS = {
       { id: 'dc1',     label: 'DC',    group: 'Défenseurs',     x: 36, y: 70 },
       { id: 'dc2',     label: 'DC',    group: 'Défenseurs',     x: 64, y: 70 },
       { id: 'lat_d',   label: 'LAT D', group: 'Latéraux',       x: 88, y: 70 },
-      { id: 'gk',      label: 'GB',    group: 'Gardiens',       x: 50, y: 90 },
-    ],
-  },
-  '3-5-2': {
-    label: '3-5-2',
-    slots: [
-      { id: 'att1',    label: 'AC',    group: 'Avants-centres', x: 38, y: 14 },
-      { id: 'att2',    label: 'AC',    group: 'Avants-centres', x: 62, y: 14 },
-      { id: 'lat_g',   label: 'PIS G', group: 'Latéraux',       x: 10, y: 45 },
-      { id: 'mc1',     label: 'MIL',   group: 'Milieux',        x: 32, y: 45 },
-      { id: 'mc2',     label: 'MIL',   group: 'Milieux',        x: 50, y: 45 },
-      { id: 'mc3',     label: 'MIL',   group: 'Milieux',        x: 68, y: 45 },
-      { id: 'lat_d',   label: 'PIS D', group: 'Latéraux',       x: 90, y: 45 },
-      { id: 'dc1',     label: 'DC',    group: 'Défenseurs',     x: 25, y: 72 },
-      { id: 'dc2',     label: 'DC',    group: 'Défenseurs',     x: 50, y: 72 },
-      { id: 'dc3',     label: 'DC',    group: 'Défenseurs',     x: 75, y: 72 },
-      { id: 'gk',      label: 'GB',    group: 'Gardiens',       x: 50, y: 90 },
-    ],
-  },
-  '3-4-3': {
-    label: '3-4-3',
-    slots: [
-      { id: 'off_l',   label: 'AIL G', group: 'Offensifs',      x: 18, y: 16 },
-      { id: 'att1',    label: 'AC',    group: 'Avants-centres', x: 50, y: 16 },
-      { id: 'off_r',   label: 'AIL D', group: 'Offensifs',      x: 82, y: 16 },
-      { id: 'lat_g',   label: 'PIS G', group: 'Latéraux',       x: 10, y: 46 },
-      { id: 'mc1',     label: 'MIL',   group: 'Milieux',        x: 38, y: 46 },
-      { id: 'mc2',     label: 'MIL',   group: 'Milieux',        x: 62, y: 46 },
-      { id: 'lat_d',   label: 'PIS D', group: 'Latéraux',       x: 90, y: 46 },
-      { id: 'dc1',     label: 'DC',    group: 'Défenseurs',     x: 25, y: 72 },
-      { id: 'dc2',     label: 'DC',    group: 'Défenseurs',     x: 50, y: 72 },
-      { id: 'dc3',     label: 'DC',    group: 'Défenseurs',     x: 75, y: 72 },
       { id: 'gk',      label: 'GB',    group: 'Gardiens',       x: 50, y: 90 },
     ],
   },
@@ -5910,7 +5943,7 @@ function attachSlotDrag(slotEl, pitch) {
   let startX, startY, dragging = false, suppressClick = false;
 
   function pointerStart(e) {
-    // Le chip de doublure gère son propre clic — ne pas démarrer un drag depuis lui
+    // Les chips de profondeur gèrent leur propre clic — ne pas démarrer un drag depuis eux
     if (e.target.closest('.slot-backup-chip')) return;
     const t = e.touches ? e.touches[0] : e;
     startX = t.clientX;
@@ -5968,7 +6001,7 @@ function attachSlotDrag(slotEl, pitch) {
   slotEl.addEventListener('click', e => { if (suppressClick) e.stopImmediatePropagation(); }, true);
 }
 
-function createSlotElement(def, player, backupPlayer) {
+function createSlotElement(def, player, backupPlayer, appointPlayer) {
   const filled = !!player;
   const slot = document.createElement('div');
   slot.className = `slot ${filled ? 'filled' : 'empty'}`;
@@ -5990,31 +6023,61 @@ function createSlotElement(def, player, backupPlayer) {
   }
   slot.innerHTML = html;
 
-  // Chip doublure : toujours visible (permet de définir la doublure
-  // sans avoir encore assigné le titulaire)
-  const chip = document.createElement('button');
-  chip.type = 'button';
-  chip.className = `slot-backup-chip ${backupPlayer ? 'filled' : 'empty'}`;
-  chip.setAttribute('data-backup-for', def.id);
+  // Ligne de profondeur : remplaçant classique + troisième choix d'appoint.
+  const depthRow = document.createElement('div');
+  depthRow.className = 'slot-depth-row';
+
+  const backupChip = document.createElement('button');
+  backupChip.type = 'button';
+  backupChip.className = `slot-backup-chip ${backupPlayer ? 'filled' : 'empty'}`;
+  backupChip.setAttribute('data-backup-for', def.id);
   if (backupPlayer) {
-    chip.title = `Doublure : ${backupPlayer.data.name}`;
-    chip.setAttribute('aria-label', `Modifier la doublure (${backupPlayer.data.name})`);
+    backupChip.title = `Remplaçant : ${backupPlayer.data.name}`;
+    backupChip.setAttribute('aria-label', `Modifier le remplaçant (${backupPlayer.data.name})`);
     const last = backupPlayer.data.name.split(' ').filter(Boolean).pop();
-    chip.innerHTML = `<span class="chip-dot">●</span><span>${last}</span>`;
+    backupChip.innerHTML = `<span class="chip-dot">●</span><span>${last}</span>`;
   } else {
-    chip.title = 'Ajouter une doublure au même poste';
-    chip.setAttribute('aria-label', `Ajouter une doublure pour ${def.label}`);
-    chip.innerHTML = `<span class="chip-dot">+</span><span>Doublure</span>`;
+    backupChip.title = `Ajouter un remplaçant pour ${def.label}`;
+    backupChip.setAttribute('aria-label', `Ajouter un remplaçant pour ${def.label}`);
+    backupChip.innerHTML = `<span class="chip-dot">+</span><span>Rempl.</span>`;
   }
-  chip.addEventListener('click', e => {
+  backupChip.addEventListener('click', e => {
     e.stopPropagation();
     openLineupPicker(def.id + '_b');
   });
+
+  const chips = [backupChip];
+  const canShowAppoint = filled && !!backupPlayer;
+  if (canShowAppoint) {
+    const appointChip = document.createElement('button');
+    appointChip.type = 'button';
+    appointChip.className = `slot-backup-chip slot-appoint-chip ${appointPlayer ? 'filled' : 'empty'}`;
+    appointChip.setAttribute('data-appoint-for', def.id);
+    if (appointPlayer) {
+      appointChip.title = `Solution d'appoint : ${appointPlayer.data.name}`;
+      appointChip.setAttribute('aria-label', `Modifier la solution d'appoint (${appointPlayer.data.name})`);
+      const last = appointPlayer.data.name.split(' ').filter(Boolean).pop();
+      appointChip.innerHTML = `<span class="chip-dot">＋</span><span>${last}</span>`;
+    } else {
+      appointChip.title = `Ajouter une solution d'appoint pour ${def.label}`;
+      appointChip.setAttribute('aria-label', `Ajouter une solution d'appoint pour ${def.label}`);
+      appointChip.innerHTML = `<span class="chip-dot">+</span>`;
+    }
+    appointChip.addEventListener('click', e => {
+      e.stopPropagation();
+      openLineupPicker(def.id + '_a');
+    });
+    chips.push(appointChip);
+  }
+
   // Empêche le mousedown/touchstart de remonter au slot (qui démarrerait un drag)
   const swallow = e => e.stopPropagation();
-  chip.addEventListener('mousedown', swallow);
-  chip.addEventListener('touchstart', swallow, { passive: true });
-  slot.appendChild(chip);
+  chips.forEach(chip => {
+    chip.addEventListener('mousedown', swallow);
+    chip.addEventListener('touchstart', swallow, { passive: true });
+    depthRow.appendChild(chip);
+  });
+  slot.appendChild(depthRow);
 
   return slot;
 }
@@ -6029,10 +6092,13 @@ function renderLineupHero() {
 
   const assigned = getAssignedPlayerIds();
   const slots = getEffectiveSlots();
-  let titulaires = 0, doublures = 0;
+  let titulaires = 0, doublures = 0, appoints = 0;
   slots.forEach(def => {
-    if (state.lineup[def.id]) titulaires++;
-    if (state.lineup[def.id + '_b']) doublures++;
+    const hasTitulaire = !!state.lineup[def.id];
+    const hasRemplacant = !!state.lineup[def.id + '_b'];
+    if (hasTitulaire) titulaires++;
+    if (hasRemplacant) doublures++;
+    if (hasTitulaire && hasRemplacant && state.lineup[def.id + '_a']) appoints++;
   });
 
   let balance = 0;
@@ -6048,7 +6114,11 @@ function renderLineupHero() {
     </div>
     <div class="hero-stat">
       <span class="hero-stat-val">${doublures}/11</span>
-      <span class="hero-stat-key">doublures</span>
+      <span class="hero-stat-key">remplaçants</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">${appoints}/11</span>
+      <span class="hero-stat-key">appoints</span>
     </div>
     <div class="hero-stat balance">
       <span class="hero-stat-val ${balKlass}">${balSign}${balAbs} M€</span>
@@ -6080,18 +6150,22 @@ function renderLineup() {
   const slots = getEffectiveSlots();
   let filledCount = 0;
   let backupCount = 0;
+  let appointCount = 0;
   slots.forEach(def => {
     const assignedId = state.lineup[def.id];
     const player = findLineupPlayer(assignedId);
     const filled = !!player;
     if (filled) filledCount++;
 
-    // La doublure n'a plus de slot visuel séparé — juste un chip sur le titulaire
+    // Remplaçant + appoint n'ont pas de slot visuel séparé — juste des chips sur le poste.
     const backupId = def.id + '_b';
     const backupPlayer = findLineupPlayer(state.lineup[backupId]);
     if (backupPlayer) backupCount++;
+    const appointId = def.id + '_a';
+    const appointPlayer = findLineupPlayer(state.lineup[appointId]);
+    if (filled && backupPlayer && appointPlayer) appointCount++;
 
-    const slot = createSlotElement(def, player, backupPlayer);
+    const slot = createSlotElement(def, player, backupPlayer, appointPlayer);
     pitch.appendChild(slot);
     attachSlotDrag(slot, pitch);
   });
@@ -6133,25 +6207,53 @@ function resetLineupAll() {
 // LINEUP PICKER (modal)
 // ============================================================
 
-// Candidats pour un slot : joueurs SQUAD (hors départs définitifs/prêts) + arrivées
-// dont le groupe matche celui du slot (incluant suppléances via groupes secondaires).
-function getCandidatesForSlot(slotDef) {
+// Groupes autorisés pour le 3e choix d'appoint, par poste à couvrir.
+// Logique volontairement stricte : l'appoint reste occasionnel, mais crédible sportivement.
+function getAppointAllowedGroups(slotDef) {
+  const slotGroup = slotDef.group;
+  const isWingerSlot = slotGroup === 'Offensifs' && /^AIL\b/.test(slotDef.label || '');
+  const rules = {
+    'Gardiens': ['Gardiens'],
+    'Défenseurs': ['Défenseurs'],
+    'Latéraux': ['Latéraux', 'Défenseurs'],
+    'Milieux': ['Milieux', 'Défenseurs'],
+    // Un latéral peut seulement dépanner un vrai couloir offensif (AIL G/D),
+    // pas un offensif axial type N°10/MO.
+    'Offensifs': isWingerSlot ? ['Offensifs', 'Latéraux', 'Avants-centres'] : ['Offensifs', 'Avants-centres'],
+    'Avants-centres': ['Avants-centres', 'Offensifs'],
+  };
+  return rules[slotGroup] || [slotGroup];
+}
+
+// Candidats pour un slot : joueurs SQUAD (hors départs définitifs/prêts) + arrivées.
+// Titulaire/remplaçant : groupe du slot uniquement (+ suppléances déclarées).
+// Appoint : groupes compatibles selon getAppointAllowedGroups(), sans impact effectif/KPI.
+function getCandidatesForSlot(slotDef, options = {}) {
+  const isAppoint = !!options.isAppoint;
+  const allowedAppointGroups = isAppoint ? getAppointAllowedGroups(slotDef) : null;
   const candidates = [];
   SQUAD.forEach(p => {
     if (state.departing[p.id] !== undefined) return; // joueur qui part (vente ou prêt) → hors-effectif
     const primary = getEffectiveGroup(p);
     const secondaries = getSecondaryGroups(p) || [];
-    if (primary === slotDef.group || secondaries.includes(slotDef.group)) {
-      candidates.push({ kind: 'squad', data: p });
+    const relation = primary === slotDef.group ? 'primary' : (secondaries.includes(slotDef.group) ? 'secondary' : 'other');
+    if (relation !== 'other' || (isAppoint && allowedAppointGroups.includes(primary))) {
+      candidates.push({ kind: 'squad', data: p, relation });
     }
   });
   state.arrivals.forEach(a => {
-    if (POSITION_TO_GROUP[a.position] === slotDef.group) {
-      candidates.push({ kind: 'arrival', data: a });
+    const group = POSITION_TO_GROUP[a.position];
+    const relation = group === slotDef.group ? 'primary' : 'other';
+    if (relation === 'primary' || (isAppoint && allowedAppointGroups.includes(group))) {
+      candidates.push({ kind: 'arrival', data: a, relation });
     }
   });
-  // Tri : actuel d'abord (visible mais marqué), puis par valeur TM desc, arrivées par salaire
+  // Tri : naturels d'abord, puis suppléances déclarées, puis appoints hors poste ; valeur décroissante dans chaque bloc.
+  const rank = { primary: 0, secondary: 1, other: 2 };
   candidates.sort((x, y) => {
+    const rx = rank[x.relation] ?? 9;
+    const ry = rank[y.relation] ?? 9;
+    if (rx !== ry) return rx - ry;
     const vx = x.kind === 'squad' ? (x.data.tmValue || 0) : (x.data.monthlySalary || 0) / 10;
     const vy = y.kind === 'squad' ? (y.data.tmValue || 0) : (y.data.monthlySalary || 0) / 10;
     return vy - vx;
@@ -6161,7 +6263,7 @@ function getCandidatesForSlot(slotDef) {
 
 // Slots où le joueur est déjà assigné.
 // Un même joueur peut volontairement apparaître plusieurs fois dans le onze
-// (ex : titulaire à droite + doublure à gauche). On garde donc tous les slots.
+// (ex : titulaire à droite + appoint à gauche). On garde donc tous les slots.
 function findSlotsOfPlayer(playerId) {
   if (!playerId) return [];
   return Object.keys(state.lineup).filter(sid => state.lineup[sid] === playerId);
@@ -6173,15 +6275,16 @@ function findSlotOfPlayer(playerId) {
 
 let _activeSlotId = null;
 
-// Résout un slot id (potentiellement backup `xxx_b`) vers sa def de base + flag isBackup
+// Résout un slot id (titulaire, remplaçant `_b` ou appoint `_a`) vers sa def de base.
 function resolveSlotDef(slotId) {
   if (!slotId) return null;
   const f = getCurrentFormation();
   const isBackup = slotId.endsWith('_b');
-  const baseId = isBackup ? slotId.slice(0, -2) : slotId;
+  const isAppoint = slotId.endsWith('_a');
+  const baseId = (isBackup || isAppoint) ? slotId.slice(0, -2) : slotId;
   const def = f.slots.find(s => s.id === baseId);
   if (!def) return null;
-  return { def, isBackup, baseId };
+  return { def, isBackup, isAppoint, baseId };
 }
 
 function openLineupPicker(slotId) {
@@ -6189,11 +6292,11 @@ function openLineupPicker(slotId) {
   if (!resolved) return;
   _activeSlotId = slotId;
 
-  const { def, isBackup } = resolved;
+  const { def, isBackup, isAppoint } = resolved;
   const modal = document.getElementById('lineup-modal');
-  const role = isBackup ? 'Doublure' : 'Titulaire';
+  const role = isAppoint ? 'Solution d\'appoint' : (isBackup ? 'Remplaçant' : 'Titulaire');
   document.getElementById('lineup-picker-title').textContent = `${role} ${def.label} · choisir un joueur`;
-  document.getElementById('lineup-picker-group').textContent = def.group;
+  document.getElementById('lineup-picker-group').textContent = isAppoint ? `Solutions d'appoint · ${def.group}` : def.group;
 
   // Bouton "vider" visible seulement si le slot est rempli
   const clearBtn = document.getElementById('lineup-clear-slot');
@@ -6214,9 +6317,10 @@ function renderLineupPickerList(filterText) {
   const resolved = resolveSlotDef(_activeSlotId);
   if (!resolved) return;
   const def = resolved.def;
+  const isAppoint = !!resolved.isAppoint;
 
   const q = (filterText || '').trim().toLowerCase();
-  const candidates = getCandidatesForSlot(def).filter(c => {
+  const candidates = getCandidatesForSlot(def, { isAppoint }).filter(c => {
     if (!q) return true;
     return c.data.name.toLowerCase().includes(q);
   });
@@ -6240,15 +6344,18 @@ function renderLineupPickerList(filterText) {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
       metaParts.push(`<span>${p.monthlySalary} k€/mois</span>`);
       metaParts.push(`<span>Recrue</span>`);
+      if (isAppoint && c.relation === 'other') metaParts.push(`<span style="color: var(--muted);">appoint hors poste</span>`);
     } else {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
       metaParts.push(`<span>${p.age} ans</span>`);
       metaParts.push(`<span>${p.tmValue.toFixed(1)} M€</span>`);
+      if (isAppoint && c.relation === 'secondary') metaParts.push(`<span style="color: var(--om-blue);">suppléance déclarée</span>`);
+      if (isAppoint && c.relation === 'other') metaParts.push(`<span style="color: var(--muted);">appoint hors poste</span>`);
       if (isAssignedElsewhere) {
         const labels = assignedElsewhere.slice(0, 2).map(sid => {
           const otherResolved = resolveSlotDef(sid);
           return otherResolved
-            ? (otherResolved.isBackup ? `Doubl. ${otherResolved.def.label}` : otherResolved.def.label)
+            ? (otherResolved.isAppoint ? `Appoint ${otherResolved.def.label}` : (otherResolved.isBackup ? `Rempl. ${otherResolved.def.label}` : otherResolved.def.label))
             : sid;
         });
         const suffix = assignedElsewhere.length > 2 ? ` +${assignedElsewhere.length - 2}` : '';
@@ -6275,7 +6382,7 @@ function renderLineupPickerList(filterText) {
 function assignPlayerToSlot(playerId) {
   if (!_activeSlotId || !playerId) return;
   // On autorise volontairement les doublons : un joueur peut être titulaire
-  // à un poste et doublure ailleurs, ou couvrir plusieurs postes sur le terrain.
+  // à un poste et appoint ailleurs, ou couvrir plusieurs postes sur le terrain.
   // Assigner ici ne libère donc plus ses autres slots.
   state.lineup[_activeSlotId] = playerId;
   saveState();
@@ -6285,7 +6392,10 @@ function assignPlayerToSlot(playerId) {
 
 function clearLineupSlot() {
   if (!_activeSlotId) return;
+  const resolved = resolveSlotDef(_activeSlotId);
   delete state.lineup[_activeSlotId];
+  // Si on retire le titulaire ou le remplaçant, le 3e choix d'appoint n'est plus valide/visible.
+  if (resolved && !resolved.isAppoint) delete state.lineup[resolved.baseId + '_a'];
   saveState();
   closeLineupPicker();
   renderLineup();
@@ -6682,7 +6792,7 @@ function resetMercatoState(confirmFirst = true) {
 
 function resetLineupState(confirmFirst = true) {
   if (!hasLineupState()) return;
-  if (confirmFirst && !confirm('Réinitialiser le onze type ?\n\nCela supprimera titulaires, doublures et placements personnalisés sur le terrain. Le mercato sera conservé.')) return;
+  if (confirmFirst && !confirm('Réinitialiser le onze type ?\n\nCela supprimera titulaires, remplaçants, appoints et placements personnalisés sur le terrain. Le mercato sera conservé.')) return;
   state.lineup = {};
   state.lineupPositions = {};
   saveState();
@@ -6890,12 +7000,15 @@ function buildExportHero(liveHero, W, H) {
   const msDeltaSign = msDelta >= 0 ? '+' : '−';
   const msDeltaColor = msDelta <= 0 ? '#7DE2B8' : '#FF9F8F';
 
-  // Titulaires / doublures
+  // Titulaires / remplaçants / appoints
   const slots = (typeof getEffectiveSlots === 'function') ? getEffectiveSlots() : [];
-  let titulaires = 0, doublures = 0;
+  let titulaires = 0, doublures = 0, appoints = 0;
   slots.forEach(def => {
-    if (state.lineup && state.lineup[def.id]) titulaires++;
-    if (state.lineup && state.lineup[def.id + '_b']) doublures++;
+    const hasTitulaire = !!(state.lineup && state.lineup[def.id]);
+    const hasRemplacant = !!(state.lineup && state.lineup[def.id + '_b']);
+    if (hasTitulaire) titulaires++;
+    if (hasRemplacant) doublures++;
+    if (hasTitulaire && hasRemplacant && state.lineup[def.id + '_a']) appoints++;
   });
 
   // DÉPARTS complets : tri par valeur décroissante puis prêts à la fin
@@ -7070,7 +7183,7 @@ function buildExportHero(liveHero, W, H) {
     <div style="text-align: right;">
       <div style="font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.55); letter-spacing: 0.18em; text-transform: uppercase;">Onze</div>
       <div style="margin-top: 3px; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums;">
-        ${titulaires}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">tit.</span> · ${doublures}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">doub.</span>
+        ${titulaires}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">tit.</span> · ${doublures}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">rempl.</span> · ${appoints}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">app.</span>
       </div>
     </div>
   `;
@@ -7138,9 +7251,9 @@ function buildCompoCard() {
     background-image: none;
     border: 1px solid #C8D4C0;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
   `;
-  // Chips Doublure vides retirées du clone (export propre)
+  // Chips + vides retirés du clone (export propre)
   pitchClone.querySelectorAll('.slot-backup-chip.empty').forEach(c => c.remove());
 
   // Bandes alternées + marquages, ajoutés EN PREMIER pour qu'ils passent sous les slots existants
