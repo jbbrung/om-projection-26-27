@@ -4030,93 +4030,99 @@
       margin-top: 0;
       overflow-y: visible;
     }
-    /* Strip sticky compense la sidebar non-sticky */
+    /* App bar mobile : identité OM + KPI DS critiques */
     .mobile-decision-strip {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 42px;
-      gap: 1px;
+      display: flex;
+      gap: 0;
       position: sticky;
       top: 0;
-      z-index: 80;
-      background: var(--border);
+      z-index: 90;
+      width: 100vw;
+      max-width: 100vw;
+      overflow: hidden;
+      background: rgba(255,255,255,0.95);
       border-bottom: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 10px rgba(11, 97, 172, 0.06);
+      backdrop-filter: blur(12px);
+    }
+    [data-theme="dark"] .mobile-decision-strip {
+      background: rgba(18, 24, 31, 0.95);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+    }
+    .mds-brand,
+    .mds-kpi,
+    .mds-reset { background: transparent; }
+    .mds-brand {
+      flex: 0 0 42px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 6px;
+    }
+    .mds-brand img {
+      width: 27px;
+      height: 27px;
+      object-fit: contain;
+      display: block;
+      border-radius: 999px;
+      background: rgba(11, 97, 172, 0.08);
+      box-shadow: 0 0 0 1px rgba(11, 97, 172, 0.14);
     }
     .mds-kpi {
-      background: var(--card);
-      padding: 9px 10px 10px;
+      flex: 1 1 0;
+      padding: 8px 10px 8px;
       min-width: 0;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       gap: 1px;
       min-height: 50px;
+      border-left: 1px solid var(--border);
     }
     .mds-label {
       font-family: var(--condensed);
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 9px;
-      font-weight: 700;
+      letter-spacing: 0.13em;
+      font-size: 8.5px;
+      font-weight: 900;
       color: var(--muted);
     }
     .mds-value {
       font-family: var(--sans);
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 15.5px;
+      font-weight: 900;
       color: var(--text);
-      line-height: 1.1;
+      line-height: 1.05;
       margin-top: 2px;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.01em;
-    }
-    .mds-value.over { color: var(--red); }
-    .mds-value.at { color: var(--orange); }
-    .mds-value.under { color: var(--text); }
-    .mds-value.positive { color: var(--green); }
-    .mds-value.negative { color: var(--red); }
-    .mds-detail {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 1px;
-      letter-spacing: 0;
-      line-height: 1.3;
-    }
-    .mds-status {
-      background: var(--card);
-      min-height: 50px;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2px;
-      padding: 8px 7px;
-    }
-    .mds-status-value {
-      font-family: var(--condensed);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text);
+      letter-spacing: -0.03em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .mds-status-value.ok { color: var(--green); }
-    .mds-status-value.warn { color: var(--orange); }
-    .mds-status-value.danger { color: var(--red); }
+    .mds-value.over { color: #ff5d76; }
+    .mds-value.at { color: var(--orange); }
+    .mds-value.under { color: var(--text); }
+    .mds-value.positive { color: #26c978; }
+    .mds-value.negative { color: #ff5d76; }
+    .mds-detail {
+      font-size: 9.2px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.9;
+    }
     .mds-reset {
-      background: var(--card);
-      min-height: 50px;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 5px;
+      display: none;
     }
     .mds-reset-btn {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 999px;
       border: 1px solid var(--border-md);
       background: var(--card);
@@ -4134,15 +4140,74 @@
       border-color: var(--border-blue);
       background: var(--om-blue-tint);
     }
+    .mobile-section-nav {
+      display: block;
+      position: sticky;
+      top: 49px;
+      z-index: 89;
+      left: 0;
+      right: 0;
+      width: 100vw;
+      max-width: 100vw;
+      height: 38px;
+      overflow: hidden;
+      padding: 0;
+      background: rgba(242, 244, 246, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    [data-theme="dark"] .mobile-section-nav { background: rgba(17, 22, 28, 0.96); }
+    .mobile-section-tab {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 20%;
+      min-width: 0;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      min-height: 38px;
+      padding: 11px 0 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: var(--condensed);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+      background: transparent;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mobile-section-tab:nth-child(1) { left: 0; }
+    .mobile-section-tab:nth-child(2) { left: 20%; }
+    .mobile-section-tab:nth-child(3) { left: 40%; }
+    .mobile-section-tab:nth-child(4) { left: 60%; }
+    .mobile-section-tab:nth-child(5) { left: 80%; }
+    .mobile-section-tab.active,
+    .mobile-section-tab:active,
+    .mobile-section-tab:hover {
+      color: var(--om-blue);
+      border-bottom-color: var(--om-blue);
+      background: transparent;
+    }
   }
   @media (max-width: 480px) {
-    .mobile-decision-strip { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 38px; }
-    .mds-value { font-size: 15.5px; }
-    .mds-label { font-size: 8.5px; letter-spacing: 0.08em; }
-    .mds-kpi { padding: 8px 8px 9px; }
-    .mds-status { padding-inline: 6px; }
-    .mds-status-value { font-size: 10.5px; letter-spacing: 0.06em; }
-    .mds-reset-btn { width: 30px; height: 30px; font-size: 16px; }
+    .mds-brand { flex-basis: 38px; min-height: 49px; }
+    .mds-brand img { width: 24px; height: 24px; }
+    .mds-value { font-size: 14px; }
+    .mds-label { font-size: 8px; letter-spacing: 0.1em; }
+    .mds-detail { font-size: 8.6px; }
+    .mds-kpi { min-height: 49px; padding: 7px 7px 7px; }
+    .mds-reset-btn { width: 28px; height: 28px; font-size: 15px; }
+    .mobile-section-nav { top: 49px; height: 36px; padding: 0; }
+    .mobile-section-tab { min-height: 36px; padding: 10px 0 8px; font-size: 10px; letter-spacing: 0.045em; }
   }
 
   .mobile-section-nav,
@@ -4213,7 +4278,7 @@
     .hero-credit { font-size: 10px; margin-top: 8px; }
     .hero-saison { font-size: 24px; }
 
-    .mobile-section-nav { display: none; }
+    .mobile-section-nav { display: block; }
     .mobile-staff-pills {
       display: flex;
       gap: 8px;
@@ -4259,7 +4324,7 @@
     #departures-section,
     #arrivals-section,
     #budget-section,
-    #lineup-section { scroll-margin-top: 58px; }
+    #lineup-section { scroll-margin-top: 88px; }
     .section {
       padding: 20px 16px;
       border-radius: 10px;
@@ -4368,9 +4433,17 @@
       display: block;
       padding-left: 2px;
     }
+    .group-block table tbody td:nth-child(3) .mobile-name-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: calc(100% - 38px);
+      min-width: 0;
+      vertical-align: middle;
+    }
     .group-block table tbody td:nth-child(3) .player-name {
       display: block;
-      max-width: 100%;
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -4378,12 +4451,19 @@
       font-weight: 700;
       letter-spacing: -0.01em;
     }
+    .group-block table tbody td:nth-child(3) .mobile-name-line .rights-badge {
+      flex: 0 0 auto;
+      margin-left: 0;
+    }
     .group-block table tbody td:nth-child(3) .move-btn {
       position: absolute;
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
       margin: 0;
+    }
+    .group-block table tbody td:nth-child(3) .oa-avail-badge {
+      display: none;
     }
 
     /* Cell 9 (VNC) — affichée à droite pour tous SAUF les départs réels */
@@ -4604,66 +4684,142 @@
       margin-right: 2px;
     }
 
-    /* ARRIVALS : Joueur + delete top, métriques en bas */
+    /* ARRIVALS : carte décisionnelle — identité, coût principal, détails secondaires */
     #arrivals-body tr {
-      align-items: center;
+      align-items: flex-start;
+      gap: 5px 10px;
+      padding: 15px 10px;
+      position: relative;
     }
     #arrivals-body tr td:nth-child(1) {
-      flex: 1 1 calc(100% - 40px);
-      font-size: 14px;
+      flex: 1 1 calc(100% - 46px);
+      order: 1;
+      min-width: 0;
+      padding-right: 4px;
+      font-size: 15px;
       color: var(--text);
-      line-height: 1.4;
+      line-height: 1.35;
+    }
+    #arrivals-body tr td:nth-child(1) .player-poste {
+      margin-right: 9px;
+      padding: 3px 8px;
+      min-width: 30px;
+      font-size: 11px;
+      vertical-align: middle;
+    }
+    #arrivals-body tr td:nth-child(1) .player-name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      vertical-align: middle;
+    }
+    #arrivals-body tr td:nth-child(1) .transfer-type-badge,
+    #arrivals-body tr td:nth-child(1) .oa-pill {
+      margin-left: 8px;
+      vertical-align: middle;
     }
     #arrivals-body tr td:nth-child(5) {
-      flex: 0 0 32px;
+      flex: 0 0 36px;
+      order: 2;
       align-self: flex-start;
+      display: flex;
+      justify-content: flex-end;
     }
-    #arrivals-body tr td:nth-child(2),
+    #arrivals-body tr td:nth-child(5):empty { display: none; }
+    #arrivals-body tr td:nth-child(5) .delete-btn {
+      min-width: 34px;
+      min-height: 34px;
+      border-radius: 8px;
+      opacity: 0.78;
+    }
+    #arrivals-body tr td:nth-child(2) {
+      flex: 0 0 100%;
+      order: 3;
+      margin-top: 4px;
+      padding-top: 9px;
+      border-top: 1px dashed var(--border-soft);
+      text-align: right;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    #arrivals-body tr.manual-arrival td:nth-child(2) { color: var(--green); }
+    #arrivals-body tr td:nth-child(2)::before {
+      content: 'Coût 26/27';
+      float: left;
+      margin-top: 3px;
+      font-family: var(--condensed);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    #arrivals-body tr td:nth-child(2)::after {
+      content: ' M€';
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: 2px;
+    }
     #arrivals-body tr td:nth-child(3),
     #arrivals-body tr td:nth-child(4) {
       flex: 0 1 auto;
-    }
-    #arrivals-body tr td:nth-child(2)::before {
-      content: 'Coût 26/27 ';
-      font-weight: 600;
+      order: 4;
+      font-size: 11px;
+      line-height: 1.35;
       color: var(--muted);
-      margin-right: 2px;
     }
+    #arrivals-body tr td:nth-child(3):empty,
+    #arrivals-body tr td:nth-child(4):empty { display: none; }
     #arrivals-body tr td:nth-child(3)::before {
-      content: '· Amort./an ';
-      font-weight: 600;
-      color: var(--muted);
+      content: 'Amort. ';
+      font-weight: 700;
+      color: var(--muted-soft);
       margin-right: 2px;
     }
     #arrivals-body tr td:nth-child(4)::before {
-      content: '· Reste à payer ';
-      font-weight: 600;
-      color: var(--muted);
+      content: '· À payer ';
+      font-weight: 700;
+      color: var(--muted-soft);
       margin-right: 2px;
     }
 
-    /* SUBTOTAL des tableaux transferts : ne montrer que label + métrique-clé */
+    /* SUBTOTAL des tableaux transferts : une seule ligne claire, métrique clé à droite */
     .side-by-side tfoot tr.subtotal-row {
-      display: block;
-      background: var(--bg-soft);
-      padding: 10px 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      background: transparent;
+      padding: 12px 0 0;
       border: none;
-      border-top: 1px solid var(--text);
-      margin-top: 0;
+      border-top: 1px solid var(--border-md);
+      margin-top: 10px;
       font-size: 12px;
       text-align: left;
     }
     .side-by-side tfoot tr.subtotal-row td {
-      display: inline;
+      display: none;
       padding: 0;
       color: var(--text);
       font-size: 12px;
     }
+    .side-by-side tfoot tr.subtotal-row td:first-child {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+      color: var(--text);
+    }
     /* Départs : cacher Vente + Cash OM, garder Plus-value (key) */
-    #dep-cession-total, #dep-omcash-total { display: none; }
     #dep-plusvalue-total {
-      float: right;
-      font-weight: 700;
+      display: block;
+      flex: 0 0 auto;
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
     }
     #dep-plusvalue-total::before {
       content: 'Plus-value '; 
@@ -4671,13 +4827,13 @@
       font-weight: 500;
       margin-right: 4px;
     }
-    /* Arrivées : cacher Amort + reste à payer, garder Coût 26/27 (key) */
-    #arr-amort-total, #arr-oa-future-total { display: none; }
-    /* Le 5ème <td> vide en tfoot arrivals */
-    .side-by-side tfoot tr.subtotal-row td:empty { display: none; }
+    /* Arrivées : garder Coût 26/27 comme métrique-clé */
     #arr-cash-total {
-      float: right;
-      font-weight: 700;
+      display: block;
+      flex: 0 0 auto;
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
     }
     #arr-cash-total::before {
       content: 'Coût 26/27 ';
@@ -4886,8 +5042,9 @@
   </div>
 </div>
 
-<!-- Sticky strip mobile : MS chargée + Balance toujours visibles pendant la scroll de l'effectif. -->
+<!-- App bar mobile : identité OM + KPI critiques toujours visibles. -->
 <div class="mobile-decision-strip" aria-label="Synthèse rapide du scénario">
+  <div class="mds-brand" aria-label="Olympique de Marseille"><img src="om-logo.png" alt=""></div>
   <div class="mds-kpi">
     <div class="mds-label">MS</div>
     <div class="mds-value" id="mds-ms">—</div>
@@ -4902,6 +5059,13 @@
     <button type="button" class="mds-reset-btn" data-reset-menu-trigger aria-label="Réinitialiser le scénario">↻</button>
   </div>
 </div>
+<nav class="mobile-section-nav" aria-label="Navigation mobile">
+  <a class="mobile-section-tab" href="#budget-section" data-section-tab="budget-section">Budget</a>
+  <a class="mobile-section-tab" href="#effectif-section" data-section-tab="effectif-section">Effectif</a>
+  <a class="mobile-section-tab" href="#arrivals-section" data-section-tab="arrivals-section">Arrivées</a>
+  <a class="mobile-section-tab" href="#departures-section" data-section-tab="departures-section">Départs</a>
+  <a class="mobile-section-tab" href="#lineup-section" data-section-tab="lineup-section">Compo</a>
+</nav>
 <!-- MODAL RÉINITIALISATION SCÉNARIO -->
 <div class="modal-overlay" id="reset-modal">
   <div class="modal-card reset-modal-card">
@@ -5934,7 +6098,7 @@ function appendPlayerRow(tbody, p, coef) {
       <input type="checkbox" data-player="${p.id}" ${isDeparting ? 'checked' : ''}>
     </td>
     <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
-    <td><span class="player-name">${p.name}</span>${moveBtn}${movedBadge}${rightsBadge}${oaBadge}${loanBadge}${mobileMeta}</td>
+    <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}</span>${moveBtn}${movedBadge}${oaBadge}${loanBadge}${mobileMeta}</td>
     <td>${p.age}</td>
     <td>${p.contractEnd.slice(-4)}</td>
     <td class="numeric">${p.tmValue.toFixed(1)}</td>
@@ -6176,7 +6340,7 @@ function renderSquad() {
       tr.innerHTML = `
         <td class="checkbox-cell"></td>
         <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
-        <td><span class="player-name">${p.name}</span>${moveBtn}${suppBadge}${rightsBadge}${suppMobileMeta}</td>
+        <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}</span>${moveBtn}${suppBadge}${suppMobileMeta}</td>
         <td>${p.age}</td>
         <td>${p.contractEnd.slice(-4)}</td>
         <td class="numeric">—</td>
@@ -6899,7 +7063,7 @@ function renderArrivals() {
       </td>
       <td class="numeric">${p.transferCost.toFixed(2)}</td>
       <td class="numeric">${p.annualAmort.toFixed(2)}</td>
-      <td class="numeric" style="color: var(--muted);">—</td>
+      <td class="numeric" style="color: var(--muted);"></td>
       <td></td>
     `;
     tbody.appendChild(tr);
@@ -6930,8 +7094,8 @@ function renderArrivals() {
     tr.innerHTML = `
       <td><span class="player-poste">${getPositionCode(a)}</span><span class="player-name">${a.name}</span>${typeBadge}</td>
       <td class="numeric">${a.transferType === 'youth' ? '—' : cash.toFixed(2)}</td>
-      <td class="numeric">${amort > 0 ? amort.toFixed(2) : '—'}</td>
-      <td class="numeric" style="${future > 0 ? 'color: var(--om-blue); font-weight: 600;' : 'color: var(--muted);'}">${future > 0 ? future.toFixed(2) : '—'}</td>
+      <td class="numeric">${amort > 0 ? amort.toFixed(2) : ''}</td>
+      <td class="numeric" style="${future > 0 ? 'color: var(--om-blue); font-weight: 600;' : 'color: var(--muted);'}">${future > 0 ? future.toFixed(2) : ''}</td>
       <td><button class="delete-btn" onclick="removeArrival('${a.id}')" title="Retirer">✕</button></td>
     `;
     tbody.appendChild(tr);
@@ -7609,6 +7773,12 @@ function updateSynthesis(a, target, produits) {
   const effectifText = `${a.finalEffectif}${cdfCount ? ` · ${cdfCount} CDF` : ''}`;
   const miniEffectif = document.getElementById('syn-mini-effectif');
   if (miniEffectif) miniEffectif.textContent = effectifText;
+  const mobileEffectif = document.getElementById('mds-effectif');
+  if (mobileEffectif) {
+    mobileEffectif.textContent = String(a.finalEffectif || '—');
+    mobileEffectif.classList.remove('under', 'at', 'over');
+    mobileEffectif.classList.add(a.finalEffectif < 22 ? 'over' : (a.finalEffectif > 25 ? 'at' : 'under'));
+  }
   const effectifSummary = document.getElementById('syn-effectif-summary');
   if (effectifSummary) effectifSummary.textContent = `${effectifText}${avgAge ? ` · ${avgAge.toFixed(1)} ans` : ''}`;
   const miniAge = document.getElementById('syn-mini-age');
@@ -7662,15 +7832,15 @@ function updateSynthesis(a, target, produits) {
   // 2bis. Mobile decision strip — mirror MS + Balance (sticky sur mobile/tablette)
   const mdsMs = document.getElementById('mds-ms');
   if (mdsMs) {
-    mdsMs.textContent = ms.toFixed(1) + ' / ' + target + ' M€';
+    mdsMs.textContent = ms.toFixed(1) + '/' + target + ' M€';
     mdsMs.classList.remove('over', 'at', 'under');
     if (ms <= target) mdsMs.classList.add('under');
     else if (ms <= target * 1.1) mdsMs.classList.add('at');
     else mdsMs.classList.add('over');
     const mdsMsDelta = document.getElementById('mds-ms-delta');
-    if (delta > 0) mdsMsDelta.textContent = '+' + delta.toFixed(1) + ' M€ vs cible';
-    else if (delta < 0) mdsMsDelta.textContent = delta.toFixed(1) + ' M€ vs cible';
-    else mdsMsDelta.textContent = 'aligné sur la cible';
+    if (delta > 0) mdsMsDelta.textContent = '+' + delta.toFixed(1) + ' vs cible';
+    else if (delta < 0) mdsMsDelta.textContent = delta.toFixed(1) + ' vs cible';
+    else mdsMsDelta.textContent = 'aligné cible';
   }
   const mdsBal = document.getElementById('mds-balance');
   if (mdsBal) {
@@ -7678,7 +7848,7 @@ function updateSynthesis(a, target, produits) {
     mdsBal.classList.remove('positive', 'negative');
     mdsBal.classList.add(balance >= 0 ? 'positive' : 'negative');
     document.getElementById('mds-balance-detail').textContent =
-      balance >= 0 ? 'surplus cession' : 'déficit cession';
+      balance >= 0 ? 'surplus' : 'déficit';
   }
 
   // 3. Calcul résultat net (pour DNCG)
@@ -7952,6 +8122,26 @@ function syncMercatoActions() {
   if (!bar) return;
   const hasMercato = Object.keys(state.departing).length > 0 || state.arrivals.length > 0;
   bar.hidden = !hasMercato;
+}
+
+function setupMobileSectionTabs() {
+  const tabs = Array.from(document.querySelectorAll('[data-section-tab]'));
+  if (!tabs.length || !('IntersectionObserver' in window)) return;
+  const sections = tabs
+    .map(tab => document.getElementById(tab.dataset.sectionTab))
+    .filter(Boolean);
+  if (!sections.length) return;
+  const setActive = id => {
+    tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.sectionTab === id));
+  };
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, { rootMargin: '-96px 0px -55% 0px', threshold: [0.08, 0.18, 0.32] });
+  sections.forEach(section => observer.observe(section));
+  setActive('effectif-section');
 }
 
 // ============================================================
@@ -8695,6 +8885,7 @@ function flashPlayerRow(playerId) {
 
 loadState();
 updateArrivalFormVisibility();
+setupMobileSectionTabs();
 renderAll();
 </script>
 
