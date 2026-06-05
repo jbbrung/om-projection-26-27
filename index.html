@@ -8692,7 +8692,7 @@ function buildExportHero(liveHero, W, H) {
   const row = (code, name, valueHTML, valueColor) => `
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
       <div style="display: flex; align-items: baseline; gap: 6px; min-width: 0; flex: 1 1 auto;">
-        <span style="display:inline-block; padding:1px 5px; background:rgba(255,255,255,0.14); color:#cfe1f5; border-radius:3px; font-size:9px; font-weight:800; letter-spacing:0.06em; flex-shrink:0;">${code}</span>
+        <span style="display:inline-block; width:26px; box-sizing:border-box; padding:1px 0; text-align:center; background:rgba(255,255,255,0.14); color:#cfe1f5; border-radius:3px; font-size:9px; font-weight:800; letter-spacing:0.06em; flex-shrink:0;">${code}</span>
         <span style="font-size: 11.5px; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</span>
       </div>
       <span style="font-size: 11px; font-weight: 700; color: ${valueColor}; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;">${valueHTML}</span>
