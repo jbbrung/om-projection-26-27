@@ -4556,6 +4556,31 @@
     .group-block table tbody td:nth-child(3) .oa-avail-badge {
       display: none;
     }
+    .group-block table tbody tr.new-arrival td:nth-child(3) {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 7px;
+    }
+    .group-block table tbody tr.new-arrival td:nth-child(3) .player-name {
+      display: inline-block;
+      flex: 0 1 auto;
+      max-width: calc(100% - 88px);
+      vertical-align: middle;
+    }
+    .group-block table tbody tr.new-arrival td:nth-child(3) .transfer-type-badge,
+    .group-block table tbody tr.new-arrival td:nth-child(3) .oa-pill,
+    .group-block table tbody tr.new-arrival td:nth-child(3) .moved-badge,
+    .group-block table tbody tr.new-arrival td:nth-child(3) .supplement-badge {
+      flex: 0 0 auto;
+      margin-left: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    .group-block table tbody tr.new-arrival td:nth-child(3) .future-oa-note,
+    .group-block table tbody tr.new-arrival td:nth-child(3) .player-mobile-meta {
+      flex: 0 0 100%;
+    }
 
     /* Cell 9 (VNC) — affichée à droite pour tous SAUF les départs réels */
     .group-block table tbody tr:not(.departing) td:nth-child(9) {
@@ -4600,7 +4625,7 @@
       order: 5;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 8px;
       padding: 8px 0 2px 0;
       margin-top: 4px;
@@ -4614,13 +4639,19 @@
       color: var(--muted);
       font-size: 11px;
       letter-spacing: 0.02em;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
     }
     .group-block table tbody tr.free-departure td:nth-child(11)::before {
       content: 'Résiliation';
     }
-    .group-block table tbody td:nth-child(11) input.cession-input {
+    .group-block table tbody td:nth-child(11) input.cession-input,
+    .group-block table tbody td:nth-child(11) .cession-static {
+      margin-left: auto;
       flex: 0 0 auto;
+    }
+    .group-block table tbody td:nth-child(11) input.cession-input {
       width: 56px;
       max-width: 56px;
       min-height: 28px;
@@ -4755,9 +4786,37 @@
     /* DEPARTURES : Joueur en haut, 3 métriques en bas avec labels inline */
     #departures-body tr td:nth-child(1) {
       flex: 0 0 100%;
+      min-width: 0;
       font-size: 14px;
       color: var(--text);
       line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    #departures-body tr td:nth-child(1) .player-poste {
+      margin-right: 0;
+      width: 34px;
+      min-width: 34px;
+      box-sizing: border-box;
+      padding-left: 0;
+      padding-right: 0;
+      flex: 0 0 34px;
+    }
+    #departures-body tr td:nth-child(1) .player-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #departures-body tr td:nth-child(1) .rights-badge,
+    #departures-body tr td:nth-child(1) .free-departure-badge,
+    #departures-body tr td:nth-child(1) .oa-exercised-badge,
+    #departures-body tr td:nth-child(1) .loan-out-badge {
+      flex: 0 0 auto;
+      margin-left: 0;
+      white-space: nowrap;
     }
     #departures-body tr td:nth-child(2)::before {
       content: 'Vente ';  
@@ -4784,57 +4843,78 @@
     /* ARRIVALS : carte décisionnelle — identité, coût principal, détails secondaires */
     #arrivals-body tr {
       align-items: flex-start;
-      gap: 5px 10px;
-      padding: 15px 10px;
+      gap: 6px 12px;
+      padding: 16px 14px;
+      margin-bottom: 10px;
       position: relative;
+      border-radius: 10px;
+    }
+    #arrivals-body tr.new-arrival.manual-arrival + tr.new-arrival.manual-arrival td {
+      border-top: none;
     }
     #arrivals-body tr td:nth-child(1) {
-      flex: 1 1 calc(100% - 46px);
+      flex: 1 1 calc(100% - 48px);
       order: 1;
       min-width: 0;
       padding-right: 4px;
       font-size: 15px;
       color: var(--text);
       line-height: 1.35;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
     #arrivals-body tr td:nth-child(1) .player-poste {
-      margin-right: 9px;
-      padding: 3px 8px;
-      min-width: 30px;
+      margin-right: 0;
+      padding: 3px 0;
+      width: 34px;
+      min-width: 34px;
+      box-sizing: border-box;
       font-size: 11px;
       vertical-align: middle;
+      flex: 0 0 34px;
     }
     #arrivals-body tr td:nth-child(1) .player-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: 16px;
       font-weight: 800;
       letter-spacing: -0.015em;
       vertical-align: middle;
+      flex: 1 1 auto;
     }
     #arrivals-body tr td:nth-child(1) .transfer-type-badge,
     #arrivals-body tr td:nth-child(1) .oa-pill {
-      margin-left: 8px;
+      margin-left: 0;
       vertical-align: middle;
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
     #arrivals-body tr td:nth-child(5) {
-      flex: 0 0 36px;
+      flex: 0 0 40px;
       order: 2;
       align-self: flex-start;
       display: flex;
       justify-content: flex-end;
+      margin-top: -2px;
     }
     #arrivals-body tr td:nth-child(5):empty { display: none; }
     #arrivals-body tr td:nth-child(5) .delete-btn {
-      min-width: 34px;
-      min-height: 34px;
+      min-width: 36px;
+      min-height: 36px;
       border-radius: 8px;
       opacity: 0.78;
     }
     #arrivals-body tr td:nth-child(2) {
       flex: 0 0 100%;
       order: 3;
-      margin-top: 4px;
-      padding-top: 9px;
-      border-top: 1px dashed var(--border-soft);
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: none;
+      background: linear-gradient(to right, transparent 0, var(--border-soft) 18px, var(--border-soft) calc(100% - 18px), transparent 100%) top left / 100% 1px no-repeat;
       text-align: right;
       font-size: 18px;
       font-weight: 800;
@@ -4901,8 +4981,14 @@
     .side-by-side tfoot tr.subtotal-row td {
       display: none;
       padding: 0;
+      border-top: none !important;
+      border-bottom: none !important;
       color: var(--text);
       font-size: 12px;
+    }
+    .side-by-side tfoot tr.subtotal-row td::before,
+    .side-by-side tfoot tr.subtotal-row td::after {
+      border: none !important;
     }
     .side-by-side tfoot tr.subtotal-row td:first-child {
       display: block;
