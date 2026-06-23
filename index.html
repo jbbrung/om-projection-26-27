@@ -294,7 +294,7 @@
     position: relative;
     background: var(--card);
     border: 1px solid var(--border-md);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 32px 28px 24px;
     max-width: 480px;
     width: 100%;
@@ -314,7 +314,7 @@
     font-size: 22px;
     line-height: 1;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 4px;
     transition: background 0.15s, color 0.15s;
   }
   .help-close:hover { background: var(--bg-soft); color: var(--text); }
@@ -418,7 +418,7 @@
     background: var(--om-blue);
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     font-family: var(--condensed);
     font-size: 14px;
     font-weight: 700;
@@ -464,7 +464,7 @@
     background: var(--card);
     border: 1px solid var(--border-md);
     border-left: 3px solid var(--muted);
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 10px 14px;
     font-family: var(--sans);
     font-size: 13px;
@@ -798,7 +798,7 @@
   /* SECTIONS */
   .section {
     background: var(--card);
-    border-radius: 14px;
+    border-radius: 0;
     padding: 36px 36px 32px;
     margin-bottom: 28px;
     border: 1px solid var(--border);
@@ -902,7 +902,7 @@
     min-width: 0;
     position: relative;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 7px;
     border: 1px solid rgba(61, 143, 232, 0.24);
     background: #06365f;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
@@ -957,7 +957,7 @@
     align-self: stretch;
     position: relative;
     background: #06365f;
-    border-radius: 16px;
+    border-radius: 0;
     overflow: hidden;
     color: #ffffff;
     padding: 28px 26px;
@@ -1029,6 +1029,43 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.72);
+  }
+  .lineup-hero-groups {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    margin: -1px 0 2px;
+  }
+  .lineup-hero-group {
+    min-width: 0;
+    padding: 5px 4px 4px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.07);
+    text-align: center;
+  }
+  .lineup-hero-group.is-under {
+    border-color: rgba(255, 180, 173, 0.36);
+    background: rgba(255, 180, 173, 0.10);
+  }
+  .lineup-hero-group-code {
+    display: block;
+    font-family: var(--sans);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.58);
+    line-height: 1;
+  }
+  .lineup-hero-group-count {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
   .lineup-hero-stats .hero-stat.balance .hero-stat-val.neg { color: #ffb4ad; }
   .lineup-hero-stats .hero-stat.balance .hero-stat-val.pos { color: #b9eccf; }
@@ -1110,6 +1147,11 @@
     .lineup-hero { flex: 1 1 auto; width: 100%; min-height: 200px; padding: 22px 20px; }
   }
   @media (max-width: 720px) {
+    .lineup-hero-stats { gap: 9px; }
+    .lineup-hero-groups { gap: 5px; }
+    .lineup-hero-group { padding: 5px 2px 4px; border-radius: 4px; }
+    .lineup-hero-group-code { font-size: 7.5px; letter-spacing: 0.08em; }
+    .lineup-hero-group-count { font-size: 12px; }
     .slot-backup-chip { font-size: 9.5px; padding: 2px 7px; }
     .slot-appoint-chip.empty { width: 23px; height: 23px; padding: 0; }
   }
@@ -1150,7 +1192,7 @@
     cursor: pointer;
     line-height: 1;
     padding: 4px 8px;
-    border-radius: 8px;
+    border-radius: 5px;
     transition: background 0.15s, color 0.15s;
   }
   .lineup-picker-close:hover { background: var(--bg-soft); color: var(--text); }
@@ -1161,7 +1203,7 @@
     font-size: 14px;
     padding: 10px 12px;
     border: 1px solid var(--border-md);
-    border-radius: 10px;
+    border-radius: 6px;
     margin-bottom: 14px;
     background: var(--bg);
     color: var(--text);
@@ -1180,7 +1222,7 @@
     align-items: center;
     gap: 12px;
     padding: 10px 8px;
-    border-radius: 10px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background 0.12s;
   }
@@ -1276,7 +1318,7 @@
     aspect-ratio: 2 / 3;
     background: repeating-linear-gradient(180deg, #E8F0E2 0 10%, #EFF5EA 10% 20%);
     border: 1px solid #C8D4C0;
-    border-radius: 12px;
+    border-radius: 7px;
     overflow: visible;
   }
   [data-theme="dark"] .pitch {
@@ -1417,7 +1459,7 @@
     padding: 3px 10px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: var(--sans);
     font-size: 12px;
     font-weight: 600;
@@ -1883,7 +1925,7 @@
     z-index: 100;
     background: var(--card);
     border: 1px solid var(--border-md);
-    border-radius: 8px;
+    border-radius: 5px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
     min-width: 210px;
     padding: 6px;
@@ -2078,7 +2120,7 @@
     width: 88px;
     padding: 5px 10px;
     border: 1px solid var(--border-md);
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 13px;
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -2156,7 +2198,7 @@
     background: var(--text);
     color: white;
     font-weight: 500;
-    border-radius: 10px;
+    border-radius: 6px;
     overflow: hidden;
   }
 
@@ -2301,7 +2343,7 @@
     align-items: end;
     background: var(--bg-soft);
     padding: 24px 24px 22px;
-    border-radius: 10px;
+    border-radius: 0;
     border: 1px solid var(--border);
     margin-bottom: 24px;
   }
@@ -2455,7 +2497,7 @@
   /* OA PANEL */
   .oa-panel {
     background: var(--om-blue-tint);
-    border-radius: 10px;
+    border-radius: 0;
     border: 1px solid var(--border-blue);
     padding: 22px 24px;
     margin-bottom: 28px;
@@ -2489,7 +2531,7 @@
 
   .oa-panel table {
     background: var(--card);
-    border-radius: 8px;
+    border-radius: 5px;
     overflow: hidden;
   }
 
@@ -2531,7 +2573,7 @@
 
   .modal-card {
     background: var(--card);
-    border-radius: 16px;
+    border-radius: 9px;
     padding: 36px 36px 28px;
     width: 460px;
     max-width: 90vw;
@@ -2771,7 +2813,7 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--border);
-    border-radius: 10px;
+    border-radius: 6px;
     padding: 14px 18px;
     text-align: left;
     cursor: pointer;
@@ -2845,7 +2887,7 @@
     margin: 4px 0 14px;
     padding: 14px;
     border: 1px solid var(--border-md);
-    border-radius: 12px;
+    border-radius: 7px;
     background: rgba(255,255,255,0.025);
     transition: border-color 0.15s ease, background 0.15s ease;
   }
@@ -2934,7 +2976,7 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--border);
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 10px 12px;
     text-align: left;
     cursor: pointer;
@@ -3008,7 +3050,7 @@
   .youth-selection-summary {
     margin-top: 14px;
     padding: 12px 14px;
-    border-radius: 10px;
+    border-radius: 6px;
     background: var(--bg);
     border: 1px solid var(--border);
     font-size: 12px;
@@ -3082,7 +3124,7 @@
     width: min(320px, calc(100vw - 56px));
     padding: 10px 12px;
     border: 1px solid var(--border-md);
-    border-radius: 10px;
+    border-radius: 6px;
     background: var(--card);
     color: var(--text-dim);
     box-shadow: 0 14px 34px rgba(0,0,0,0.18);
@@ -3101,7 +3143,7 @@
     background: var(--om-blue-soft);
     border-left: 3px solid var(--om-blue);
     padding: 9px 13px;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 12px;
     font-weight: 600;
     color: var(--text);
@@ -3134,7 +3176,7 @@
     padding: 10px 12px;
     border: 1px solid var(--border-md);
     border-bottom: 1px solid var(--border-md);
-    border-radius: 8px;
+    border-radius: 5px;
     font-size: 14px;
     font-weight: 500;
     color: var(--text);
@@ -3189,7 +3231,7 @@
     border: 1px solid transparent;
     background: var(--om-blue-soft);
     color: var(--om-blue);
-    border-radius: 5px;
+    border-radius: 4px;
     width: 100%;
     min-width: 0;
     padding: 5px 8px;
@@ -3235,7 +3277,7 @@
     border: 1px solid var(--border-md);
     background: transparent;
     color: var(--text-dim);
-    border-radius: 10px;
+    border-radius: 6px;
     min-width: 0;
     padding: 8px 8px 7px;
     font-family: var(--sans);
@@ -3282,9 +3324,48 @@
     outline: 2px solid rgba(11, 97, 172, 0.55);
     outline-offset: 2px;
   }
+  .salary-custom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-soft);
+  }
+  .salary-custom-label {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+  .salary-custom-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+  .salary-custom-control input {
+    width: 86px;
+    min-height: 34px;
+    padding: 6px 8px;
+    text-align: right;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .salary-custom-unit {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 750;
+    white-space: nowrap;
+  }
   .salary-structure-note {
     padding: 8px 10px;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 1px solid rgba(199, 122, 43, 0.34);
     background: rgba(199, 122, 43, 0.10);
     color: var(--orange);
@@ -3316,7 +3397,7 @@
   .arr-preview {
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 0;
     padding: 14px 18px;
     margin-bottom: 16px;
   }
@@ -3346,7 +3427,7 @@
     margin-top: 10px;
     font-size: 12px;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     line-height: 1.4;
     border-left: 3px solid var(--border);
     background: var(--card);
@@ -3457,7 +3538,7 @@
     top: 92px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 0;
     padding: 26px 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     max-height: calc(100vh - 112px);
@@ -3550,7 +3631,7 @@
     margin: 0;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 0;
     background: var(--bg-soft);
     overflow: hidden;
   }
@@ -3656,7 +3737,7 @@
     line-height: 1.45;
     letter-spacing: 0;
     padding: 8px 11px;
-    border-radius: 6px;
+    border-radius: 4px;
     width: max-content;
     max-width: 240px;
     white-space: normal;
@@ -3692,7 +3773,7 @@
     width: 100%;
     padding: 4px 6px;
     border: 1px solid var(--border-md);
-    border-radius: 6px;
+    border-radius: 4px;
     background: var(--bg);
     font-size: 15px;
     font-weight: 600;
@@ -3724,7 +3805,7 @@
     color: var(--text-dim);
     border: 1px solid var(--border-md);
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
     text-transform: uppercase;
@@ -3808,7 +3889,7 @@
     border: 1px solid var(--border);
     background: var(--card);
     color: var(--text);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 14px;
     cursor: pointer;
     font-family: var(--sans);
@@ -3980,7 +4061,7 @@
   .syn-mini-card {
     padding: 12px 13px;
     border: 1px solid var(--border);
-    border-radius: 11px;
+    border-radius: 0;
     background: rgba(255, 255, 255, 0.58);
   }
   .syn-mini-key {
@@ -4418,7 +4499,7 @@
     #lineup-section { scroll-margin-top: 88px; }
     .section {
       padding: 20px 16px;
-      border-radius: 10px;
+      border-radius: 0;
       margin-bottom: 18px;
     }
     .section h2 { font-size: 18px; margin-bottom: 18px; }
@@ -4843,11 +4924,11 @@
     /* ARRIVALS : carte décisionnelle — identité, coût principal, détails secondaires */
     #arrivals-body tr {
       align-items: flex-start;
-      gap: 6px 12px;
-      padding: 16px 14px;
-      margin-bottom: 10px;
+      gap: 5px 10px;
+      padding: 13px 12px;
+      margin-bottom: 8px;
       position: relative;
-      border-radius: 10px;
+      border-radius: 0;
     }
     #arrivals-body tr.new-arrival.manual-arrival + tr.new-arrival.manual-arrival td {
       border-top: none;
@@ -4857,9 +4938,9 @@
       order: 1;
       min-width: 0;
       padding-right: 4px;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text);
-      line-height: 1.35;
+      line-height: 1.32;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -4880,9 +4961,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.015em;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
       vertical-align: middle;
       flex: 1 1 auto;
     }
@@ -4905,7 +4986,7 @@
     #arrivals-body tr td:nth-child(5) .delete-btn {
       min-width: 36px;
       min-height: 36px;
-      border-radius: 8px;
+      border-radius: 5px;
       opacity: 0.78;
     }
     #arrivals-body tr td:nth-child(2) {
@@ -4916,7 +4997,7 @@
       border-top: none;
       background: linear-gradient(to right, transparent 0, var(--border-soft) 18px, var(--border-soft) calc(100% - 18px), transparent 100%) top left / 100% 1px no-repeat;
       text-align: right;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       line-height: 1.15;
       color: var(--text);
@@ -5031,7 +5112,7 @@
       background: var(--text);
       color: white;
       padding: 14px 16px;
-      border-radius: 10px;
+      border-radius: 6px;
       font-size: 13px;
     }
     .grand-total td { display: inline; padding: 0; border: none; color: white; }
@@ -5461,6 +5542,13 @@
               <span>Top</span><strong>450k</strong><em id="salary-count-450">—</em>
             </button>
           </div>
+          <div class="salary-custom-row">
+            <span class="salary-custom-label">Ou montant personnalisé</span>
+            <div class="salary-custom-control">
+              <input type="number" id="arr-salary-custom" min="0" max="900" step="10" inputmode="decimal" placeholder="Ex: 220" aria-label="Salaire mensuel personnalisé en k€">
+              <span class="salary-custom-unit">k€/mois</span>
+            </div>
+          </div>
           <div class="salary-structure-note" id="salary-structure-note" hidden></div>
         </label>
         <input type="hidden" id="arr-loan-fee" value="0">
@@ -5845,6 +5933,7 @@ const YOUTH_PROSPECTS = [
   { id: 'vanneck', name: 'Jelle Van Neck', position: 'GK', group: 'Gardiens', age: 22, tmValue: 0 },
   // DÉFENSE CENTRALE
   { id: 'hamzaoui', name: 'Hilan Hamzaoui Slimani', position: 'DC', group: 'Défenseurs', age: 20, tmValue: 0 },
+  { id: 'lung', name: 'Sacha Lung', position: 'DC', group: 'Défenseurs', age: 18, tmValue: 0 },
   // LATÉRAUX
   { id: 'koum', name: 'Alexi Koum', position: 'LB', group: 'Latéraux', age: 20, tmValue: 0.30 },
   { id: 'bienck', name: 'Felix Bienck', position: 'LB', group: 'Latéraux', age: 18, tmValue: 0 },
@@ -5853,6 +5942,7 @@ const YOUTH_PROSPECTS = [
   { id: 'kamissoko', name: 'Nouhoum Kamissoko', position: 'DM', group: 'Milieux', age: 21, tmValue: 0.075 },
   { id: 'sellami', name: 'Yanis Sellami', position: 'DM', group: 'Milieux', age: 19, tmValue: 0 },
   // ENSEMBLE OFFENSIF
+  { id: 'malanda', name: 'Jephte Malanda', position: 'AM', group: 'Offensifs', age: 18, tmValue: 0 },
   { id: 'joseph', name: 'Victor Joseph', position: 'AM', group: 'Offensifs', age: 20, tmValue: 0 },
   { id: 'mmadi', name: 'Tadjidine Mmadi', position: 'LW', group: 'Offensifs', age: 19, tmValue: 0.80 },
   { id: 'abdallah', name: 'Keyliane Abdallah', position: 'RW', group: 'Offensifs', age: 20, tmValue: 0.05 },
@@ -6996,6 +7086,10 @@ function syncPositionChips() {
 
 function syncSalaryPresets() {
   const salary = parseFloat(document.getElementById('arr-salary')?.value) || 0;
+  const customInput = document.getElementById('arr-salary-custom');
+  if (customInput && document.activeElement !== customInput) {
+    customInput.value = salary > 0 ? String(salary) : '';
+  }
   const counts = getSalaryPyramidCounts();
   const countMap = { 80: counts.remplacant, 180: counts.titulaire, 300: counts.cadre, 450: counts.top };
   const hint = document.getElementById('salary-pyramid-hint');
@@ -7054,6 +7148,7 @@ function openArrivalModal() {
   // Reset des champs
   document.getElementById('arr-name').value = '';
   document.getElementById('arr-salary').value = '';
+  document.getElementById('arr-salary-custom').value = '';
   document.getElementById('arr-transfer').value = '';
   document.getElementById('arr-loan-fee').value = '0';
   document.getElementById('arr-oa-price').value = '';
@@ -7100,6 +7195,7 @@ function selectArrivalType(cardType) {
     renderYouthPicker();
     document.getElementById('arr-name').value = '';
     document.getElementById('arr-salary').value = '';
+    document.getElementById('arr-salary-custom').value = '';
   } else {
     setTimeout(() => document.getElementById('arr-name').focus(), 50);
   }
@@ -7643,32 +7739,59 @@ function getAssignedPlayerIds() {
   return new Set(Object.values(state.lineup).filter(Boolean));
 }
 
+function getPrimaryGroupCounts() {
+  const counts = Object.fromEntries(GROUPS_ORDER.map(g => [g, 0]));
+  SQUAD
+    .filter(p => state.departing[p.id] === undefined)
+    .forEach(p => {
+      const group = getEffectiveGroup(p);
+      if (group) counts[group] = (counts[group] || 0) + 1;
+    });
+  state.arrivals.forEach(a => {
+    const group = getEffectiveGroup(a);
+    if (group) counts[group] = (counts[group] || 0) + 1;
+  });
+  return counts;
+}
+
 function renderLineupHero() {
   const statsEl = document.getElementById('hero-stats');
   if (!statsEl) return;
 
-  const assigned = getAssignedPlayerIds();
-  const slots = getEffectiveSlots();
-  let titulaires = 0, doublures = 0;
-  slots.forEach(def => {
-    if (state.lineup[def.id]) titulaires++;
-    if (state.lineup[def.id + '_b']) doublures++;
-  });
-
   let balance = 0;
-  try { balance = computeAggregates().balance; } catch (e) {}
+  let finalEffectif = 0;
+  try {
+    const a = computeAggregates();
+    balance = a.balance;
+    finalEffectif = a.finalEffectif;
+  } catch (e) {}
+  const groupCounts = getPrimaryGroupCounts();
+  const groupShort = [
+    ['Gardiens', 'GB'],
+    ['Défenseurs', 'DEF'],
+    ['Latéraux', 'LAT'],
+    ['Milieux', 'MIL'],
+    ['Offensifs', 'OFF'],
+    ['Avants-centres', 'BU'],
+  ];
+  const groupHtml = groupShort.map(([group, code]) => {
+    const count = groupCounts[group] || 0;
+    const target = GROUP_TARGETS[group] || 0;
+    const klass = target && count < target ? ' is-under' : '';
+    return `<span class="lineup-hero-group${klass}" title="${group} : ${count}/${target}"><span class="lineup-hero-group-code">${code}</span><span class="lineup-hero-group-count">${count}</span></span>`;
+  }).join('');
+
   const balSign = balance >= 0 ? '+' : '−';
   const balAbs = Math.abs(balance).toFixed(1);
   const balKlass = balance >= 0 ? 'pos' : 'neg';
 
   statsEl.innerHTML = `
     <div class="hero-stat">
-      <span class="hero-stat-val">${titulaires}/11</span>
-      <span class="hero-stat-key">titulaires</span>
+      <span class="hero-stat-val">${finalEffectif || '—'}/22</span>
+      <span class="hero-stat-key">effectif</span>
     </div>
-    <div class="hero-stat">
-      <span class="hero-stat-val">${doublures}/11</span>
-      <span class="hero-stat-key">remplaçants</span>
+    <div class="lineup-hero-groups" aria-label="Répartition de l’effectif par ligne">
+      ${groupHtml}
     </div>
     <div class="hero-stat balance">
       <span class="hero-stat-val ${balKlass}">${balSign}${balAbs} M€</span>
@@ -8559,9 +8682,14 @@ document.querySelectorAll('.position-chip-group button[data-position]').forEach(
 ['arr-name', 'arr-salary', 'arr-transfer', 'arr-loan-fee', 'arr-oa-price', 'arr-duration'].forEach(id => {
   document.getElementById(id).addEventListener('input', updateArrivalPreview);
 });
+document.getElementById('arr-salary-custom').addEventListener('input', e => {
+  document.getElementById('arr-salary').value = e.target.value;
+  updateArrivalPreview();
+});
 document.querySelectorAll('.salary-preset-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.getElementById('arr-salary').value = btn.dataset.salaryPreset;
+    document.getElementById('arr-salary-custom').value = btn.dataset.salaryPreset;
     updateArrivalPreview();
   });
 });
@@ -8655,7 +8783,7 @@ const GESPUTTIJ_AVATAR_B64 = '/9j/4AAQSkZJRgABAQAASABIAAD/4QCARXhpZgAATU0AKgAAAA
 
 // ────────────────────────────────────────────────────────────
 // Hero panel d'export : notebook bg ambient + dashboard mercato complet
-// (balance giant + listes complètes départs/arrivées + footer MS/titulaires)
+// (balance giant + listes complètes départs/arrivées + footer MS/effectif)
 // ────────────────────────────────────────────────────────────
 function buildExportHero(liveHero, W, H) {
   const agg = (() => { try { return computeAggregates(); } catch (e) { return null; } })();
@@ -8663,6 +8791,7 @@ function buildExportHero(liveHero, W, H) {
   const cessions = agg ? agg.totalOmCash : 0;
   const achats = agg ? (agg.arrTransfer + agg.oaTransferCost) : 0;
   const msChargee = agg ? agg.finalCharged : 0;
+  const finalEffectif = agg ? agg.finalEffectif : 0;
   const target = parseFloat(document.getElementById('target-ms')?.value || '95') || 95;
   const msDelta = msChargee - target;
   const balSign = balance >= 0 ? '+' : '−';
@@ -8671,13 +8800,22 @@ function buildExportHero(liveHero, W, H) {
   const msDeltaSign = msDelta >= 0 ? '+' : '−';
   const msDeltaColor = msDelta <= 0 ? '#7DE2B8' : '#FF9F8F';
 
-  // Titulaires / remplaçants
-  const slots = (typeof getEffectiveSlots === 'function') ? getEffectiveSlots() : [];
-  let titulaires = 0, doublures = 0;
-  slots.forEach(def => {
-    if (state.lineup && state.lineup[def.id]) titulaires++;
-    if (state.lineup && state.lineup[def.id + '_b']) doublures++;
-  });
+  // Répartition effectif primaire — alignée avec la hero card live/mobile
+  const groupCounts = (typeof getPrimaryGroupCounts === 'function') ? getPrimaryGroupCounts() : {};
+  const exportGroups = [
+    ['Gardiens', 'GB'],
+    ['Défenseurs', 'DEF'],
+    ['Latéraux', 'LAT'],
+    ['Milieux', 'MIL'],
+    ['Offensifs', 'OFF'],
+    ['Avants-centres', 'BU'],
+  ];
+  const exportGroupHtml = exportGroups.map(([group, code]) => {
+    const count = groupCounts[group] || 0;
+    const target = GROUP_TARGETS[group] || 0;
+    const under = target && count < target;
+    return `<span style="display:inline-flex; align-items:baseline; gap:3px; color:${under ? '#FFB4AD' : '#fff'}; white-space:nowrap;"><span style="font-size:8px; font-weight:800; color:rgba(255,255,255,0.48); letter-spacing:0.10em;">${code}</span><span style="font-size:11px; font-weight:800; font-variant-numeric:tabular-nums;">${count}</span></span>`;
+  }).join('');
 
   // DÉPARTS complets : tri par valeur décroissante puis prêts à la fin
   const departures = Object.keys(state.departing)
@@ -8714,7 +8852,7 @@ function buildExportHero(liveHero, W, H) {
     width: ${W}px; height: ${H}px;
     flex: 0 0 ${W}px;
     background: #06365f;
-    border-radius: 16px;
+    border-radius: 9px;
     overflow: hidden;
     color: #ffffff;
     box-shadow: 0 10px 28px rgba(11, 97, 172, 0.20);
@@ -8774,7 +8912,8 @@ function buildExportHero(liveHero, W, H) {
     </div>
   `;
 
-  // Helpers de rendu de rangée mouvement
+  // Helpers de rendu de rangée mouvement — export borné pour éviter les débordements
+  const MAX_EXPORT_ROWS_PER_SECTION = 9;
   const row = (code, name, valueHTML, valueColor) => `
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
       <div style="display: flex; align-items: baseline; gap: 6px; min-width: 0; flex: 1 1 auto;">
@@ -8784,54 +8923,62 @@ function buildExportHero(liveHero, W, H) {
       <span style="font-size: 11px; font-weight: 700; color: ${valueColor}; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;">${valueHTML}</span>
     </div>
   `;
+  const moreRow = (hiddenCount, label) => `
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 4px 0 2px; color: rgba(255,255,255,0.52); font-size: 10.5px; font-weight: 700; font-style: italic;">
+      <span>+${hiddenCount} ${label}${hiddenCount > 1 ? 's' : ''}</span>
+      <span style="font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38);">voir détail app</span>
+    </div>
+  `;
+  const boundedRows = (items, mapper, emptyText, hiddenLabel) => {
+    if (!items.length) return `<div style="color: rgba(255,255,255,0.45); font-size: 11px; font-style: italic; padding: 4px 0;">${emptyText}</div>`;
+    const visible = items.slice(0, MAX_EXPORT_ROWS_PER_SECTION);
+    const hidden = items.length - visible.length;
+    return visible.map(mapper).join('') + (hidden > 0 ? moreRow(hidden, hiddenLabel) : '');
+  };
 
   // 2. DÉPARTS
   const depZone = document.createElement('div');
-  depZone.style.cssText = `flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;`;
-  const depRowsHtml = departures.length
-    ? departures.map(d => {
-        const code = getPositionCode(d.p);
-        if (d.mode === 'sale') {
-          return row(code, d.p.name, `+${d.price.toFixed(1)} M€`, '#7DE2B8');
-        }
-        return row(code, d.p.name, 'Prêt', 'rgba(255,255,255,0.55)');
-      }).join('')
-    : `<div style="color: rgba(255,255,255,0.45); font-size: 11px; font-style: italic; padding: 4px 0;">Aucun départ</div>`;
+  depZone.style.cssText = `flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;`;
+  const depRowsHtml = boundedRows(departures, d => {
+    const code = getPositionCode(d.p);
+    if (d.mode === 'sale') {
+      return row(code, d.p.name, `+${d.price.toFixed(1)} M€`, '#7DE2B8');
+    }
+    return row(code, d.p.name, 'Prêt', 'rgba(255,255,255,0.55)');
+  }, 'Aucun départ', 'autre départ');
   depZone.innerHTML = `
-    <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+    <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex: 0 0 auto;">
       <span style="font-size: 14px; color: #7DE2B8; font-weight: 800; line-height: 1;">↑</span>
       <span style="font-size: 10px; font-weight: 800; color: #fff; letter-spacing: 0.18em; text-transform: uppercase;">Départs</span>
       <span style="font-size: 9.5px; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.05em;">${departures.length} au total</span>
     </div>
-    <div>${depRowsHtml}</div>
+    <div style="min-height: 0; overflow: hidden;">${depRowsHtml}</div>
   `;
 
   // 3. ARRIVÉES
   const arrZone = document.createElement('div');
-  arrZone.style.cssText = `flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;`;
-  const arrRowsHtml = arrivals.length
-    ? arrivals.map(d => {
-        const code = getPositionCode(d.a);
-        const label = ARRIVAL_LABEL[d.a.transferType] || '';
-        if (d.a.transferType === 'permanent' && d.cost > 0) {
-          return row(code, d.a.name, `−${d.cost.toFixed(1)} M€`, '#FF9F8F');
-        }
-        if (d.cost > 0) {
-          return row(code, d.a.name, `${label} −${d.cost.toFixed(1)}`, '#FFCFC2');
-        }
-        return row(code, d.a.name, label, 'rgba(255,255,255,0.62)');
-      }).join('')
-    : `<div style="color: rgba(255,255,255,0.45); font-size: 11px; font-style: italic; padding: 4px 0;">Aucune arrivée</div>`;
+  arrZone.style.cssText = `flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;`;
+  const arrRowsHtml = boundedRows(arrivals, d => {
+    const code = getPositionCode(d.a);
+    const label = ARRIVAL_LABEL[d.a.transferType] || '';
+    if (d.a.transferType === 'permanent' && d.cost > 0) {
+      return row(code, d.a.name, `−${d.cost.toFixed(1)} M€`, '#FF9F8F');
+    }
+    if (d.cost > 0) {
+      return row(code, d.a.name, `${label} −${d.cost.toFixed(1)}`, '#FFCFC2');
+    }
+    return row(code, d.a.name, label, 'rgba(255,255,255,0.62)');
+  }, 'Aucune arrivée', 'autre arrivée');
   arrZone.innerHTML = `
-    <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+    <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex: 0 0 auto;">
       <span style="font-size: 14px; color: #FF9F8F; font-weight: 800; line-height: 1;">↓</span>
       <span style="font-size: 10px; font-weight: 800; color: #fff; letter-spacing: 0.18em; text-transform: uppercase;">Arrivées</span>
       <span style="font-size: 9.5px; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.05em;">${arrivals.length} au total</span>
     </div>
-    <div>${arrRowsHtml}</div>
+    <div style="min-height: 0; overflow: hidden;">${arrRowsHtml}</div>
   `;
 
-  // 4. FOOTER : MS chargée + Titulaires
+  // 4. FOOTER : MS chargée + effectif
   const footerZone = document.createElement('div');
   footerZone.style.cssText = `
     flex: 0 0 auto;
@@ -8849,10 +8996,13 @@ function buildExportHero(liveHero, W, H) {
         <span style="color: ${msDeltaColor}; font-weight: 700; margin-left: 4px; font-variant-numeric: tabular-nums;">${msDeltaSign}${Math.abs(msDelta).toFixed(1)}</span>
       </div>
     </div>
-    <div style="text-align: right;">
-      <div style="font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.55); letter-spacing: 0.18em; text-transform: uppercase;">Onze</div>
-      <div style="margin-top: 3px; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums;">
-        ${titulaires}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">tit.</span> · ${doublures}/11 <span style="color: rgba(255,255,255,0.55); font-weight: 600;">rempl.</span>
+    <div style="text-align: right; min-width: 0;">
+      <div style="font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.55); letter-spacing: 0.18em; text-transform: uppercase;">Effectif</div>
+      <div style="margin-top: 3px; color: #fff; font-weight: 800; font-variant-numeric: tabular-nums;">
+        ${finalEffectif || '—'}<span style="color: rgba(255,255,255,0.55); font-weight: 600;">/22 joueurs</span>
+      </div>
+      <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 7px; flex-wrap: wrap; max-width: 170px;">
+        ${exportGroupHtml}
       </div>
     </div>
   `;
@@ -8922,7 +9072,7 @@ function buildCompoCard() {
     background-color: #E8F0E2;
     background-image: none;
     border: 1px solid #C8D4C0;
-    border-radius: 12px;
+    border-radius: 7px;
     overflow: visible;
   `;
   // Chips + vides retirés du clone (export propre)
@@ -8956,7 +9106,7 @@ function buildCompoCard() {
     const b = document.createElement('div');
     b.style.cssText = `
       position: relative; flex: 1 1 0; height: ${PITCH_H}px;
-      border-radius: 12px; overflow: hidden;
+      border-radius: 7px; overflow: hidden;
       border: 1px solid rgba(11,97,172,0.22);
       background-image:
         linear-gradient(to bottom, rgba(6,54,95,0.12), rgba(6,54,95,0.62)),
