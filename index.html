@@ -1588,6 +1588,30 @@
     width: 100%;
     max-width: 100%;
   }
+  .section-departures table {
+    table-layout: fixed;
+  }
+  .section-departures th:nth-child(1),
+  .section-departures td:nth-child(1) { width: 58%; }
+  .section-departures th:nth-child(2),
+  .section-departures td:nth-child(2),
+  .section-departures th:nth-child(3),
+  .section-departures td:nth-child(3),
+  .section-departures th:nth-child(4),
+  .section-departures td:nth-child(4) { width: 14%; }
+  .section-departures thead th.numeric {
+    letter-spacing: 0.10em;
+    line-height: 1.25;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .section-departures tfoot td {
+    white-space: nowrap;
+  }
+  .section-departures tfoot td.numeric {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
   .section-departures td:first-child,
   .section-arrivals td:first-child {
     white-space: nowrap;
@@ -1721,6 +1745,27 @@
   .loan-out-badge.has-oa-mand {
     background: rgba(0, 61, 121, 0.18);
     color: var(--om-blue-dark);
+  }
+  .official-departure-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-left: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    background: rgba(108, 117, 125, 0.14);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .official-departure-check {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+  tbody tr.official-departure-row td:first-child {
+    border-left: 2px solid var(--muted);
   }
 
   /* Arrivées : highlight bleu OM (style "ligne soi" om.fr) */
@@ -4715,7 +4760,7 @@
       color: var(--muted);
     }
     .group-block table tbody td:nth-child(11)::before {
-      content: 'Vente';
+      content: 'Prix';
       font-weight: 600;
       color: var(--muted);
       font-size: 11px;
@@ -4900,7 +4945,7 @@
       white-space: nowrap;
     }
     #departures-body tr td:nth-child(2)::before {
-      content: 'Vente ';  
+      content: 'Prix ';  
       font-weight: 600;
       color: var(--muted);
       margin-right: 2px;
@@ -5398,9 +5443,11 @@
 
     <div id="modal-loan-fields" style="display:none;">
       <div class="modal-hint" style="margin-top: 4px;">
-        Salaire retiré des comptes OM pour 26/27. Pas d'indemnité, pas de plus-value.
+        Salaire retiré des comptes OM pour 26/27. Indemnité de prêt éventuelle comptée en cash, sans plus-value.
         Le joueur reste un actif OM (VNC + amortissement conservés).
       </div>
+      <label for="modal-loan-fee">Indemnité de prêt (M€)</label>
+      <input type="number" id="modal-loan-fee" step="0.5" min="0" placeholder="0">
       <label class="modal-loan-oa-toggle">
         <input type="checkbox" id="modal-loan-oa-check">
         <span>Avec option d'achat négociée</span>
@@ -5643,9 +5690,9 @@
         <thead>
           <tr>
             <th>Joueur</th>
-            <th class="numeric">Vente (M€)</th>
-            <th class="numeric">Cash OM (M€)</th>
-            <th class="numeric">Plus-value (M€)</th>
+            <th class="numeric">Prix/ind.<br>(M€)</th>
+            <th class="numeric">Cash OM<br>(M€)</th>
+            <th class="numeric">PV<br>(M€)</th>
           </tr>
         </thead>
         <tbody id="departures-body">
@@ -5767,7 +5814,7 @@
             Limite masse salariale
             <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="MS chargée = salaires bruts × 1,40 (multiplicateur charges patronales et sociales, standard Ligue 1). Coefficient fixé par défaut, non modifiable.">ⓘ</span>
           </span>
-          <span class="syn-input-wrap"><input type="number" id="target-ms" value="95" step="1" min="0"><em>M€</em></span>
+          <span class="syn-input-wrap"><input type="number" id="target-ms" value="94" step="1" min="0"><em>M€</em></span>
         </label>
         <label class="syn-input-row">
           <span>Budget estimé</span>
@@ -5839,7 +5886,7 @@
         </summary>
         <div class="syn-details-content">
           <div class="syn-row">
-            <span>Cessions (net OM)</span><span id="syn-cessions">0.0 M€</span>
+            <span>Cessions / prêts (net OM)</span><span id="syn-cessions">0.0 M€</span>
           </div>
           <div class="syn-row">
             <span>Acquisitions cash</span><span id="syn-acq">0.0 M€</span>
@@ -5890,36 +5937,36 @@
 // ============================================================
 const SQUAD = [
   // GARDIENS
-  { id: 'rulli', name: 'Gerónimo Rulli', position: 'GK', group: 'Gardiens', age: 33, contractEnd: '30/06/2027', tmValue: 6.0, monthlySalary: 228, transferCost: 3.0, annualAmort: 1.03, vnc: 1.03 },
+  { id: 'rulli', name: 'Gerónimo Rulli', position: 'GK', group: 'Gardiens', age: 34, contractEnd: '30/06/2027', tmValue: 6.0, monthlySalary: 228, transferCost: 3.0, annualAmort: 1.03, vnc: 1.03 },
   { id: 'delange', name: 'Jeffrey de Lange', position: 'GK', group: 'Gardiens', age: 28, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 75, transferCost: 2.0, annualAmort: 0.69, vnc: 0.69 },
   // DÉFENSE CENTRALE
   { id: 'aguerd', name: 'Nayef Aguerd', position: 'DC', group: 'Défenseurs', age: 30, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 410, transferCost: 21.0, annualAmort: 4.34, vnc: 17.38 },
   { id: 'balerdi', name: 'Leonardo Balerdi', position: 'DC', group: 'Défenseurs', age: 27, contractEnd: '30/06/2028', tmValue: 18.0, monthlySalary: 363, transferCost: 8.0, annualAmort: 1.14, vnc: 2.29 },
-  { id: 'medina', name: 'Facundo Medina', position: 'DC', group: 'Défenseurs', age: 26, contractEnd: '30/06/2030', tmValue: 18.0, monthlySalary: 348, transferCost: 20.0, annualAmort: 5.00, vnc: 20.00, oaArrival: true },
+  { id: 'medina', name: 'Facundo Medina', position: 'DC', group: 'Défenseurs', age: 27, contractEnd: '30/06/2030', tmValue: 18.0, monthlySalary: 348, transferCost: 20.0, annualAmort: 5.00, vnc: 20.00, oaArrival: true },
   { id: 'eganriley', name: 'CJ Egan-Riley', position: 'DC', group: 'Défenseurs', age: 23, contractEnd: '30/06/2029', tmValue: 9.0, monthlySalary: 152, transferCost: 0, annualAmort: 0, vnc: 0 },
-  { id: 'meite', name: 'Bamo Meïté', position: 'DC', group: 'Défenseurs', age: 24, contractEnd: '30/06/2028', tmValue: 7.0, monthlySalary: 25, transferCost: 11.5, annualAmort: 2.88, vnc: 5.75, loanedOutOA: { club: 'Lorient', price: 7.0 } },
-  { id: 'cornelius', name: 'Derek Cornelius', position: 'DC', group: 'Défenseurs', age: 28, contractEnd: '30/06/2028', tmValue: 2.5, monthlySalary: 60, transferCost: 4.0, annualAmort: 1.02, vnc: 2.04, loanedOutOA: { club: 'Rangers FC', price: 4.0 } },
+  { id: 'meite', name: 'Bamo Meïté', position: 'DC', group: 'Défenseurs', age: 24, contractEnd: '30/06/2028', tmValue: 7.0, monthlySalary: 25, transferCost: 11.5, annualAmort: 2.88, vnc: 5.75 },
+  { id: 'cornelius', name: 'Derek Cornelius', position: 'DC', group: 'Défenseurs', age: 28, contractEnd: '30/06/2028', tmValue: 2.5, monthlySalary: 60, transferCost: 4.0, annualAmort: 1.02, vnc: 2.04 },
   // LATÉRAUX
   { id: 'emerson', name: 'Emerson', position: 'LB', group: 'Latéraux', age: 31, contractEnd: '30/06/2027', tmValue: 9.0, monthlySalary: 303, transferCost: 0.7, annualAmort: 0.38, vnc: 0.38 },
-  { id: 'garcia', name: 'Ulisses Garcia', position: 'LB', group: 'Latéraux', age: 30, contractEnd: '30/06/2028', tmValue: 3.0, monthlySalary: 167, transferCost: 3.0, annualAmort: 0.68, vnc: 1.36, loanedOutOA: { club: 'Sassuolo', price: 3.0 } },
+  { id: 'garcia', name: 'Ulisses Garcia', position: 'LB', group: 'Latéraux', age: 30, contractEnd: '30/06/2028', tmValue: 3.0, monthlySalary: 167, transferCost: 3.0, annualAmort: 0.68, vnc: 1.36 },
   // MILIEUX
   { id: 'hojbjerg', name: 'Pierre-Emile Højbjerg', position: 'DM', group: 'Milieux', age: 30, contractEnd: '30/06/2028', tmValue: 15.0, monthlySalary: 455, transferCost: 13.5, annualAmort: 4.50, vnc: 9.00 },
   { id: 'kondogbia', name: 'Geoffrey Kondogbia', position: 'DM', group: 'Milieux', age: 33, contractEnd: '30/06/2027', tmValue: 3.0, monthlySalary: 455, transferCost: 8.0, annualAmort: 2.00, vnc: 2.00 },
-  { id: 'timber', name: 'Quinten Timber', position: 'CM', group: 'Milieux', age: 24, contractEnd: '30/06/2030', tmValue: 25.0, monthlySalary: 380, transferCost: 4.5, annualAmort: 1.02, vnc: 4.08 },
-  { id: 'nnadi', name: 'Tochukwu Nnadi', position: 'DM', group: 'Milieux', age: 22, contractEnd: '30/06/2030', tmValue: 4.5, monthlySalary: 45, transferCost: 6.0, annualAmort: 1.36, vnc: 5.43 },
+  { id: 'timber', name: 'Quinten Timber', position: 'CM', group: 'Milieux', age: 25, contractEnd: '30/06/2030', tmValue: 25.0, monthlySalary: 380, transferCost: 4.5, annualAmort: 1.02, vnc: 4.08 },
+  { id: 'nnadi', name: 'Tochukwu Nnadi', position: 'DM', group: 'Milieux', age: 23, contractEnd: '30/06/2030', tmValue: 4.5, monthlySalary: 45, transferCost: 6.0, annualAmort: 1.36, vnc: 5.43 },
   // OFFENSIF
   { id: 'weah', name: 'Timothy Weah', position: 'RM', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 20.0, monthlySalary: 380, transferCost: 15.4, annualAmort: 3.85, vnc: 15.40, oaArrival: true },
   { id: 'greenwood', name: 'Mason Greenwood', position: 'RW', group: 'Offensifs', age: 24, contractEnd: '30/06/2029', tmValue: 55.0, monthlySalary: 455, transferCost: 25.8, annualAmort: 5.25, vnc: 15.74, resaleRights: 0.60 },
-  { id: 'paixao', name: 'Igor Paixão', position: 'LW', group: 'Offensifs', age: 25, contractEnd: '30/06/2030', tmValue: 35.0, monthlySalary: 425, transferCost: 30.0, annualAmort: 6.10, vnc: 24.41 },
+  { id: 'paixao', name: 'Igor Paixão', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 35.0, monthlySalary: 425, transferCost: 30.0, annualAmort: 6.10, vnc: 24.41 },
   { id: 'traore', name: 'Hamed Traoré', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 333, transferCost: 7.5, annualAmort: 1.88, vnc: 7.50, oaArrival: true, resaleRights: 0.50 },
-  { id: 'gomes', name: 'Angel Gomes', position: 'AM', group: 'Offensifs', age: 25, contractEnd: '30/06/2028', tmValue: 10.0, monthlySalary: 333, transferCost: 0, annualAmort: 0, vnc: 0, loanedOutOA: { club: 'Wolves', price: 8.0 } },
-  { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 28, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 126, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25, loanedOutOA: { club: 'Istanbul Başakşehir', price: 5.0 } },
+  { id: 'gomes', name: 'Angel Gomes', position: 'AM', group: 'Offensifs', age: 25, contractEnd: '30/06/2028', tmValue: 10.0, monthlySalary: 333, transferCost: 0, annualAmort: 0, vnc: 0 },
+  { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 29, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 258, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25 },
   { id: 'abdelli', name: 'Himad Abdelli', position: 'AM', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 5.0, monthlySalary: 75, transferCost: 2.75, annualAmort: 0.62, vnc: 2.49 },
   // ATTAQUE
   { id: 'gouiri', name: 'Amine Gouiri', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2029', tmValue: 28.0, monthlySalary: 380, transferCost: 19.0, annualAmort: 4.30, vnc: 12.91 },
-  { id: 'aubameyang', name: 'Pierre-Emerick Aubameyang', position: 'CF', group: 'Avants-centres', age: 36, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 380, transferCost: 0, annualAmort: 0, vnc: 0 },
-  { id: 'maupay', name: 'Neal Maupay', position: 'CF', group: 'Avants-centres', age: 29, contractEnd: '30/06/2028', tmValue: 4.0, monthlySalary: 257, transferCost: 6.0, annualAmort: 1.53, vnc: 3.06, loanedOutOA: { club: 'Séville', price: 5.0 } },
-  { id: 'moumbagna', name: 'Faris Moumbagna', position: 'CF', group: 'Avants-centres', age: 25, contractEnd: '30/06/2028', tmValue: 3.5, monthlySalary: 92, transferCost: 8.0, annualAmort: 1.81, vnc: 3.62, loanedOutOA: { club: 'Cremonese', price: 3.0 } },
+  { id: 'aubameyang', name: 'Pierre-Emerick Aubameyang', position: 'CF', group: 'Avants-centres', age: 37, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 380, transferCost: 0, annualAmort: 0, vnc: 0 },
+  { id: 'maupay', name: 'Neal Maupay', position: 'CF', group: 'Avants-centres', age: 29, contractEnd: '30/06/2028', tmValue: 4.0, monthlySalary: 257, transferCost: 6.0, annualAmort: 1.53, vnc: 3.06 },
+  { id: 'moumbagna', name: 'Faris Moumbagna', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2028', tmValue: 3.5, monthlySalary: 92, transferCost: 8.0, annualAmort: 1.81, vnc: 3.62 },
 ];
 
 // ============================================================
@@ -6017,7 +6064,7 @@ const GROUP_TARGETS = {
   'Gardiens': 2,
   'Défenseurs': 4,
   'Latéraux': 4,
-  'Milieux': 5,
+  'Milieux': 4,
   'Offensifs': 5,
   'Avants-centres': 2,
 };
@@ -6027,6 +6074,9 @@ function depPrice(dep) {
   if (dep == null) return 0;
   if (typeof dep === 'number') return dep;
   return dep.price || 0;
+}
+function loanOutFee(dep) {
+  return isLoanOut(dep) ? depPrice(dep) : 0;
 }
 function depMode(dep) {
   if (dep == null) return null;
@@ -6065,8 +6115,28 @@ function getSecondaryGroups(player) {
 // ============================================================
 // STATE
 // ============================================================
+const OFFICIAL_DEPARTURES = Object.freeze({
+  greenwood: { mode: 'sale', price: 40 },
+  traore: { mode: 'loan-out', price: 2, loanOA: { price: 8, mandatory: false } },
+});
+function cloneDeparture(dep) {
+  return dep ? JSON.parse(JSON.stringify(dep)) : undefined;
+}
+function isOfficialDeparture(id) {
+  return Object.prototype.hasOwnProperty.call(OFFICIAL_DEPARTURES, id);
+}
+function getDeparture(id) {
+  return isOfficialDeparture(id) ? cloneDeparture(OFFICIAL_DEPARTURES[id]) : state.departing[id];
+}
+function getDepartureIds() {
+  return Array.from(new Set([...Object.keys(OFFICIAL_DEPARTURES), ...Object.keys(state.departing)]));
+}
+function isDepartingId(id) {
+  return getDeparture(id) !== undefined;
+}
+
 const state = {
-  departing: {},        // { playerId: {mode:'sale'|'loan-out', price} }
+  departing: {},        // départs simulés uniquement ; les officiels vivent dans OFFICIAL_DEPARTURES
   arrivals: [],         // [{ id, name, position, monthlySalary, transferCost, durationYears }]
   groupOverrides: {},   // { playerId: 'Milieux' } — override du groupe d'origine (POSITION_TO_GROUP)
   secondaryGroups: {},  // { playerId: ['Latéraux', ...] } — postes secondaires (suppléances)
@@ -6196,7 +6266,7 @@ function squadHeaderHtml() {
         ${th('annualBrut', 'Annuel brut (M€)', 'numeric')}
         ${th('vnc', 'VNC (M€)', 'numeric')}
         ${th('annualAmort', 'Amort./an (M€)', 'numeric')}
-        <th class="numeric">Vente (M€)</th>
+        <th class="numeric">Prix/ind. (M€)</th>
         <th class="numeric">Plus-value (M€)</th>
       </tr>
     </thead>
@@ -6227,7 +6297,7 @@ function sortPlayers(arr, sortKey, sortDir) {
   });
 }
 
-const STORAGE_KEY = 'om-simulator-state-v1';
+const STORAGE_KEY = 'om-simulator-state-v3';
 
 // Load saved state
 function loadState() {
@@ -6241,6 +6311,8 @@ function loadState() {
         Object.keys(state.departing).forEach(id => {
           const v = state.departing[id];
           if (typeof v === 'number') state.departing[id] = { mode: 'sale', price: v };
+          // Les départs officiels ne sont pas du scénario utilisateur : ils ne doivent pas être restaurés comme simulés.
+          if (isOfficialDeparture(id)) delete state.departing[id];
         });
       }
       if (parsed.arrivals) state.arrivals = parsed.arrivals.map(normalizeArrival);
@@ -6304,7 +6376,7 @@ function saveState() {
 // SETTINGS
 // ============================================================
 function getCoef() { return 1.40; }
-function getTarget() { return parseFloat(document.getElementById('target-ms').value) || 95; }
+function getTarget() { return parseFloat(document.getElementById('target-ms').value) || 94; }
 function getProduits() { return parseFloat(document.getElementById('produits').value) || 200; }
 
 // Hypothèses Compte de Résultat (référence : analyse OM 26/27 révisée)
@@ -6346,8 +6418,9 @@ function omCashFromCession(player, cessionPrice) {
 // le caller puisse les agréger (utile en vue groupée seulement).
 // ============================================================
 function appendPlayerRow(tbody, p, coef) {
-  const dep = state.departing[p.id];
+  const dep = getDeparture(p.id);
   const isDeparting = dep !== undefined;
+  const isOfficial = isOfficialDeparture(p.id);
   const loanOut = isLoanOut(dep);
   const cession = isDeparting ? depPrice(dep) : 0;
   const annualBrut = p.monthlySalary * 12 / 1000;
@@ -6361,7 +6434,7 @@ function appendPlayerRow(tbody, p, coef) {
   if (loanOut) {
     if (loanOa) {
       const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
-      const lbl = loanOa.mandatory ? `Prêt + OA obl. ${loanOa.price.toFixed(1)} M€` : `Prêt + OA opt. ${loanOa.price.toFixed(1)} M€`;
+      const lbl = loanOa.mandatory ? `POA obl. ${loanOa.price.toFixed(0)}M€` : `POA ${loanOa.price.toFixed(0)}M€`;
       const tip = loanOa.mandatory
         ? `Prêt sortant avec OA obligatoire de ${loanOa.price.toFixed(1)} M€ — engagement futur entrant 27/28`
         : `Prêt sortant avec OA optionnelle de ${loanOa.price.toFixed(1)} M€ — info indicative`;
@@ -6384,20 +6457,27 @@ function appendPlayerRow(tbody, p, coef) {
   const freeDepartureBadge = (isDeparting && !loanOut && cession === 0)
     ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
     : '';
+  const officialBadge = isOfficial
+    ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Acté</span>`
+    : '';
 
   const tr = document.createElement('tr');
   tr.dataset.playerId = p.id;
   if (loanOut) tr.classList.add('loan-out-row');
   else if (isDeparting) tr.classList.add('departing');
+  if (isOfficial) tr.classList.add('official-departure-row');
   if (isDeparting && !loanOut && cession === 0) tr.classList.add('free-departure');
 
   const mobileMeta = `<div class="player-mobile-meta">${p.age} ans<span class="sep">·</span>FDC ${p.contractEnd.slice(-4)}<span class="sep">·</span>${p.monthlySalary} k€/mois</div>`;
+  const checkbox = isOfficial
+    ? `<input type="checkbox" checked disabled class="official-departure-check" title="Départ officiel — non modifiable">`
+    : `<input type="checkbox" data-player="${p.id}" ${isDeparting ? 'checked' : ''}>`;
   tr.innerHTML = `
     <td class="checkbox-cell">
-      <input type="checkbox" data-player="${p.id}" ${isDeparting ? 'checked' : ''}>
+      ${checkbox}
     </td>
     <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
-    <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}</span>${freeDepartureBadge}${moveBtn}${movedBadge}${oaBadge}${loanBadge}${mobileMeta}</td>
+    <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}</span>${freeDepartureBadge}${moveBtn}${movedBadge}${oaBadge}${loanBadge}${mobileMeta}</td>
     <td>${p.age}</td>
     <td>${p.contractEnd.slice(-4)}</td>
     <td class="numeric">${p.tmValue.toFixed(1)}</td>
@@ -6407,7 +6487,9 @@ function appendPlayerRow(tbody, p, coef) {
     <td class="numeric">${p.annualAmort.toFixed(2)}</td>
     <td class="numeric cession-cell">
       ${loanOut
-        ? '<span style="color: var(--muted);">—</span>'
+        ? (cession > 0
+            ? `<span class="cession-static" title="Indemnité de prêt encaissée en 26/27 — pas de plus-value">${cession.toFixed(cession % 1 ? 1 : 0)} M€</span>`
+            : '<span style="color: var(--muted);">—</span>')
         : (isDeparting
             ? `<span class="cession-static" title="Prix verrouillé — décoche puis revends le joueur pour changer le montant">${cession.toFixed(cession % 1 ? 1 : 0)} M€</span>`
             : `<span style="color: var(--muted);">0</span>`)}
@@ -6428,9 +6510,11 @@ function appendPlayerRow(tbody, p, coef) {
     contrib.vnc = p.vnc;
     contrib.amort = p.annualAmort;
   } else if (loanOut) {
-    // Prêt sortant : actif toujours à l'OM (VNC + amort), pas de salaire
+    // Prêt sortant : actif toujours à l'OM (VNC + amort), pas de salaire.
+    // L'indemnité de prêt éventuelle compte en cash 26/27, sans plus-value.
     contrib.vnc = p.vnc;
     contrib.amort = p.annualAmort;
+    contrib.cession = cession;
   } else {
     // Vente : compte pour cession/plus-value
     contrib.cession = cession;
@@ -6573,7 +6657,7 @@ function renderSquad() {
       !isGoalkeeper(p) &&
       getEffectiveGroup(p) !== groupName &&
       getSecondaryGroups(p).includes(groupName) &&
-      state.departing[p.id] === undefined
+      !isDepartingId(p.id)
     );
     const supplementArrivals = state.arrivals.filter(a =>
       !isGoalkeeper(a) &&
@@ -6585,8 +6669,8 @@ function renderSquad() {
     // Tri intra-groupe (les arrivées et suppléances restent à part).
     // Les joueurs sortants passent en fin de section pour lire d'abord l'effectif restant.
     groupPlayers = sortPlayers(groupPlayers, state.sortKey, state.sortDir);
-    const activeGroupPlayers = groupPlayers.filter(p => state.departing[p.id] === undefined);
-    const departingGroupPlayers = groupPlayers.filter(p => state.departing[p.id] !== undefined);
+    const activeGroupPlayers = groupPlayers.filter(p => !isDepartingId(p.id));
+    const departingGroupPlayers = groupPlayers.filter(p => isDepartingId(p.id));
     groupPlayers = [...activeGroupPlayers, ...departingGroupPlayers];
 
     const block = document.createElement('div');
@@ -6596,7 +6680,7 @@ function renderSquad() {
     title.className = 'group-title';
     // Effectif sportif réel pour ce groupe = staying (pas de départ) + arrivées + suppléances
     // Les prêts sortants ne comptent pas car le joueur n'est plus dans l'effectif
-    const stayingInGroup = groupPlayers.filter(p => state.departing[p.id] === undefined).length;
+    const stayingInGroup = groupPlayers.filter(p => !isDepartingId(p.id)).length;
     const effectiveCount = stayingInGroup + groupArrivals.length + supplementPlayers.length + supplementArrivals.length;
     const min = MIN_PER_GROUP[groupName];
     const target = GROUP_TARGETS[groupName] || min || effectiveCount;
@@ -6719,7 +6803,7 @@ function renderSquad() {
 // ============================================================
 function renderDepartures() {
   const tbody = document.getElementById('departures-body');
-  const departingIds = Object.keys(state.departing);
+  const departingIds = getDepartureIds();
   const depCount = document.getElementById('dep-count');
   if (depCount) depCount.textContent = departingIds.length ? `(${departingIds.length})` : '';
 
@@ -6751,17 +6835,16 @@ function renderDepartures() {
     });
 
   departingPlayers.forEach(({ id, player: p }) => {
-    const dep = state.departing[id];
+    const dep = getDeparture(id);
+    const isOfficial = isOfficialDeparture(id);
     const loanOut = isLoanOut(dep);
     const cession = depPrice(dep);
     const rights = getRights(p);
-    const omCash = loanOut ? 0 : omCashFromCession(p, cession);
+    const omCash = loanOut ? loanOutFee(dep) : omCashFromCession(p, cession);
     const pv = loanOut ? 0 : (omCash - p.vnc);
-    if (!loanOut) {
-      totCession += cession;
-      totOmCash += omCash;
-      totPV += pv;
-    }
+    totCession += loanOut ? loanOutFee(dep) : cession;
+    totOmCash += omCash;
+    if (!loanOut) totPV += pv;
 
     const rightsBadge = (!loanOut && rights < 1) ? ` <span class="rights-badge">${Math.round(rights*100)}%</span>` : '';
     const loanOa = getLoanOA(dep);
@@ -6769,7 +6852,7 @@ function renderDepartures() {
     if (loanOut) {
       if (loanOa) {
         const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
-        const lbl = loanOa.mandatory ? `Prêt + OA obl. ${loanOa.price.toFixed(1)} M€` : `Prêt + OA opt. ${loanOa.price.toFixed(1)} M€`;
+        const lbl = loanOa.mandatory ? `POA obl. ${loanOa.price.toFixed(0)}M€` : `POA ${loanOa.price.toFixed(0)}M€`;
         loanBadge = ` <span class="loan-out-badge ${cls}">${lbl}</span>`;
       } else {
         loanBadge = ` <span class="loan-out-badge">Prêt sortant</span>`;
@@ -6780,22 +6863,24 @@ function renderDepartures() {
     const freeDepartureBadge = (!loanOut && cession === 0)
       ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
       : '';
+    const officialBadge = isOfficial ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Acté</span>` : '';
 
     const tr = document.createElement('tr');
     if (loanOut) tr.classList.add('loan-out-row');
+    if (isOfficial) tr.classList.add('official-departure-row');
     if (!loanOut && cession === 0) tr.classList.add('free-departure');
     tr.innerHTML = `
-      <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
-      <td class="numeric">${loanOut ? '—' : cession.toFixed(2)}</td>
-      <td class="numeric">${loanOut ? '—' : omCash.toFixed(2)}</td>
+      <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
+      <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}</td>
+      <td class="numeric">${loanOut ? (omCash > 0 ? omCash.toFixed(2) : '—') : omCash.toFixed(2)}</td>
       <td class="numeric ${(!loanOut && pv > 0) ? 'plus-value-pos' : ((!loanOut && pv < 0) ? 'plus-value-neg' : '')}">${loanOut ? '—' : fmtM(pv, true)}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  document.getElementById('dep-cession-total').textContent = totCession.toFixed(2) + ' M€';
-  document.getElementById('dep-omcash-total').textContent = totOmCash.toFixed(2) + ' M€';
-  document.getElementById('dep-plusvalue-total').textContent = fmtM(totPV, true);
+  document.getElementById('dep-cession-total').textContent = totCession.toFixed(1) + ' M€';
+  document.getElementById('dep-omcash-total').textContent = totOmCash.toFixed(1) + ' M€';
+  document.getElementById('dep-plusvalue-total').textContent = (totPV > 0 ? '+' : '') + totPV.toFixed(1) + ' M€';
 
   // Salaire mensuel moyen des sortants — narratif "qualité du ménage"
   const salarySum = departingIds.reduce((s, id) => {
@@ -7062,7 +7147,7 @@ function updateArrivalSummary() {
 }
 
 function getSalaryPyramidCounts() {
-  const activePlayers = SQUAD.filter(p => state.departing[p.id] === undefined);
+  const activePlayers = SQUAD.filter(p => !isDepartingId(p.id));
   const scenarioPlayers = activePlayers.concat(state.arrivals || []);
   return scenarioPlayers.reduce((counts, p) => {
     const salary = p.monthlySalary || 0;
@@ -7464,9 +7549,9 @@ function computeAggregates() {
   const coef = getCoef();
 
   // Salary removed for ANY departure (sale or loan-out)
-  const stayingForPayroll = SQUAD.filter(p => state.departing[p.id] === undefined);
+  const stayingForPayroll = SQUAD.filter(p => !isDepartingId(p.id));
   // VNC / amortissement : seul une VENTE retire l'actif. Un prêt sortant reste à l'OM.
-  const stayingForAssets = SQUAD.filter(p => !isSale(state.departing[p.id]));
+  const stayingForAssets = SQUAD.filter(p => !isSale(getDeparture(p.id)));
 
   const stayingMonthly = stayingForPayroll.reduce((s, p) => s + p.monthlySalary, 0);
   const stayingBrut = stayingMonthly * 12 / 1000;
@@ -7479,19 +7564,22 @@ function computeAggregates() {
   const allCharged = allBrut * coef;
   const allAmort = SQUAD.reduce((s, p) => s + p.annualAmort, 0);
 
-  // Departures — seuls les ventes génèrent cash/plus-value/économie d'amort
-  const departingIds = Object.keys(state.departing);
-  const saleIds = departingIds.filter(id => isSale(state.departing[id]));
-  const loanOutIds = departingIds.filter(id => isLoanOut(state.departing[id]));
+  // Departures — les ventes génèrent cash + plus-value ; les prêts sortants peuvent générer une indemnité de prêt (cash, sans plus-value)
+  const departingIds = getDepartureIds();
+  const saleIds = departingIds.filter(id => isSale(getDeparture(id)));
+  const loanOutIds = departingIds.filter(id => isLoanOut(getDeparture(id)));
 
-  const totalCession = saleIds.reduce((s, id) => s + depPrice(state.departing[id]), 0);
-  const totalOmCash = saleIds.reduce((s, id) => {
+  const totalLoanFees = loanOutIds.reduce((s, id) => s + loanOutFee(getDeparture(id)), 0);
+  const totalSaleCession = saleIds.reduce((s, id) => s + depPrice(getDeparture(id)), 0);
+  const totalCession = totalSaleCession + totalLoanFees;
+  const totalSaleOmCash = saleIds.reduce((s, id) => {
     const p = SQUAD.find(x => x.id === id);
-    return s + omCashFromCession(p, depPrice(state.departing[id]));
+    return s + omCashFromCession(p, depPrice(getDeparture(id)));
   }, 0);
+  const totalOmCash = totalSaleOmCash + totalLoanFees;
   const totalPlusValue = saleIds.reduce((s, id) => {
     const p = SQUAD.find(x => x.id === id);
-    return s + (omCashFromCession(p, depPrice(state.departing[id])) - (p ? p.vnc : 0));
+    return s + (omCashFromCession(p, depPrice(getDeparture(id))) - (p ? p.vnc : 0));
   }, 0);
   const departingAmortSaved = saleIds.reduce((s, id) => {
     const p = SQUAD.find(x => x.id === id);
@@ -7505,7 +7593,7 @@ function computeAggregates() {
   }, 0);
 
   // Engagements futurs entrants — OA obligatoires négociées sur prêts sortants (cash IN 27/28)
-  const loanOutFutureIn = loanOutIds.reduce((s, id) => s + loanOutFutureIncome(state.departing[id]), 0);
+  const loanOutFutureIn = loanOutIds.reduce((s, id) => s + loanOutFutureIncome(getDeparture(id)), 0);
 
   // Arrivals (manuelles) — cash et amort dépendent du type (achat ferme vs prêt)
   const arrMonthly = state.arrivals.reduce((s, a) => s + a.monthlySalary, 0);
@@ -7742,7 +7830,7 @@ function getAssignedPlayerIds() {
 function getPrimaryGroupCounts() {
   const counts = Object.fromEntries(GROUPS_ORDER.map(g => [g, 0]));
   SQUAD
-    .filter(p => state.departing[p.id] === undefined)
+    .filter(p => !isDepartingId(p.id))
     .forEach(p => {
       const group = getEffectiveGroup(p);
       if (group) counts[group] = (counts[group] || 0) + 1;
@@ -7907,7 +7995,7 @@ function getCandidatesForSlot(slotDef, options = {}) {
   const allowedAppointGroups = isAppoint ? getAppointAllowedGroups(slotDef) : null;
   const candidates = [];
   SQUAD.forEach(p => {
-    if (state.departing[p.id] !== undefined) return; // joueur qui part (vente ou prêt) → hors-effectif
+    if (isDepartingId(p.id)) return; // joueur qui part (vente ou prêt) → hors-effectif
     const primary = getEffectiveGroup(p);
     const secondaries = getSecondaryGroups(p) || [];
     const relation = primary === slotDef.group ? 'primary' : (secondaries.includes(slotDef.group) ? 'secondary' : 'other');
@@ -8138,7 +8226,7 @@ function updateSynthesis(a, target, produits) {
   if (hypSummary) hypSummary.textContent = `${target.toFixed(0)} M€ cible · ${produits.toFixed(0)} M€ budget`;
 
   // 1ter. Vue effectif — lecture DS rapide
-  const presentSquad = SQUAD.filter(p => state.departing[p.id] === undefined);
+  const presentSquad = SQUAD.filter(p => !isDepartingId(p.id));
   const youthArrivals = state.arrivals.filter(a => a.transferType === 'youth');
   const cdfCount = youthArrivals.length;
   const knownAges = [
@@ -8396,9 +8484,11 @@ function openCessionModal(playerId) {
   }
 
   // Reset des champs OA négociée pour prêt sortant
+  const loanFee = document.getElementById('modal-loan-fee');
   const loanOaCheck = document.getElementById('modal-loan-oa-check');
   const loanOaFields = document.getElementById('modal-loan-oa-fields');
   const loanOaPrice = document.getElementById('modal-loan-oa-price');
+  loanFee.value = '';
   loanOaCheck.checked = false;
   loanOaFields.style.display = 'none';
   loanOaPrice.value = '';
@@ -8420,7 +8510,8 @@ function confirmCessionModal() {
   if (!currentModalPlayerId) return closeCessionModal();
   const player = SQUAD.find(x => x.id === currentModalPlayerId);
   if (currentModalMode === 'loan-out') {
-    const dep = { mode: 'loan-out', price: 0 };
+    const loanFee = parseFloat(document.getElementById('modal-loan-fee').value) || 0;
+    const dep = { mode: 'loan-out', price: loanFee };
     const oaCheck = document.getElementById('modal-loan-oa-check');
     if (oaCheck && oaCheck.checked) {
       const oaPrice = parseFloat(document.getElementById('modal-loan-oa-price').value) || 0;
@@ -8463,6 +8554,10 @@ document.getElementById('modal-cancel').addEventListener('click', () => {
 });
 document.getElementById('modal-confirm').addEventListener('click', confirmCessionModal);
 document.getElementById('modal-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmCessionModal();
+  if (e.key === 'Escape') { closeCessionModal(); renderAll(); }
+});
+document.getElementById('modal-loan-fee').addEventListener('keydown', e => {
   if (e.key === 'Enter') confirmCessionModal();
   if (e.key === 'Escape') { closeCessionModal(); renderAll(); }
 });
@@ -8554,7 +8649,7 @@ function resetPositionsState(confirmFirst = true) {
 
 function resetMercatoState(confirmFirst = true) {
   if (!hasMercatoState()) return;
-  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera tous les départs et toutes les arrivées ajoutées. Les recrues supprimées disparaîtront aussi du onze type.')) return;
+  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera les départs simulés et les arrivées ajoutées. Les départs officiels actés resteront affichés. Les recrues supprimées disparaîtront aussi du onze type.')) return;
   const removedArrivalIds = new Set(state.arrivals.map(a => a.id));
   Object.keys(state.lineup).forEach(slotId => {
     if (removedArrivalIds.has(state.lineup[slotId])) delete state.lineup[slotId];
@@ -8576,7 +8671,7 @@ function resetLineupState(confirmFirst = true) {
 
 function resetEverythingState() {
   if (!hasAnyResettableState()) return;
-  if (!confirm('Tout réinitialiser ?\n\nCela supprimera mercato, postes personnalisés, suppléances et onze type.')) return;
+  if (!confirm('Tout réinitialiser ?\n\nCela supprimera départs simulés, arrivées, postes personnalisés, suppléances et onze type. Les départs officiels actés resteront affichés.')) return;
   state.departing = {};
   state.arrivals = [];
   state.groupOverrides = {};
@@ -8792,7 +8887,7 @@ function buildExportHero(liveHero, W, H) {
   const achats = agg ? (agg.arrTransfer + agg.oaTransferCost) : 0;
   const msChargee = agg ? agg.finalCharged : 0;
   const finalEffectif = agg ? agg.finalEffectif : 0;
-  const target = parseFloat(document.getElementById('target-ms')?.value || '95') || 95;
+  const target = parseFloat(document.getElementById('target-ms')?.value || '94') || 94;
   const msDelta = msChargee - target;
   const balSign = balance >= 0 ? '+' : '−';
   const balAbs = Math.abs(balance).toFixed(1);
@@ -8818,12 +8913,12 @@ function buildExportHero(liveHero, W, H) {
   }).join('');
 
   // DÉPARTS complets : tri par valeur décroissante puis prêts à la fin
-  const departures = Object.keys(state.departing)
+  const departures = getDepartureIds()
     .map(id => {
       const p = SQUAD.find(x => x.id === id);
       if (!p) return null;
-      const dep = state.departing[id];
-      return { p, price: depPrice(dep), mode: depMode(dep) };
+      const dep = getDeparture(id);
+      return { p, price: depPrice(dep), mode: depMode(dep), official: isOfficialDeparture(id) };
     })
     .filter(Boolean)
     .sort((a, b) => {
@@ -8907,7 +9002,7 @@ function buildExportHero(liveHero, W, H) {
       Balance mercato
     </div>
     <div style="margin-top: 10px; display: flex; gap: 18px; font-size: 11px; color: rgba(255,255,255,0.78);">
-      <div><span style="color: rgba(255,255,255,0.55);">Cessions</span> <span style="font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">${cessions.toFixed(1)} M€</span></div>
+      <div><span style="color: rgba(255,255,255,0.55);">Cessions/prêts</span> <span style="font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">${cessions.toFixed(1)} M€</span></div>
       <div><span style="color: rgba(255,255,255,0.55);">Achats</span> <span style="font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">${achats.toFixed(1)} M€</span></div>
     </div>
   `;
@@ -8944,7 +9039,7 @@ function buildExportHero(liveHero, W, H) {
     if (d.mode === 'sale') {
       return row(code, d.p.name, `+${d.price.toFixed(1)} M€`, '#7DE2B8');
     }
-    return row(code, d.p.name, 'Prêt', 'rgba(255,255,255,0.55)');
+    return row(code, d.p.name, d.price > 0 ? `+${d.price.toFixed(1)} M€ prêt` : 'Prêt', d.price > 0 ? '#7DE2B8' : 'rgba(255,255,255,0.55)');
   }, 'Aucun départ', 'autre départ');
   depZone.innerHTML = `
     <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex: 0 0 auto;">
