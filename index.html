@@ -4321,8 +4321,11 @@
     .mds-value.over { color: #ff5d76; }
     .mds-value.at { color: var(--orange); }
     .mds-value.under { color: var(--text); }
-    .mds-value.positive { color: #26c978; }
-    .mds-value.negative { color: #ff5d76; }
+    .mds-value.positive,
+    .mds-value.ok { color: #26c978; }
+    .mds-value.warn { color: var(--orange); }
+    .mds-value.negative,
+    .mds-value.danger { color: #ff5d76; }
     .mds-detail {
       font-size: 9.2px;
       color: var(--muted);
@@ -4421,7 +4424,8 @@
     .mds-value { font-size: 14px; }
     .mds-label { font-size: 8px; letter-spacing: 0.1em; }
     .mds-detail { font-size: 8.6px; }
-    .mds-kpi { min-height: 49px; padding: 7px 7px 7px; }
+    .mds-kpi { min-height: 49px; padding: 7px 6px 7px; }
+    .mds-status-kpi .mds-value { font-size: 13px; }
     .mds-reset-btn { width: 28px; height: 28px; font-size: 15px; }
     .mobile-section-nav { top: 49px; height: 36px; padding: 0; }
     .mobile-section-tab { min-height: 36px; padding: 10px 0 8px; font-size: 10px; letter-spacing: 0.045em; }
@@ -5267,6 +5271,19 @@
     /* SIDE-BY-SIDE → stack en colonne unique */
     .side-by-side { grid-template-columns: 1fr !important; gap: 18px !important; }
     .synthesis-panel { padding: 18px 14px; }
+    .synthesis-panel .syn-indicator {
+      gap: 8px;
+      padding: 8px 0;
+    }
+    .synthesis-panel .syn-ind-label { font-size: 11px; line-height: 1.25; }
+    .synthesis-panel .syn-ind-value { font-size: 11.5px; white-space: nowrap; }
+    .synthesis-panel .syn-ratio-head { align-items: flex-start; gap: 10px; }
+    .synthesis-panel .syn-info::after {
+      left: auto;
+      right: -10px;
+      transform: none;
+      max-width: min(260px, calc(100vw - 48px));
+    }
 
     /* MODAL : full-width sur petit écran */
     .modal-card {
@@ -5411,9 +5428,14 @@
     <div class="mds-detail" id="mds-ms-delta">—</div>
   </div>
   <div class="mds-kpi">
-    <div class="mds-label">Balance</div>
+    <div class="mds-label">Départs</div>
     <div class="mds-value" id="mds-balance">—</div>
     <div class="mds-detail" id="mds-balance-detail">—</div>
+  </div>
+  <div class="mds-kpi mds-status-kpi">
+    <div class="mds-label">Feux</div>
+    <div class="mds-value" id="mds-status">—</div>
+    <div class="mds-detail" id="mds-status-detail">—</div>
   </div>
   <div class="mds-reset">
     <button type="button" class="mds-reset-btn" data-reset-menu-trigger aria-label="Réinitialiser le scénario">↻</button>
@@ -5862,13 +5884,13 @@
       <div class="syn-inputs-content">
         <label class="syn-input-row">
           <span>
-            Limite masse salariale
-            <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="MS chargée = salaires bruts × 1,40 (multiplicateur charges patronales et sociales, standard Ligue 1). Coefficient fixé par défaut, non modifiable.">ⓘ</span>
+            Plafond masse salariale
+            <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="Contrainte mercato : masse salariale chargée 26/27 strictement inférieure à 100 M€. MS chargée = salaires bruts × 1,40.">ⓘ</span>
           </span>
-          <span class="syn-input-wrap"><input type="number" id="target-ms" value="94" step="1" min="0"><em>M€</em></span>
+          <span class="syn-input-wrap"><input type="number" id="target-ms" value="100" step="1" min="0"><em>M€</em></span>
         </label>
         <label class="syn-input-row">
-          <span>Budget estimé</span>
+          <span>Revenus football estimés</span>
           <span class="syn-input-wrap"><input type="number" id="produits" value="200" step="5" min="0"><em>M€</em></span>
         </label>
       </div>
@@ -5911,7 +5933,7 @@
 
     <div class="syn-section">
       <div class="syn-ratio-head">
-        <div class="syn-label">Ratio MS / Budget</div>
+        <div class="syn-label">Ratio UEFA <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="Approximation scénario : (MS + amortissements + agents) / (revenus + résultat des cessions). Plafond 26/27 : 70%. En règlement UEFA réel, les plus-values sont lissées sur 3 ans.">ⓘ</span></div>
         <div class="syn-ratio-value" id="syn-ratio-value">—</div>
       </div>
       <div class="syn-gauge">
@@ -5952,17 +5974,22 @@
       </details>
     </div>
 
-    <div class="syn-section" hidden>
-      <div class="syn-label">Conformité réglementaire</div>
+    <div class="syn-section">
+      <div class="syn-label">Contraintes mercato</div>
       <div class="syn-indicator">
-        <span class="syn-dot" id="syn-dot-dncg"></span>
-        <span class="syn-ind-label">DNCG · Résultat &gt; −30 M€</span>
-        <span class="syn-ind-value" id="syn-ind-dncg">—</span>
+        <span class="syn-dot" id="syn-dot-ms-constraint"></span>
+        <span class="syn-ind-label">MS chargée &lt; 100 M€</span>
+        <span class="syn-ind-value" id="syn-ind-ms-constraint">—</span>
       </div>
       <div class="syn-indicator">
-        <span class="syn-dot" id="syn-dot-balance"></span>
-        <span class="syn-ind-label">Balance mercato équilibrée</span>
-        <span class="syn-ind-value" id="syn-ind-balance">—</span>
+        <span class="syn-dot" id="syn-dot-sales"></span>
+        <span class="syn-ind-label">Cash départs ≥ 80 M€</span>
+        <span class="syn-ind-value" id="syn-ind-sales">—</span>
+      </div>
+      <div class="syn-indicator">
+        <span class="syn-dot" id="syn-dot-scr"></span>
+        <span class="syn-ind-label">Ratio UEFA ≤ 70%</span>
+        <span class="syn-ind-value" id="syn-ind-scr">—</span>
       </div>
     </div>
   </aside>
@@ -5990,6 +6017,7 @@ const SQUAD = [
   // GARDIENS
   { id: 'rulli', name: 'Gerónimo Rulli', position: 'GK', group: 'Gardiens', age: 34, contractEnd: '30/06/2027', tmValue: 6.0, monthlySalary: 228, transferCost: 3.0, annualAmort: 1.03, vnc: 1.03 },
   { id: 'delange', name: 'Jeffrey de Lange', position: 'GK', group: 'Gardiens', age: 28, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 75, transferCost: 2.0, annualAmort: 0.69, vnc: 0.69 },
+  { id: 'vermot', name: 'Théo Vermot', position: 'GK', group: 'Gardiens', age: 29, contractEnd: '30/06/2027', tmValue: 0, monthlySalary: 20, transferCost: 0, annualAmort: 0, vnc: 0 },
   // DÉFENSE CENTRALE
   { id: 'aguerd', name: 'Nayef Aguerd', position: 'DC', group: 'Défenseurs', age: 30, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 410, transferCost: 21.0, annualAmort: 4.34, vnc: 17.38 },
   { id: 'balerdi', name: 'Leonardo Balerdi', position: 'DC', group: 'Défenseurs', age: 27, contractEnd: '30/06/2028', tmValue: 18.0, monthlySalary: 363, transferCost: 8.0, annualAmort: 1.14, vnc: 2.29 },
@@ -6034,7 +6062,6 @@ const YOUTH_PROSPECTS = [
   { id: 'lung', name: 'Sacha Lung', position: 'DC', group: 'Défenseurs', age: 18, tmValue: 0 },
   // LATÉRAUX
   { id: 'koum', name: 'Alexi Koum', position: 'LB', group: 'Latéraux', age: 20, tmValue: 0.30 },
-  { id: 'bienck', name: 'Felix Bienck', position: 'LB', group: 'Latéraux', age: 18, tmValue: 0 },
   { id: 'bezahaf', name: 'Kelyann Bezahaf', position: 'RB', group: 'Latéraux', age: 17, tmValue: 0 },
   // MILIEUX
   { id: 'kamissoko', name: 'Nouhoum Kamissoko', position: 'DM', group: 'Milieux', age: 21, tmValue: 0.075 },
@@ -6428,8 +6455,11 @@ function saveState() {
 // SETTINGS
 // ============================================================
 function getCoef() { return 1.40; }
-function getTarget() { return parseFloat(document.getElementById('target-ms').value) || 94; }
+function getTarget() { return parseFloat(document.getElementById('target-ms').value) || 100; }
 function getProduits() { return parseFloat(document.getElementById('produits').value) || 200; }
+
+const MERCATO_DEPARTURE_CASH_TARGET = 80; // M€ — ventes + indemnités de prêt sortant minimum demandées
+const UEFA_SQUAD_COST_LIMIT = 70; // % — plafond UEFA 2025/26
 
 // Hypothèses Compte de Résultat (référence : analyse OM 26/27 révisée)
 const PL_DEFAULTS = {
@@ -7671,7 +7701,7 @@ function computeAggregates() {
   return {
     stayingMonthly, stayingBrut, stayingCharged, stayingVnc, stayingAmort,
     allBrut, allCharged, allAmort,
-    totalCession, totalOmCash, totalPlusValue, departingAmortSaved, loanOutSalarySaved,
+    totalCession, totalSaleCession, totalOmCash, totalPlusValue, departingAmortSaved, loanOutSalarySaved,
     saleCount: saleIds.length, loanOutCount: loanOutIds.length,
     arrMonthly, arrBrut, arrCharged, arrTransfer, arrAmort, arrFutureCommit, arrVnc,
     oaTransferCost,
@@ -8264,18 +8294,22 @@ function updateSynthesis(a, target, produits) {
     msInfo.setAttribute('data-tooltip', `MS 26/27 : ${ms.toFixed(1)} M€ · MS 25/26 : ${MS_2526_BASELINE} M€ · ${ecoWord} : ${Math.abs(ecoAbs).toFixed(1)} M€ (${ecoRatio >= 0 ? '−' : '+'}${Math.abs(ecoRatio).toFixed(1)}%)`);
   }
 
-  // 1bis. Ratio MS / Budget — lecture de soutenabilité simple
-  const ratio = produits > 0 ? (ms / produits) * 100 : 0;
+  // 1bis. Squad cost ratio UEFA — approximation exploitable pour le scénario
+  // Formule simplifiée : (MS chargée + amortissements joueurs + agents) / (revenus football + résultat des cessions).
+  // En règlement UEFA complet, le résultat transferts est lissé sur 3 ans ; ici on utilise la photo scénario 26/27.
+  const squadCostNumerator = ms + a.finalAmort + PL_DEFAULTS.agentFees;
+  const squadCostDenominator = produits + a.totalPlusValue;
+  const squadCostRatio = squadCostDenominator > 0 ? (squadCostNumerator / squadCostDenominator) * 100 : 0;
   const ratioValue = document.getElementById('syn-ratio-value');
-  if (ratioValue) ratioValue.textContent = ratio.toFixed(1) + ' %';
+  if (ratioValue) ratioValue.textContent = squadCostRatio.toFixed(1) + ' %';
   const ratioGauge = document.getElementById('syn-ratio-gauge');
   if (ratioGauge) {
-    ratioGauge.style.width = Math.min((ratio / 70) * 100, 100) + '%';
+    ratioGauge.style.width = Math.min((squadCostRatio / UEFA_SQUAD_COST_LIMIT) * 100, 100) + '%';
     ratioGauge.classList.remove('under', 'at', 'over');
-    ratioGauge.classList.add(ratio <= 50 ? 'under' : (ratio <= 70 ? 'at' : 'over'));
+    ratioGauge.classList.add(squadCostRatio <= UEFA_SQUAD_COST_LIMIT ? 'under' : (squadCostRatio <= UEFA_SQUAD_COST_LIMIT + 5 ? 'at' : 'over'));
   }
   const hypSummary = document.getElementById('syn-hyp-summary');
-  if (hypSummary) hypSummary.textContent = `${target.toFixed(0)} M€ cible · ${produits.toFixed(0)} M€ budget`;
+  if (hypSummary) hypSummary.textContent = `${target.toFixed(0)} M€ MS · ${produits.toFixed(0)} M€ revenus`;
 
   // 1ter. Vue effectif — lecture DS rapide
   const presentSquad = SQUAD.filter(p => !isDepartingId(p.id));
@@ -8354,58 +8388,61 @@ function updateSynthesis(a, target, produits) {
   if (mdsMs) {
     mdsMs.textContent = ms.toFixed(1) + '/' + target + ' M€';
     mdsMs.classList.remove('over', 'at', 'under');
-    if (ms <= target) mdsMs.classList.add('under');
-    else if (ms <= target * 1.1) mdsMs.classList.add('at');
+    if (ms < target) mdsMs.classList.add('under');
+    else if (ms <= target * 1.05) mdsMs.classList.add('at');
     else mdsMs.classList.add('over');
     const mdsMsDelta = document.getElementById('mds-ms-delta');
-    if (delta > 0) mdsMsDelta.textContent = '+' + delta.toFixed(1) + ' vs cible';
-    else if (delta < 0) mdsMsDelta.textContent = delta.toFixed(1) + ' vs cible';
-    else mdsMsDelta.textContent = 'aligné cible';
+    if (delta > 0) mdsMsDelta.textContent = '+' + delta.toFixed(1) + ' vs plafond';
+    else if (delta < 0) mdsMsDelta.textContent = delta.toFixed(1) + ' vs plafond';
+    else mdsMsDelta.textContent = 'plafond atteint';
   }
   const mdsBal = document.getElementById('mds-balance');
   if (mdsBal) {
-    mdsBal.textContent = (balance >= 0 ? '+' : '') + balance.toFixed(1) + ' M€';
-    mdsBal.classList.remove('positive', 'negative');
-    mdsBal.classList.add(balance >= 0 ? 'positive' : 'negative');
+    const departureGap = MERCATO_DEPARTURE_CASH_TARGET - a.totalCession;
+    mdsBal.textContent = a.totalCession.toFixed(1) + ' M€';
+    mdsBal.classList.remove('positive', 'negative', 'at');
+    mdsBal.classList.add(a.totalCession >= MERCATO_DEPARTURE_CASH_TARGET ? 'positive' : (departureGap <= 5 ? 'at' : 'negative'));
     document.getElementById('mds-balance-detail').textContent =
-      balance >= 0 ? 'surplus' : 'déficit';
+      departureGap <= 0 ? 'objectif atteint' : 'reste ' + departureGap.toFixed(1) + ' M€';
   }
 
-  // 3. Calcul résultat net (pour DNCG)
-  const agents = PL_DEFAULTS.agentFees;
-  const other = PL_DEFAULTS.otherCharges;
-  const fin = PL_DEFAULTS.financialResult;
-  const pv = a.totalPlusValue;
-  const charges = ms + a.finalAmort + agents + other;
-  const resultatNet = produits - charges + pv + fin;
+  // 3. Contraintes mercato — nouveau triptyque de conformité
+  const msConstraintState = ms < target ? 'ok' : 'danger';
+  const departureCashState = a.totalCession >= MERCATO_DEPARTURE_CASH_TARGET
+    ? 'ok'
+    : (a.totalCession >= MERCATO_DEPARTURE_CASH_TARGET - 5 ? 'warn' : 'danger');
+  const squadCostState = squadCostRatio <= UEFA_SQUAD_COST_LIMIT
+    ? 'ok'
+    : (squadCostRatio <= UEFA_SQUAD_COST_LIMIT + 5 ? 'warn' : 'danger');
 
-  // 4. Conformité
-  // DNCG : résultat net > -30 M€
-  const dncgDot = document.getElementById('syn-dot-dncg');
-  const dncgVal = document.getElementById('syn-ind-dncg');
-  dncgDot.classList.remove('ok', 'warn', 'danger');
-  dncgVal.textContent = (resultatNet >= 0 ? '+' : '') + resultatNet.toFixed(1) + ' M€';
-  let dncgState = 'danger';
-  if (resultatNet >= -15) dncgState = 'ok';
-  else if (resultatNet >= -30) dncgState = 'warn';
-  dncgDot.classList.add(dncgState);
+  const msConstraintDot = document.getElementById('syn-dot-ms-constraint');
+  const msConstraintVal = document.getElementById('syn-ind-ms-constraint');
+  if (msConstraintDot && msConstraintVal) {
+    msConstraintDot.classList.remove('ok', 'warn', 'danger');
+    msConstraintDot.classList.add(msConstraintState);
+    msConstraintVal.textContent = `${ms.toFixed(1)} / ${target.toFixed(0)} M€`;
+  }
 
-  // Balance : positif → toujours OK (cession nette = bénéfique).
-  // Négatif : toléré jusqu'à -15 M€, à surveiller jusqu'à -30 M€, hors norme au-delà.
-  const balDot = document.getElementById('syn-dot-balance');
-  const balVal = document.getElementById('syn-ind-balance');
-  balDot.classList.remove('ok', 'warn', 'danger');
-  balVal.textContent = (balance >= 0 ? '+' : '') + balance.toFixed(1) + ' M€';
-  let balanceState = 'danger';
-  if (balance >= -15) balanceState = 'ok';
-  else if (balance >= -30) balanceState = 'warn';
-  balDot.classList.add(balanceState);
+  const salesDot = document.getElementById('syn-dot-sales');
+  const salesVal = document.getElementById('syn-ind-sales');
+  if (salesDot && salesVal) {
+    salesDot.classList.remove('ok', 'warn', 'danger');
+    salesDot.classList.add(departureCashState);
+    salesVal.textContent = `${a.totalCession.toFixed(1)} / ${MERCATO_DEPARTURE_CASH_TARGET} M€`;
+  }
 
-  // 5. Statut global — synthèse lisible en un coup d'œil
-  const msState = ms <= target ? 'ok' : (ms <= target * 1.1 ? 'warn' : 'danger');
-  const globalState = [msState, dncgState, balanceState].includes('danger')
+  const scrDot = document.getElementById('syn-dot-scr');
+  const scrVal = document.getElementById('syn-ind-scr');
+  if (scrDot && scrVal) {
+    scrDot.classList.remove('ok', 'warn', 'danger');
+    scrDot.classList.add(squadCostState);
+    scrVal.textContent = `${squadCostRatio.toFixed(1)} / ${UEFA_SQUAD_COST_LIMIT}%`;
+  }
+
+  // 4. Statut global — synthèse lisible en un coup d'œil
+  const globalState = [msConstraintState, departureCashState, squadCostState].includes('danger')
     ? 'danger'
-    : ([msState, dncgState, balanceState].includes('warn') ? 'warn' : 'ok');
+    : ([msConstraintState, departureCashState, squadCostState].includes('warn') ? 'warn' : 'ok');
   const statusLabel = globalState === 'ok'
     ? 'Scénario conforme'
     : (globalState === 'warn' ? 'Zone de vigilance' : 'Non conforme');
@@ -8417,12 +8454,15 @@ function updateSynthesis(a, target, produits) {
   }
   const mobileStatus = document.getElementById('mds-status');
   if (mobileStatus) {
+    const okCount = [msConstraintState, departureCashState, squadCostState].filter(s => s === 'ok').length;
     mobileStatus.classList.remove('ok', 'warn', 'danger');
     mobileStatus.classList.add(globalState);
     mobileStatus.textContent = globalState === 'ok'
       ? 'OK'
       : (globalState === 'warn' ? 'Tendu' : 'Alerte');
     mobileStatus.title = statusLabel;
+    const mobileStatusDetail = document.getElementById('mds-status-detail');
+    if (mobileStatusDetail) mobileStatusDetail.textContent = okCount + '/3 verts';
   }
 }
 
@@ -8939,7 +8979,7 @@ function buildExportHero(liveHero, W, H) {
   const achats = agg ? (agg.arrTransfer + agg.oaTransferCost) : 0;
   const msChargee = agg ? agg.finalCharged : 0;
   const finalEffectif = agg ? agg.finalEffectif : 0;
-  const target = parseFloat(document.getElementById('target-ms')?.value || '94') || 94;
+  const target = parseFloat(document.getElementById('target-ms')?.value || '100') || 100;
   const msDelta = msChargee - target;
   const balSign = balance >= 0 ? '+' : '−';
   const balAbs = Math.abs(balance).toFixed(1);
