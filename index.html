@@ -4909,32 +4909,55 @@
       font-size: 13px;
     }
 
-    /* DEPARTURES : Joueur en haut, 3 métriques en bas avec labels inline */
+    /* DEPARTURES : même langage mobile que les arrivées — identité, métrique clé, détails */
+    #departures-body tr {
+      align-items: flex-start;
+      gap: 5px 10px;
+      padding: 13px 12px;
+      margin-bottom: 8px;
+      position: relative;
+      border-radius: 0;
+    }
     #departures-body tr td:nth-child(1) {
       flex: 0 0 100%;
+      order: 1;
       min-width: 0;
+      padding-right: 4px;
       font-size: 14px;
       color: var(--text);
-      line-height: 1.4;
+      line-height: 1.32;
       display: flex;
       align-items: center;
       gap: 8px;
       flex-wrap: nowrap;
     }
+    #departures-body tr td.empty-state {
+      flex: 0 0 100%;
+      display: block;
+      text-align: center;
+      padding: 24px 0;
+    }
     #departures-body tr td:nth-child(1) .player-poste {
       margin-right: 0;
+      padding: 3px 0;
       width: 34px;
       min-width: 34px;
       box-sizing: border-box;
-      padding-left: 0;
-      padding-right: 0;
+      font-size: 11px;
+      vertical-align: middle;
       flex: 0 0 34px;
     }
     #departures-body tr td:nth-child(1) .player-name {
       min-width: 0;
+      max-width: none;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      vertical-align: middle;
+      flex: 1 1 auto;
     }
     #departures-body tr td:nth-child(1) .rights-badge,
     #departures-body tr td:nth-child(1) .free-departure-badge,
@@ -4944,10 +4967,43 @@
       margin-left: 0;
       white-space: nowrap;
     }
-    #departures-body tr td:nth-child(2)::before {
-      content: 'Prix ';  
-      font-weight: 600;
+    #departures-body tr td:nth-child(4) {
+      flex: 0 0 100%;
+      order: 2;
+      margin-top: 6px;
+      padding-top: 10px;
+      background: linear-gradient(to right, transparent 0, var(--border-soft) 18px, var(--border-soft) calc(100% - 18px), transparent 100%) top left / 100% 1px no-repeat;
+      text-align: right;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    #departures-body tr td:nth-child(4)::before {
+      content: 'Plus-value';
+      float: left;
+      margin-top: 3px;
+      font-family: var(--condensed);
+      font-size: 10px;
+      font-weight: 800;
       color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    #departures-body tr td:nth-child(2),
+    #departures-body tr td:nth-child(3) {
+      flex: 0 1 auto;
+      order: 3;
+      font-size: 11px;
+      line-height: 1.35;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    #departures-body tr td:nth-child(2)::before {
+      content: 'Prix ';
+      font-weight: 700;
+      color: var(--muted-soft);
       margin-right: 2px;
     }
     #departures-body tr.free-departure td:nth-child(2)::before {
@@ -4955,14 +5011,8 @@
     }
     #departures-body tr td:nth-child(3)::before {
       content: '· Cash OM ';
-      font-weight: 600;
-      color: var(--muted);
-      margin-right: 2px;
-    }
-    #departures-body tr td:nth-child(4)::before {
-      content: '· Plus-value '; 
-      font-weight: 600;
-      color: var(--muted);
+      font-weight: 700;
+      color: var(--muted-soft);
       margin-right: 2px;
     }
 
@@ -5003,6 +5053,7 @@
     }
     #arrivals-body tr td:nth-child(1) .player-name {
       min-width: 0;
+      max-width: none;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -6118,6 +6169,7 @@ function getSecondaryGroups(player) {
 const OFFICIAL_DEPARTURES = Object.freeze({
   greenwood: { mode: 'sale', price: 40 },
   traore: { mode: 'loan-out', price: 2, loanOA: { price: 8, mandatory: false } },
+  aubameyang: { mode: 'sale', price: 1.5 },
 });
 function cloneDeparture(dep) {
   return dep ? JSON.parse(JSON.stringify(dep)) : undefined;
