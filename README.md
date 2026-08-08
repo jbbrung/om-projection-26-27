@@ -19,7 +19,7 @@ Ouvrir `index.html` dans un navigateur, ou utiliser la version déployée sur `m
 ## Hypothèses par défaut
 
 - Cible MS chargée : 94 M€
-- Coefficient charges : 1,40
+- Coefficient charges patronales : 1,50
 - Budget estimé : 200 M€
 - Honoraires agents : 16 M€
 - Autres charges : 105 M€

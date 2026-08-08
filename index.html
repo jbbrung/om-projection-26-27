@@ -5400,7 +5400,7 @@
       <div class="arr-help-block-title">Ce qu'il te faut sous la main</div>
       <ul class="arr-help-list">
         <li><strong>Nom complet</strong> · prénom + nom à taper</li>
-        <li><strong>Salaire mensuel brut</strong> en k€ · multiplié × 1,40 (charges France) pour la MS chargée</li>
+        <li><strong>Salaire mensuel brut</strong> en k€ · annualisé × 12 puis multiplié × 1,50 (charges patronales) pour la MS chargée</li>
         <li><strong>Prix de transfert</strong> en M€ · uniquement pour les achats fermes</li>
         <li><strong>Durée du contrat</strong> en années · sert à étaler l'amortissement comptable</li>
         <li><strong>Prix OA</strong> en M€ · si prêt avec option d'achat</li>
@@ -5884,7 +5884,7 @@
         <label class="syn-input-row">
           <span>
             Plafond masse salariale
-            <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="Contrainte mercato : masse salariale chargée 26/27 strictement inférieure à 100 M€. MS chargée = salaires bruts × 1,40.">ⓘ</span>
+            <span class="syn-info" tabindex="0" aria-label="Aide" data-tooltip="Contrainte mercato : masse salariale chargée 26/27 strictement inférieure à 100 M€. MS chargée = salaire mensuel brut × 12 × 1,50.">ⓘ</span>
           </span>
           <span class="syn-input-wrap"><input type="number" id="target-ms" value="100" step="1" min="0"><em>M€</em></span>
         </label>
@@ -6456,7 +6456,7 @@ function saveState() {
 // ============================================================
 // SETTINGS
 // ============================================================
-function getCoef() { return 1.40; }
+function getCoef() { return 1.50; }
 function getTarget() { return parseFloat(document.getElementById('target-ms').value) || 100; }
 function getProduits() { return parseFloat(document.getElementById('produits').value) || 200; }
 
