@@ -1709,11 +1709,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Prêt sortant : actif toujours à l'OM, simple retrait du salaire */
-  tbody tr.loan-out-row td {
-    text-decoration: none !important;
-    color: var(--text) !important;
-  }
+  /* Prêt sortant : hors effectif sportif de la saison.
+     On le barre comme une sortie, tout en gardant le liseré orange pour distinguer le prêt. */
   tbody tr.loan-out-row td:first-child {
     border-left: 2px solid var(--orange);
   }
@@ -1724,7 +1721,6 @@
   tbody tr.loan-out-row td.numeric.plus-value-cell {
     color: var(--muted) !important;
   }
-
   .loan-out-badge {
     display: inline-block;
     font-size: 9px;
@@ -1766,6 +1762,9 @@
   }
   tbody tr.official-departure-row td:first-child {
     border-left: 2px solid var(--muted);
+  }
+  tbody tr.official-departure-row.loan-out-row td:first-child {
+    border-left-color: var(--orange);
   }
 
   /* Arrivées : highlight bleu OM (style "ligne soi" om.fr) */
@@ -6194,7 +6193,10 @@ function getSecondaryGroups(player) {
 // STATE
 // ============================================================
 const OFFICIAL_DEPARTURES = Object.freeze({
-  greenwood: { mode: 'sale', price: 40 },
+  rulli: { mode: 'sale', price: 3 },
+  aguerd: { mode: 'loan-out', price: 4, loanOA: { price: 11, mandatory: false } },
+  medina: { mode: 'sale', price: 23 },
+  greenwood: { mode: 'sale', price: 39 },
   traore: { mode: 'loan-out', price: 2, loanOA: { price: 8, mandatory: false } },
   aubameyang: { mode: 'sale', price: 1.5 },
 });
@@ -6540,13 +6542,13 @@ function appendPlayerRow(tbody, p, coef) {
     ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
     : '';
   const officialBadge = isOfficial
-    ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Acté</span>`
+    ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Off</span>`
     : '';
 
   const tr = document.createElement('tr');
   tr.dataset.playerId = p.id;
+  if (isDeparting) tr.classList.add('departing');
   if (loanOut) tr.classList.add('loan-out-row');
-  else if (isDeparting) tr.classList.add('departing');
   if (isOfficial) tr.classList.add('official-departure-row');
   if (isDeparting && !loanOut && cession === 0) tr.classList.add('free-departure');
 
@@ -6859,15 +6861,22 @@ function renderSquad() {
     });
 
     if (departingGroupPlayers.length) {
-      const sep = document.createElement('tr');
-      sep.className = 'departures-separator-row';
-      sep.innerHTML = `<td colspan="12">Sorties simulées (${departingGroupPlayers.length})</td>`;
-      tbody.appendChild(sep);
-      departingGroupPlayers.forEach(p => {
-        const c = appendPlayerRow(tbody, p, coef);
-        subTM += c.tm; subMensuel += c.mensuel; subBrut += c.brut; subCharged += c.charged;
-        subVnc += c.vnc; subAmort += c.amort; subCession += c.cession; subPV += c.plusValue;
-      });
+      const officialDepartures = departingGroupPlayers.filter(p => isOfficialDeparture(p.id));
+      const simulatedDepartures = departingGroupPlayers.filter(p => !isOfficialDeparture(p.id));
+      const appendDepartureSection = (label, players) => {
+        if (!players.length) return;
+        const sep = document.createElement('tr');
+        sep.className = 'departures-separator-row';
+        sep.innerHTML = `<td colspan="12">${label} (${players.length})</td>`;
+        tbody.appendChild(sep);
+        players.forEach(p => {
+          const c = appendPlayerRow(tbody, p, coef);
+          subTM += c.tm; subMensuel += c.mensuel; subBrut += c.brut; subCharged += c.charged;
+          subVnc += c.vnc; subAmort += c.amort; subCession += c.cession; subPV += c.plusValue;
+        });
+      };
+      appendDepartureSection('Sorties officielles', officialDepartures);
+      appendDepartureSection('Sorties simulées', simulatedDepartures);
     }
 
     const tableWrap = document.createElement('div');
@@ -6945,9 +6954,10 @@ function renderDepartures() {
     const freeDepartureBadge = (!loanOut && cession === 0)
       ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
       : '';
-    const officialBadge = isOfficial ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Acté</span>` : '';
+    const officialBadge = isOfficial ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Off</span>` : '';
 
     const tr = document.createElement('tr');
+    tr.classList.add('departing');
     if (loanOut) tr.classList.add('loan-out-row');
     if (isOfficial) tr.classList.add('official-departure-row');
     if (!loanOut && cession === 0) tr.classList.add('free-departure');
@@ -8086,9 +8096,10 @@ function getCandidatesForSlot(slotDef, options = {}) {
     }
   });
   state.arrivals.forEach(a => {
-    const group = POSITION_TO_GROUP[a.position];
-    const relation = group === slotDef.group ? 'primary' : 'other';
-    if (relation === 'primary' || (isAppoint && allowedAppointGroups.includes(group))) {
+    const primary = getEffectiveGroup(a);
+    const secondaries = getSecondaryGroups(a) || [];
+    const relation = primary === slotDef.group ? 'primary' : (secondaries.includes(slotDef.group) ? 'secondary' : 'other');
+    if (relation !== 'other' || (isAppoint && allowedAppointGroups.includes(primary))) {
       candidates.push({ kind: 'arrival', data: a, relation });
     }
   });
@@ -8741,7 +8752,7 @@ function resetPositionsState(confirmFirst = true) {
 
 function resetMercatoState(confirmFirst = true) {
   if (!hasMercatoState()) return;
-  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera les départs simulés et les arrivées ajoutées. Les départs officiels actés resteront affichés. Les recrues supprimées disparaîtront aussi du onze type.')) return;
+  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera les départs simulés et les arrivées ajoutées. Les départs officiels resteront affichés. Les recrues supprimées disparaîtront aussi du onze type.')) return;
   const removedArrivalIds = new Set(state.arrivals.map(a => a.id));
   Object.keys(state.lineup).forEach(slotId => {
     if (removedArrivalIds.has(state.lineup[slotId])) delete state.lineup[slotId];
@@ -8763,7 +8774,7 @@ function resetLineupState(confirmFirst = true) {
 
 function resetEverythingState() {
   if (!hasAnyResettableState()) return;
-  if (!confirm('Tout réinitialiser ?\n\nCela supprimera départs simulés, arrivées, postes personnalisés, suppléances et onze type. Les départs officiels actés resteront affichés.')) return;
+  if (!confirm('Tout réinitialiser ?\n\nCela supprimera départs simulés, arrivées, postes personnalisés, suppléances et onze type. Les départs officiels resteront affichés.')) return;
   state.departing = {};
   state.arrivals = [];
   state.groupOverrides = {};
