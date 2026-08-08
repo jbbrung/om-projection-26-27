@@ -6078,6 +6078,38 @@ const YOUTH_PROSPECTS = [
   { id: 'valero', name: 'Antoine Valero', position: 'CF', group: 'Avants-centres', age: 17, tmValue: 0 },
 ];
 const YOUTH_DEFAULT_SALARY = 20;
+const DEFAULT_YOUTH_PROMOTION_IDS = ['koum', 'bezahaf', 'mmadi'];
+
+function createYouthPromotionArrival(youthId, index = 0, prefix = 'default') {
+  const p = YOUTH_PROSPECTS.find(x => x.id === youthId);
+  if (!p) return null;
+  return {
+    id: `arr_${prefix}_${youthId}`,
+    name: p.name,
+    position: canonicalArrivalPosition(p.position),
+    transferType: 'youth',
+    monthlySalary: YOUTH_DEFAULT_SALARY,
+    transferCost: 0,
+    loanFee: 0,
+    oaPrice: 0,
+    durationYears: 1,
+    youthId: p.id,
+  };
+}
+
+function createDefaultYouthArrivals() {
+  return DEFAULT_YOUTH_PROMOTION_IDS
+    .map((id, index) => createYouthPromotionArrival(id, index, 'default'))
+    .filter(Boolean);
+}
+
+function ensureDefaultYouthArrivals() {
+  const usedYouthIds = new Set(state.arrivals.filter(a => a.youthId).map(a => a.youthId));
+  createDefaultYouthArrivals().forEach(a => {
+    if (!usedYouthIds.has(a.youthId)) state.arrivals.push(a);
+  });
+  state.youthDefaultsApplied = true;
+}
 
 // MS chargée réelle 25/26 — baseline pour calculer l'économie réalisée par le mercato 26/27
 const MS_2526_BASELINE = 112.6;
@@ -6218,7 +6250,7 @@ function isDepartingId(id) {
 
 const state = {
   departing: {},        // départs simulés uniquement ; les officiels vivent dans OFFICIAL_DEPARTURES
-  arrivals: [],         // [{ id, name, position, monthlySalary, transferCost, durationYears }]
+  arrivals: createDefaultYouthArrivals(), // [{ id, name, position, monthlySalary, transferCost, durationYears }]
   groupOverrides: {},   // { playerId: 'Milieux' } — override du groupe d'origine (POSITION_TO_GROUP)
   secondaryGroups: {},  // { playerId: ['Latéraux', ...] } — postes secondaires (suppléances)
   sortKey: 'group',     // 'group' (défaut) | 'name' | 'age' | 'contractEnd' | 'tmValue' | 'monthlySalary' | 'vnc' | 'annualAmort'
@@ -6228,6 +6260,7 @@ const state = {
   formation: '4-2-3-1', // schéma actif
   lineupPositions: {},  // { formationId: { slotId: {x, y} } } — overrides drag fine-tune
   showAppointControls: false, // mode édition : affiche les + vides du 3e choix
+  youthDefaultsApplied: true, // les CDF par défaut ont été injectés ; une suppression utilisateur reste persistée
 };
 
 // Formations disponibles. Chaque slot a un id stable, un label affiché, un groupe data
@@ -6397,6 +6430,8 @@ function loadState() {
         });
       }
       if (parsed.arrivals) state.arrivals = parsed.arrivals.map(normalizeArrival);
+      if (typeof parsed.youthDefaultsApplied === 'boolean') state.youthDefaultsApplied = parsed.youthDefaultsApplied;
+      else ensureDefaultYouthArrivals();
       if (parsed.groupOverrides && typeof parsed.groupOverrides === 'object') {
         state.groupOverrides = parsed.groupOverrides;
       }
@@ -7438,6 +7473,9 @@ function removeArrival(id) {
   state.arrivals = state.arrivals.filter(a => a.id !== id);
   delete state.groupOverrides[id];
   delete state.secondaryGroups[id];
+  Object.keys(state.lineup).forEach(slotId => {
+    if (state.lineup[slotId] === id) delete state.lineup[slotId];
+  });
   saveState();
   renderAll();
 }
@@ -8725,8 +8763,17 @@ function setupMobileSectionTabs() {
 // ============================================================
 // RESET
 // ============================================================
+function hasDefaultYouthDelta() {
+  const currentYouthIds = new Set(state.arrivals.filter(a => a.youthId).map(a => a.youthId));
+  return DEFAULT_YOUTH_PROMOTION_IDS.some(id => !currentYouthIds.has(id));
+}
+
+function hasManualArrivalState() {
+  return state.arrivals.some(a => !a.youthId || !DEFAULT_YOUTH_PROMOTION_IDS.includes(a.youthId));
+}
+
 function hasMercatoState() {
-  return Object.keys(state.departing).length > 0 || state.arrivals.length > 0;
+  return Object.keys(state.departing).length > 0 || hasManualArrivalState() || hasDefaultYouthDelta();
 }
 
 function hasPositionState() {
@@ -8752,13 +8799,16 @@ function resetPositionsState(confirmFirst = true) {
 
 function resetMercatoState(confirmFirst = true) {
   if (!hasMercatoState()) return;
-  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera les départs simulés et les arrivées ajoutées. Les départs officiels resteront affichés. Les recrues supprimées disparaîtront aussi du onze type.')) return;
-  const removedArrivalIds = new Set(state.arrivals.map(a => a.id));
+  if (confirmFirst && !confirm('Réinitialiser le mercato ?\n\nCela supprimera les départs simulés et les arrivées ajoutées. Les départs officiels resteront affichés et les CDF par défaut seront restaurés. Les recrues supprimées disparaîtront aussi du onze type.')) return;
+  const defaultArrivals = createDefaultYouthArrivals();
+  const defaultArrivalIds = new Set(defaultArrivals.map(a => a.id));
+  const removedArrivalIds = new Set(state.arrivals.map(a => a.id).filter(id => !defaultArrivalIds.has(id)));
   Object.keys(state.lineup).forEach(slotId => {
     if (removedArrivalIds.has(state.lineup[slotId])) delete state.lineup[slotId];
   });
   state.departing = {};
-  state.arrivals = [];
+  state.arrivals = defaultArrivals;
+  state.youthDefaultsApplied = true;
   saveState();
   renderAll();
 }
@@ -8774,9 +8824,10 @@ function resetLineupState(confirmFirst = true) {
 
 function resetEverythingState() {
   if (!hasAnyResettableState()) return;
-  if (!confirm('Tout réinitialiser ?\n\nCela supprimera départs simulés, arrivées, postes personnalisés, suppléances et onze type. Les départs officiels resteront affichés.')) return;
+  if (!confirm('Tout réinitialiser ?\n\nCela supprimera départs simulés, arrivées, postes personnalisés, suppléances et onze type. Les départs officiels resteront affichés et les CDF par défaut seront restaurés.')) return;
   state.departing = {};
-  state.arrivals = [];
+  state.arrivals = createDefaultYouthArrivals();
+  state.youthDefaultsApplied = true;
   state.groupOverrides = {};
   state.secondaryGroups = {};
   state.lineup = {};
