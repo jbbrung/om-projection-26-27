@@ -4921,6 +4921,27 @@
       position: relative;
       border-radius: 0;
     }
+    #departures-body tr.departures-separator-row {
+      display: block;
+      padding: 16px 2px 4px;
+      margin: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+    #departures-body tr.departures-separator-row td,
+    #departures-body tr.departures-separator-row td:nth-child(1) {
+      display: block !important;
+      width: 100%;
+      padding: 0;
+      border: none;
+      color: var(--muted);
+      font-family: var(--condensed);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
     #departures-body tr td:nth-child(1) {
       flex: 0 0 100%;
       order: 1;
@@ -4963,6 +4984,7 @@
       flex: 1 1 auto;
     }
     #departures-body tr td:nth-child(1) .rights-badge,
+    #departures-body tr td:nth-child(1) .official-departure-badge,
     #departures-body tr td:nth-child(1) .free-departure-badge,
     #departures-body tr td:nth-child(1) .oa-exercised-badge,
     #departures-body tr td:nth-child(1) .loan-out-badge {
@@ -6226,7 +6248,6 @@ function getSecondaryGroups(player) {
 // ============================================================
 const OFFICIAL_DEPARTURES = Object.freeze({
   rulli: { mode: 'sale', price: 3 },
-  aguerd: { mode: 'loan-out', price: 4, loanOA: { price: 11, mandatory: false } },
   medina: { mode: 'sale', price: 23 },
   greenwood: { mode: 'sale', price: 39 },
   traore: { mode: 'loan-out', price: 2, loanOA: { price: 8, mandatory: false } },
@@ -6256,6 +6277,7 @@ const state = {
   sortKey: 'group',     // 'group' (défaut) | 'name' | 'age' | 'contractEnd' | 'tmValue' | 'monthlySalary' | 'vnc' | 'annualAmort'
   sortDir: 'asc',       // 'asc' | 'desc'
   detailView: false,    // toggle colonnes Annuel brut + Amort./an (cachées par défaut)
+  aguerdTransferCancellationApplied: true, // migration : prêt sortant Aguerd annulé
   lineup: {},           // { slotId: playerId|arrivalId } — onze type courant
   formation: '4-2-3-1', // schéma actif
   lineupPositions: {},  // { formationId: { slotId: {x, y} } } — overrides drag fine-tune
@@ -6428,7 +6450,14 @@ function loadState() {
           // Les départs officiels ne sont pas du scénario utilisateur : ils ne doivent pas être restaurés comme simulés.
           if (isOfficialDeparture(id)) delete state.departing[id];
         });
+        // Migration 26/27 : le prêt sortant d'Aguerd a capoté, on annule l'ancien défaut.
+        // On ne supprime que l'ancien scénario exact, pour ne pas écraser une future simulation utilisateur.
+        const aguerdDep = state.departing.aguerd;
+        if (!parsed.aguerdTransferCancellationApplied && aguerdDep && isLoanOut(aguerdDep) && depPrice(aguerdDep) === 4) {
+          delete state.departing.aguerd;
+        }
       }
+      state.aguerdTransferCancellationApplied = true;
       if (parsed.arrivals) state.arrivals = parsed.arrivals.map(normalizeArrival);
       if (typeof parsed.youthDefaultsApplied === 'boolean') state.youthDefaultsApplied = parsed.youthDefaultsApplied;
       else ensureDefaultYouthArrivals();
@@ -6960,50 +6989,64 @@ function renderDepartures() {
       return a.squadIndex - b.squadIndex;
     });
 
-  departingPlayers.forEach(({ id, player: p }) => {
-    const dep = getDeparture(id);
-    const isOfficial = isOfficialDeparture(id);
-    const loanOut = isLoanOut(dep);
-    const cession = depPrice(dep);
-    const rights = getRights(p);
-    const omCash = loanOut ? loanOutFee(dep) : omCashFromCession(p, cession);
-    const pv = loanOut ? 0 : (omCash - p.vnc);
-    totCession += loanOut ? loanOutFee(dep) : cession;
-    totOmCash += omCash;
-    if (!loanOut) totPV += pv;
+  const appendDepartureHeader = (label, count) => {
+    if (count === 0) return;
+    const sep = document.createElement('tr');
+    sep.className = 'departures-separator-row';
+    sep.innerHTML = `<td colspan="4">${label} (${count})</td>`;
+    tbody.appendChild(sep);
+  };
 
-    const rightsBadge = (!loanOut && rights < 1) ? ` <span class="rights-badge">${Math.round(rights*100)}%</span>` : '';
-    const loanOa = getLoanOA(dep);
-    let loanBadge = '';
-    if (loanOut) {
-      if (loanOa) {
-        const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
-        const lbl = loanOa.mandatory ? `POA obl. ${loanOa.price.toFixed(0)}M€` : `POA ${loanOa.price.toFixed(0)}M€`;
-        loanBadge = ` <span class="loan-out-badge ${cls}">${lbl}</span>`;
-      } else {
-        loanBadge = ` <span class="loan-out-badge">Prêt sortant</span>`;
+  const appendDepartureRows = (players, label) => {
+    appendDepartureHeader(label, players.length);
+    players.forEach(({ id, player: p }) => {
+      const dep = getDeparture(id);
+      const isOfficial = isOfficialDeparture(id);
+      const loanOut = isLoanOut(dep);
+      const cession = depPrice(dep);
+      const rights = getRights(p);
+      const omCash = loanOut ? loanOutFee(dep) : omCashFromCession(p, cession);
+      const pv = loanOut ? 0 : (omCash - p.vnc);
+      totCession += loanOut ? loanOutFee(dep) : cession;
+      totOmCash += omCash;
+      if (!loanOut) totPV += pv;
+
+      const rightsBadge = (!loanOut && rights < 1) ? ` <span class="rights-badge">${Math.round(rights*100)}%</span>` : '';
+      const loanOa = getLoanOA(dep);
+      let loanBadge = '';
+      if (loanOut) {
+        if (loanOa) {
+          const cls = loanOa.mandatory ? 'has-oa-mand' : 'has-oa-opt';
+          const lbl = loanOa.mandatory ? `POA obl. ${loanOa.price.toFixed(0)}M€` : `POA ${loanOa.price.toFixed(0)}M€`;
+          loanBadge = ` <span class="loan-out-badge ${cls}">${lbl}</span>`;
+        } else {
+          loanBadge = ` <span class="loan-out-badge">Prêt sortant</span>`;
+        }
       }
-    }
-    const oaExercised = isOaExercised(dep);
-    const oaBadge = oaExercised ? ` <span class="oa-exercised-badge" title="${p.loanedOutOA ? p.loanedOutOA.club + ' a levé l\'OA' : 'OA levée'}">OA levée</span>` : '';
-    const freeDepartureBadge = (!loanOut && cession === 0)
-      ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
-      : '';
-    const officialBadge = isOfficial ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Off</span>` : '';
+      const oaExercised = isOaExercised(dep);
+      const oaBadge = oaExercised ? ` <span class="oa-exercised-badge" title="${p.loanedOutOA ? p.loanedOutOA.club + ' a levé l\'OA' : 'OA levée'}">OA levée</span>` : '';
+      const freeDepartureBadge = (!loanOut && cession === 0)
+        ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
+        : '';
+      const officialBadge = isOfficial ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Off</span>` : '';
 
-    const tr = document.createElement('tr');
-    tr.classList.add('departing');
-    if (loanOut) tr.classList.add('loan-out-row');
-    if (isOfficial) tr.classList.add('official-departure-row');
-    if (!loanOut && cession === 0) tr.classList.add('free-departure');
-    tr.innerHTML = `
-      <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
-      <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}</td>
-      <td class="numeric">${loanOut ? (omCash > 0 ? omCash.toFixed(2) : '—') : omCash.toFixed(2)}</td>
-      <td class="numeric ${(!loanOut && pv > 0) ? 'plus-value-pos' : ((!loanOut && pv < 0) ? 'plus-value-neg' : '')}">${loanOut ? '—' : fmtM(pv, true)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+      const tr = document.createElement('tr');
+      tr.classList.add('departing');
+      if (loanOut) tr.classList.add('loan-out-row');
+      if (isOfficial) tr.classList.add('official-departure-row');
+      if (!loanOut && cession === 0) tr.classList.add('free-departure');
+      tr.innerHTML = `
+        <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
+        <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}</td>
+        <td class="numeric">${loanOut ? (omCash > 0 ? omCash.toFixed(2) : '—') : omCash.toFixed(2)}</td>
+        <td class="numeric ${(!loanOut && pv > 0) ? 'plus-value-pos' : ((!loanOut && pv < 0) ? 'plus-value-neg' : '')}">${loanOut ? '—' : fmtM(pv, true)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  };
+
+  appendDepartureRows(departingPlayers.filter(({ id }) => isOfficialDeparture(id)), 'Départs officiels');
+  appendDepartureRows(departingPlayers.filter(({ id }) => !isOfficialDeparture(id)), 'Départs simulés');
 
   document.getElementById('dep-cession-total').textContent = totCession.toFixed(1) + ' M€';
   document.getElementById('dep-omcash-total').textContent = totOmCash.toFixed(1) + ' M€';
@@ -9066,7 +9109,12 @@ function buildExportHero(liveHero, W, H) {
     return `<span style="display:inline-flex; align-items:baseline; gap:3px; color:${under ? '#FFB4AD' : '#fff'}; white-space:nowrap;"><span style="font-size:8px; font-weight:800; color:rgba(255,255,255,0.48); letter-spacing:0.10em;">${code}</span><span style="font-size:11px; font-weight:800; font-variant-numeric:tabular-nums;">${count}</span></span>`;
   }).join('');
 
-  // DÉPARTS complets : tri par valeur décroissante puis prêts à la fin
+  // DÉPARTS complets : officiels d'abord, simulés ensuite ; tri valeur décroissante puis prêts à la fin
+  const sortExportDepartures = (items) => items.sort((a, b) => {
+    if (a.mode === 'sale' && b.mode !== 'sale') return -1;
+    if (b.mode === 'sale' && a.mode !== 'sale') return 1;
+    return b.price - a.price;
+  });
   const departures = getDepartureIds()
     .map(id => {
       const p = SQUAD.find(x => x.id === id);
@@ -9074,12 +9122,9 @@ function buildExportHero(liveHero, W, H) {
       const dep = getDeparture(id);
       return { p, price: depPrice(dep), mode: depMode(dep), official: isOfficialDeparture(id) };
     })
-    .filter(Boolean)
-    .sort((a, b) => {
-      if (a.mode === 'sale' && b.mode !== 'sale') return -1;
-      if (b.mode === 'sale' && a.mode !== 'sale') return 1;
-      return b.price - a.price;
-    });
+    .filter(Boolean);
+  const officialDepartures = sortExportDepartures(departures.filter(d => d.official));
+  const simulatedDepartures = sortExportDepartures(departures.filter(d => !d.official));
 
   // ARRIVÉES mercato complètes : tri par cash sortant décroissant (promotions CDF exclues)
   const arrivals = state.arrivals
@@ -9188,13 +9233,36 @@ function buildExportHero(liveHero, W, H) {
   // 2. DÉPARTS
   const depZone = document.createElement('div');
   depZone.style.cssText = `flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;`;
-  const depRowsHtml = boundedRows(departures, d => {
+  const departureRow = d => {
     const code = getPositionCode(d.p);
     if (d.mode === 'sale') {
       return row(code, d.p.name, `+${d.price.toFixed(1)} M€`, '#7DE2B8');
     }
     return row(code, d.p.name, d.price > 0 ? `+${d.price.toFixed(1)} M€ prêt` : 'Prêt', d.price > 0 ? '#7DE2B8' : 'rgba(255,255,255,0.55)');
-  }, 'Aucun départ', 'autre départ');
+  };
+  const depSectionHeader = (label, count) => `
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0 2px; color:rgba(255,255,255,0.60); font-size:8.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase;">
+      <span>${label}</span><span style="font-variant-numeric:tabular-nums; color:rgba(255,255,255,0.42);">${count}</span>
+    </div>
+  `;
+  const depRowsForExport = () => {
+    if (!departures.length) return `<div style="color: rgba(255,255,255,0.45); font-size: 11px; font-style: italic; padding: 4px 0;">Aucun départ</div>`;
+    let remaining = MAX_EXPORT_ROWS_PER_SECTION;
+    let html = '';
+    const appendSection = (label, items, hiddenLabel) => {
+      if (!items.length) return;
+      html += depSectionHeader(label, items.length);
+      const visible = items.slice(0, remaining);
+      remaining -= visible.length;
+      html += visible.map(departureRow).join('');
+      const hidden = items.length - visible.length;
+      if (hidden > 0) html += moreRow(hidden, hiddenLabel);
+    };
+    appendSection('Officiels', officialDepartures, 'mouvement officiel masqué');
+    appendSection('Simulés', simulatedDepartures, 'mouvement simulé masqué');
+    return html;
+  };
+  const depRowsHtml = depRowsForExport();
   depZone.innerHTML = `
     <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex: 0 0 auto;">
       <span style="font-size: 14px; color: #7DE2B8; font-weight: 800; line-height: 1;">↑</span>
