@@ -5,12 +5,12 @@ Simulateur de mercato et projection budgétaire pour la saison 2026/2027 de l'Ol
 ## Contenu
 
 - **`index.html`** — Simulateur interactif V2 (single-file HTML, à ouvrir dans un navigateur ou déployé sur `mercato.gesputtij.me`). Permet de :
-  - lire la synthèse du scénario en un coup d’œil : sport, finance, prochaine action
+  - construire directement une compo en 4-2-3-1 depuis la page par défaut
+  - piloter les départs et les arrivées à droite du terrain
+  - basculer entre un mode mercato réaliste avec alertes salariales/financières et un mode sans contrainte
+  - placer des joueurs existants, des recrues ou des placeholders `RECRUE` sur le terrain
   - consulter l’effectif en lecture seule, organisé façon OM.FR
-  - piloter les ventes et les recrues depuis l’onglet Mercato
   - tester les départs avec impact sur masse salariale, cash, plus-value et ratio effectif UEFA
-  - ajouter des recrues avec discipline salariale : vente avant recrutement senior, cap recrue OM à 150 k€/mois brut, PRO 2 autorisés
-  - projeter la compo et comprendre la trajectoire DNCG/financière dans un onglet pédagogique
 
 - **`OM_26-27_Analyse_Revisee.txt`** — Note d'analyse révisée servant de base au scénario par défaut (effectif, arbitrages, recrutement, P&L cible).
 
