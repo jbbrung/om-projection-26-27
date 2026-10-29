@@ -6893,7 +6893,7 @@
     .add-form input, .add-form select { font-size: 16px; }
   }
   .departure-salary { display: block; color: var(--green); font-size: 11px; font-weight: 700; margin-top: 4px; white-space: normal; }
-  .summer-recap { border: 1px solid var(--border); background: var(--card); padding: 14px; }
+  .summer-recap { border: 1px solid var(--border); background: var(--bg-soft); padding: 10px 12px; margin-bottom: 12px; }
   .summer-recap summary { cursor: pointer; color: var(--text-dim); font-weight: 700; }
   .summer-recap summary small { display: block; margin-top: 3px; font-size: 11px; font-weight: 500; }
   .summer-recap-group h3 { margin: 16px 0 6px; font-size: 12px; color: var(--muted); }
@@ -7501,6 +7501,10 @@
         <span class="h2-title">Départs <span class="h2-count" id="dep-count"></span><span class="window-note">Sorties simulées cet hiver</span></span>
         <button type="button" class="arr-cta-btn" onclick="openSellPlayerModal()">+ Vendre un joueur</button>
       </h2>
+      <details class="summer-recap" id="summer-recap-departures">
+        <summary><span>Mercato estival</span><small>Terminé · voir le récapitulatif</small></summary>
+        <div id="summer-recap-departures-content"></div>
+      </details>
       <div class="table-scroll">
       <table>
         <thead>
@@ -7539,6 +7543,10 @@
         <button type="button" class="arr-help-btn" id="arr-help-btn" aria-label="Comment ajouter une recrue ?" title="Comment remplir une recrue ?">?</button>
         <button type="button" class="arr-cta-btn" onclick="openArrivalModal()">+ Recrue hiver</button>
       </h2>
+      <details class="summer-recap" id="summer-recap-arrivals">
+        <summary><span>Mercato estival</span><small>Terminé · voir le récapitulatif</small></summary>
+        <div id="summer-recap-arrivals-content"></div>
+      </details>
       <div class="table-scroll">
       <table>
         <thead>
@@ -7596,10 +7604,6 @@
         <aside class="builder-side" aria-label="Mercato du scénario">
           <div class="builder-alerts" id="builder-alerts"></div>
           <div id="builder-mercato-side"></div>
-          <details class="summer-recap" id="summer-recap">
-            <summary><span>Mercato estival</span><small>Terminé · voir le récapitulatif</small></summary>
-            <div id="summer-recap-content"></div>
-          </details>
         </aside>
       </div>
     </div>
@@ -11538,13 +11542,14 @@ function renderAll() {
 }
 
 function renderSummerRecap() {
-  const host = document.getElementById('summer-recap-content');
-  if (!host) return;
+  const departuresHost = document.getElementById('summer-recap-departures-content');
+  const arrivalsHost = document.getElementById('summer-recap-arrivals-content');
+  if (!departuresHost || !arrivalsHost) return;
   const departures = SQUAD.filter(p => isOfficialDeparture(p.id));
   const arrivals = SQUAD.filter(p => p.oaArrival);
   const group = (title, players, amount) => `<div class="summer-recap-group"><h3>${title} (${players.length})</h3>${players.map(p => `<div class="summer-recap-row"><span><span class="player-poste">${getPositionCode(p)}</span>${p.name}</span><strong>${fmtM(amount(p))}</strong></div>`).join('')}</div>`;
-  host.innerHTML = group('Départs officiels · indemnités', departures, p => depPrice(getDeparture(p.id)))
-    + group('Arrivées actées · coût de transfert', arrivals, p => p.transferCost);
+  departuresHost.innerHTML = group('Départs officiels · indemnités', departures, p => depPrice(getDeparture(p.id)));
+  arrivalsHost.innerHTML = group('Arrivées actées · coût de transfert', arrivals, p => p.transferCost);
 }
 
 function setupBuilderLayout() {
