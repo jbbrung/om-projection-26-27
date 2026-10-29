@@ -8242,7 +8242,7 @@ const POSITION_TO_CODE_FR = {
 };
 const POSITION_CODE_BY_ID = Object.freeze({
   // Exceptions de lecture Effectif V2, plus proches de l'usage projeté que du poste source.
-  weah: 'DD',
+  weah: 'DD', bezahaf: 'DD',
   harit: 'MO',
 });
 function getPositionCode(p) {
@@ -10449,7 +10449,7 @@ const LINEUP_SECONDARY_POSITIONS = {
   kondogbia: ['DC'], koum: ['DC'],
   abdelli: ['MC'], gomes: ['MC'], harit: ['MC', 'AG'],
   gouiri: ['AG', 'AD'], weah: ['AD', 'AG'],
-  emerson: ['AG'], garcia: ['AG'], eganriley: ['DD'],
+  emerson: ['AG'], garcia: ['AG', 'MC'], eganriley: ['DD'],
 };
 
 function getLineupSlotPosition(slotDef) {
