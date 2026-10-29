@@ -922,6 +922,21 @@
     gap: 12px;
     flex-wrap: wrap;
   }
+  .lineup-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .lineup-reset-btn {
+    flex: none;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card);
+    color: var(--text-dim);
+    font: 600 11px var(--sans);
+    letter-spacing: normal;
+    cursor: pointer;
+  }
+  .lineup-reset-btn:hover { color: var(--red); border-color: var(--red); }
+  .lineup-reset-btn:focus-visible { outline: 2px solid var(--om-blue); outline-offset: 2px; }
   .scenario-toggle {
     display: inline-flex;
     gap: 4px;
@@ -7599,7 +7614,10 @@
     <!-- ONZE TYPE -->
     <div class="section section-lineup" id="lineup-section">
       <h2>
-        <span class="h2-title">Ma compo <span class="h2-count" id="lineup-count"></span></span>
+        <span class="h2-title lineup-heading">
+          <span>Ma compo <span class="h2-count" id="lineup-count"></span></span>
+          <button type="button" class="lineup-reset-btn" data-reset-menu-trigger>↻ Réinitialiser</button>
+        </span>
         <span class="h2-controls builder-toolbar">
           <span class="scenario-toggle" id="scenario-mode-toggle" role="tablist" aria-label="Mode mercato">
             <button type="button" class="scenario-mode-btn active" data-scenario-mode="realistic" role="tab" aria-selected="true">Réaliste</button>
