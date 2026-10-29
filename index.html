@@ -8815,6 +8815,11 @@ function fmtM(v, sign = false) {
 function fmtK(v) {
   return Math.round(v || 0).toLocaleString('fr-FR') + ' k€';
 }
+function playerNameLabel(player) {
+  if (player.id !== 'hojbjerg') return player.name;
+  return `<span class="show-desktop">${player.name}</span><span class="show-mobile">P.-E. Højbjerg</span>`;
+}
+
 function fmtPct(v) {
   return (v || 0).toFixed(1) + ' %';
 }
@@ -8887,7 +8892,7 @@ function appendPlayerRow(tbody, p, coef) {
   tr.innerHTML = `
     <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
     <td class="jersey-cell">${getJerseyNumber(p)}</td>
-    <td><span class="effectif-player-heading"><span class="player-name">${p.name}</span><span class="effectif-player-tags">${rightsBadge}${officialBadge}${freeDepartureBadge}${movedBadge}${oaBadge}${loanBadge}</span></span>${moveBtn}${mobileMeta}</td>
+    <td><span class="effectif-player-heading"><span class="player-name" title="${p.name}">${playerNameLabel(p)}</span><span class="effectif-player-tags">${rightsBadge}${officialBadge}${freeDepartureBadge}${movedBadge}${oaBadge}${loanBadge}</span></span>${moveBtn}${mobileMeta}</td>
     <td>${p.age}</td>
     <td>${contractEffectifCell(p.contractEnd)}</td>
     ${tmEffectifCell(p.tmValue)}
@@ -9107,7 +9112,7 @@ function renderSquad() {
       tr.innerHTML = `
         <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
         <td class="jersey-cell">${getJerseyNumber(p)}</td>
-        <td><span class="effectif-player-heading"><span class="player-name">${p.name}</span><span class="effectif-player-tags">${rightsBadge}${suppBadge}</span></span>${moveBtn}${suppMobileMeta}</td>
+        <td><span class="effectif-player-heading"><span class="player-name" title="${p.name}">${playerNameLabel(p)}</span><span class="effectif-player-tags">${rightsBadge}${suppBadge}</span></span>${moveBtn}${suppMobileMeta}</td>
         <td>${p.age}</td>
         <td>${contractEffectifCell(p.contractEnd)}</td>
         <td class="numeric tm-cell">—</td>
@@ -9248,7 +9253,7 @@ function renderDepartures() {
       if (isOfficial) tr.classList.add('official-departure-row');
       if (!loanOut && cession === 0) tr.classList.add('free-departure');
       tr.innerHTML = `
-        <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
+        <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name" title="${p.name}">${playerNameLabel(p)}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
         <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}<span class="departure-salary">${p.monthlySalary} k€/mois libérés</span></td>
         <td class="numeric">${loanOut ? (omCash > 0 ? omCash.toFixed(2) : '—') : omCash.toFixed(2)}</td>
         <td class="numeric ${(!loanOut && pv > 0) ? 'plus-value-pos' : ((!loanOut && pv < 0) ? 'plus-value-neg' : '')}">${loanOut ? '—' : fmtM(pv, true)}</td>
@@ -11361,7 +11366,7 @@ function renderOaArrivals() {
     totAmort += p.annualAmort;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="player-name">${p.name}</span></td>
+      <td><span class="player-name" title="${p.name}">${playerNameLabel(p)}</span></td>
       <td><span class="player-poste">${getPositionCode(p)}</span></td>
       <td style="color: var(--muted); font-size: 13px;">${oaOrigin[p.id] || '—'}</td>
       <td class="numeric">${p.monthlySalary}</td>
