@@ -6567,11 +6567,29 @@
     align-items: center;
   }
   .sell-player-row:hover { border-color: var(--border-blue); background: var(--om-blue-soft); }
-  .sell-player-name { font-weight: 850; }
-  .sell-player-meta { margin-top: 3px; color: var(--text-dim); font-size: 11px; }
-  .sell-player-impact { text-align: right; font-variant-numeric: tabular-nums; }
-  .sell-player-impact strong { display:block; color: var(--green); font-size: 13px; }
-  .sell-player-impact span { display:block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+  .sell-player-info { min-width: 0; }
+  .sell-player-name { display: flex; align-items: center; gap: 8px; font-weight: 850; }
+  .sell-player-name .player-poste { flex: none; margin: 0; }
+  .sell-player-name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sell-player-meta { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 5px; color: var(--text-dim); font-size: 11px; }
+  .sell-player-meta span { white-space: nowrap; }
+  .sell-player-impact {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    background: var(--green-soft);
+    border-radius: 6px;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+  .sell-player-impact strong { display: block; color: var(--green); font-size: 19px; line-height: 1.25; }
+  .sell-player-impact small { font-size: 11px; font-weight: 600; }
+  .sell-player-impact span { display: block; color: var(--text-dim); font-size: 10px; margin-top: 2px; }
+  .sell-player-row:focus-visible { outline: 2px solid var(--om-blue); outline-offset: 2px; }
+  @media (max-width: 640px) {
+    .sell-player-row { grid-template-columns: minmax(0, 1fr); gap: 9px; padding: 12px; }
+    .sell-player-impact { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; text-align: left; }
+    .sell-player-impact span { margin: 0; }
+  }
 
   @media (max-width: 980px) {
     .v2-dashboard-grid,
@@ -7865,7 +7883,7 @@ const SQUAD = [
   { id: 'rulli', name: 'Gerónimo Rulli', position: 'GK', group: 'Gardiens', age: 34, contractEnd: '30/06/2027', tmValue: 6.0, monthlySalary: 228, transferCost: 3.0, annualAmort: 1.03, vnc: 1.03 },
   { id: 'delange', name: 'Jeffrey de Lange', position: 'GK', group: 'Gardiens', age: 28, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 76, transferCost: 2.0, annualAmort: 0.69, vnc: 0.69 },
   { id: 'vanneck', name: 'Jelle Van Neck', position: 'GK', group: 'Gardiens', age: 22, contractEnd: '30/06/2027', tmValue: 0, monthlySalary: 23, transferCost: 0, annualAmort: 0, vnc: 0 },
-  { id: 'vermot', name: 'Théo Vermot', position: 'GK', group: 'Gardiens', age: 29, contractEnd: '30/06/2027', tmValue: 0, monthlySalary: 0, transferCost: 0, annualAmort: 0, vnc: 0 },
+  { id: 'vermot', name: 'Théo Vermot', position: 'GK', group: 'Gardiens', age: 29, contractEnd: '30/06/2027', tmValue: 0.3, monthlySalary: 0, transferCost: 0, annualAmort: 0, vnc: 0 },
   // DÉFENSE CENTRALE
   { id: 'aguerd', name: 'Nayef Aguerd', position: 'DC', group: 'Défenseurs', age: 30, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 410, transferCost: 21.0, annualAmort: 4.34, vnc: 17.38 },
   { id: 'balerdi', name: 'Leonardo Balerdi', position: 'DC', group: 'Défenseurs', age: 27, contractEnd: '30/06/2028', tmValue: 18.0, monthlySalary: 363, transferCost: 8.0, annualAmort: 1.14, vnc: 2.29 },
@@ -7874,7 +7892,7 @@ const SQUAD = [
   { id: 'meite', name: 'Bamo Meïté', position: 'DC', group: 'Défenseurs', age: 24, contractEnd: '30/06/2028', tmValue: 7.0, monthlySalary: 105, transferCost: 11.5, annualAmort: 2.88, vnc: 5.75 },
   { id: 'cornelius', name: 'Derek Cornelius', position: 'DC', group: 'Défenseurs', age: 28, contractEnd: '30/06/2028', tmValue: 2.5, monthlySalary: 61, transferCost: 4.0, annualAmort: 1.02, vnc: 2.04 },
   // LATÉRAUX
-  { id: 'emerson', name: 'Emerson', position: 'LB', group: 'Latéraux', age: 32, contractEnd: '30/06/2027', tmValue: 9.0, monthlySalary: 303, transferCost: 0.7, annualAmort: 0.38, vnc: 0.38 },
+  { id: 'emerson', name: 'Emerson', position: 'LB', group: 'Latéraux', age: 32, contractEnd: '30/06/2027', tmValue: 12.0, monthlySalary: 303, transferCost: 0.7, annualAmort: 0.38, vnc: 0.38 },
   { id: 'garcia', name: 'Ulisses Garcia', position: 'LB', group: 'Latéraux', age: 30, contractEnd: '30/06/2028', tmValue: 3.0, monthlySalary: 152, transferCost: 3.0, annualAmort: 0.68, vnc: 1.36 },
   // MILIEUX
   { id: 'hojbjerg', name: 'Pierre-Emile Højbjerg', position: 'DM', group: 'Milieux', age: 31, contractEnd: '30/06/2028', tmValue: 15.0, monthlySalary: 530, transferCost: 13.5, annualAmort: 4.50, vnc: 9.00 },
@@ -7888,14 +7906,14 @@ const SQUAD = [
   { id: 'traore', name: 'Hamed Traoré', position: 'LW', group: 'Offensifs', age: 26, contractEnd: '30/06/2030', tmValue: 15.0, monthlySalary: 333, transferCost: 7.5, annualAmort: 1.88, vnc: 7.50, oaArrival: true, resaleRights: 0.50 },
   { id: 'gomes', name: 'Angel Gomes', position: 'AM', group: 'Offensifs', age: 26, contractEnd: '30/06/2028', tmValue: 10.0, monthlySalary: 333, transferCost: 0, annualAmort: 0, vnc: 0 },
   { id: 'harit', name: 'Amine Harit', position: 'LW', group: 'Offensifs', age: 29, contractEnd: '30/06/2027', tmValue: 5.0, monthlySalary: 258, transferCost: 5.0, annualAmort: 1.25, vnc: 1.25 },
-  { id: 'abdelli', name: 'Himad Abdelli', position: 'AM', group: 'Offensifs', age: 27, contractEnd: '30/06/2030', tmValue: 5.0, monthlySalary: 76, transferCost: 2.75, annualAmort: 0.62, vnc: 2.49 },
+  { id: 'abdelli', name: 'Himad Abdelli', position: 'AM', group: 'Offensifs', age: 27, contractEnd: '30/06/2030', tmValue: 9.0, monthlySalary: 76, transferCost: 2.75, annualAmort: 0.62, vnc: 2.49 },
   // ATTAQUE
-  { id: 'gouiri', name: 'Amine Gouiri', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2029', tmValue: 28.0, monthlySalary: 380, transferCost: 19.0, annualAmort: 4.30, vnc: 12.91 },
+  { id: 'gouiri', name: 'Amine Gouiri', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2029', tmValue: 30.0, monthlySalary: 380, transferCost: 19.0, annualAmort: 4.30, vnc: 12.91 },
   { id: 'aubameyang', name: 'Pierre-Emerick Aubameyang', position: 'CF', group: 'Avants-centres', age: 37, contractEnd: '30/06/2027', tmValue: 2.5, monthlySalary: 380, transferCost: 0, annualAmort: 0, vnc: 0 },
   { id: 'maupay', name: 'Neal Maupay', position: 'CF', group: 'Avants-centres', age: 30, contractEnd: '30/06/2028', tmValue: 4.0, monthlySalary: 250, transferCost: 6.0, annualAmort: 1.53, vnc: 3.06 },
   { id: 'moumbagna', name: 'Faris Moumbagna', position: 'CF', group: 'Avants-centres', age: 26, contractEnd: '30/06/2028', tmValue: 3.5, monthlySalary: 92, transferCost: 8.0, annualAmort: 1.81, vnc: 3.62 },
-  { id: 'mmadi', name: 'Tadjidine Mmadi', position: 'LW', group: 'Offensifs', age: 19, contractEnd: '30/06/2028', tmValue: 0.80, monthlySalary: 20, transferCost: 0, annualAmort: 0, vnc: 0 },
-  { id: 'abdallah', name: 'Keyliane Abdallah', position: 'RW', group: 'Offensifs', age: 20, contractEnd: '30/06/2028', tmValue: 0.05, monthlySalary: 12, transferCost: 0, annualAmort: 0, vnc: 0 },
+  { id: 'mmadi', name: 'Tadjidine Mmadi', position: 'LW', group: 'Offensifs', age: 19, contractEnd: '30/06/2028', tmValue: 1.0, monthlySalary: 20, transferCost: 0, annualAmort: 0, vnc: 0 },
+  { id: 'abdallah', name: 'Keyliane Abdallah', position: 'RW', group: 'Offensifs', age: 20, contractEnd: '30/06/2028', tmValue: 5.0, monthlySalary: 12, transferCost: 0, annualAmort: 0, vnc: 0 },
 ];
 
 // ============================================================
@@ -7910,10 +7928,10 @@ const YOUTH_PROSPECTS = [
   { id: 'hamzaoui', name: 'Hilan Hamzaoui Slimani', position: 'DC', group: 'Défenseurs', age: 20, tmValue: 0 },
   { id: 'lung', name: 'Sacha Lung', position: 'DC', group: 'Défenseurs', age: 18, tmValue: 0 },
   // LATÉRAUX
-  { id: 'koum', name: 'Alexi Koum', position: 'LB', group: 'Latéraux', age: 20, contractEnd: '30/06/2029', tmValue: 0.30 },
-  { id: 'bezahaf', name: 'Kelyann Bezahaf', position: 'RB', group: 'Latéraux', age: 20, contractEnd: '30/06/2029', tmValue: 0 },
+  { id: 'koum', name: 'Alexi Koum', position: 'LB', group: 'Latéraux', age: 20, contractEnd: '30/06/2029', tmValue: 0.35 },
+  { id: 'bezahaf', name: 'Kelyann Bezahaf', position: 'RB', group: 'Latéraux', age: 20, contractEnd: '30/06/2029', tmValue: 1.0 },
   // MILIEUX
-  { id: 'kamissoko', name: 'Nouhoum Kamissoko', position: 'DM', group: 'Milieux', age: 21, contractEnd: '30/06/2029', tmValue: 0.075 },
+  { id: 'kamissoko', name: 'Nouhoum Kamissoko', position: 'DM', group: 'Milieux', age: 21, contractEnd: '30/06/2029', tmValue: 0.2 },
   { id: 'sellami', name: 'Yanis Sellami', position: 'DM', group: 'Milieux', age: 19, tmValue: 0 },
   // ENSEMBLE OFFENSIF
   { id: 'malanda', name: 'Jephte Malanda', position: 'AM', group: 'Offensifs', age: 18, tmValue: 0 },
@@ -11261,21 +11279,20 @@ function openSellPlayerModal() {
   const candidates = SQUAD
     .filter(p => !isDepartingId(p.id))
     .map(p => {
-      const wageLoaded = p.monthlySalary * 12 / 1000 * getCoef();
       const cashPotential = (p.tmValue || 0) * getRights(p);
       const score = (p.monthlySalary || 0) + cashPotential * 8;
-      return { p, wageLoaded, cashPotential, score };
+      return { p, score };
     })
     .sort((a, b) => b.score - a.score);
-  list.innerHTML = candidates.length ? candidates.map(({ p, wageLoaded, cashPotential }) => `
+  list.innerHTML = candidates.length ? candidates.map(({ p }) => `
     <button type="button" class="sell-player-row" data-sell-player="${p.id}">
-      <div>
-        <div class="sell-player-name"><span class="player-poste">${getPositionCode(p)}</span> ${p.name}</div>
-        <div class="sell-player-meta">${p.age} ans · ${p.monthlySalary} k€/mois brut · TM ${p.tmValue.toFixed(1)} M€</div>
+      <div class="sell-player-info">
+        <div class="sell-player-name"><span class="player-poste">${getPositionCode(p)}</span><span class="sell-player-name-text">${p.name}</span></div>
+        <div class="sell-player-meta"><span>Valeur TM : ${p.tmValue.toFixed(1)} M€</span><span>Amort./an : ${p.annualAmort.toFixed(2)} M€</span></div>
       </div>
       <div class="sell-player-impact">
-        <strong>+${p.monthlySalary.toFixed(0)} k€/mois</strong>
-        <span>${wageLoaded.toFixed(1)} M€ MS/an · ${cashPotential.toFixed(1)} M€ cash pot.</span>
+        <strong>${p.monthlySalary.toFixed(0)} <small>k€/mois</small></strong>
+        <span>Salaire brut libéré</span>
       </div>
     </button>
   `).join('') : '<div class="empty-state">Aucun joueur vendable.</div>';
