@@ -6789,12 +6789,9 @@
 
   /* Builder responsive : après les styles desktop pour préserver la cascade. */
   @media (max-width: 1280px) {
-    :root { --mobile-summary-height: 64px; }
-    .mobile-decision-strip {
-      width: 100%;
-      height: var(--mobile-summary-height);
-    }
-    .dashboard-tabs { top: var(--mobile-summary-height); }
+    /* Les indicateurs restent disponibles dans les cartes sous le terrain. */
+    .mobile-decision-strip { display: none; }
+    .dashboard-tabs { top: 0; }
   }
   @media (max-width: 1180px) {
     #tab-compo .builder-layout { flex-direction: column; gap: 24px; }
@@ -6807,6 +6804,11 @@
   }
   @media (max-width: 720px) {
     .container { padding: 16px 12px 32px; }
+    #effectif-section,
+    #departures-section,
+    #arrivals-section,
+    #budget-section,
+    #lineup-section { scroll-margin-top: 56px; }
     #tab-compo .section-lineup { padding: 18px 12px; }
     #tab-compo .builder-side .section { padding: 18px 12px; }
     #tab-compo .section-lineup > h2 { gap: 10px; align-items: center; }
