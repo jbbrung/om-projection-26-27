@@ -6786,6 +6786,84 @@
   @media (max-width: 720px) {
     header { min-height: 130px; padding: 28px 18px; }
   }
+
+  /* Builder responsive : après les styles desktop pour préserver la cascade. */
+  @media (max-width: 1280px) {
+    :root { --mobile-summary-height: 64px; }
+    .mobile-decision-strip {
+      width: 100%;
+      height: var(--mobile-summary-height);
+    }
+    .dashboard-tabs { top: var(--mobile-summary-height); }
+  }
+  @media (max-width: 1180px) {
+    #tab-compo .builder-layout { flex-direction: column; gap: 24px; }
+    #tab-compo .builder-layout .pitch-col {
+      position: static;
+      flex: none;
+      width: 100%;
+    }
+    #tab-compo .builder-side { flex: none; width: 100%; min-width: 0; }
+  }
+  @media (max-width: 720px) {
+    .container { padding: 16px 12px 32px; }
+    #tab-compo .section-lineup { padding: 18px 12px; }
+    #tab-compo .builder-side .section { padding: 18px 12px; }
+    #tab-compo .section-lineup > h2 { gap: 10px; align-items: center; }
+    #tab-compo .section-lineup > h2 .h2-title { font-size: 16px; line-height: 1.35; }
+    #tab-compo .builder-toolbar {
+      width: 100%;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    #tab-compo .builder-toolbar .btn-export { width: 100%; min-height: 44px; }
+    .scenario-mode-btn, .appoint-toggle-btn { min-height: 44px; }
+    .dashboard-tabs { padding: 0 12px; }
+    .dashboard-tab { flex: 1; min-height: 44px; }
+    #tab-compo .pitch-wrap {
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 8px 10px;
+      border-radius: 12px;
+    }
+    #tab-compo .pitch-wrap::after {
+      position: static;
+      content: 'Touche un poste pour choisir un joueur ou RECRUE';
+      margin-top: 12px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    #tab-compo .pitch { border-radius: 10px; }
+    #tab-compo .slot { min-width: 0; width: 24%; max-width: 86px; }
+    #tab-compo .slot-avatar { width: 44px; height: 44px; font-size: 12px; }
+    #tab-compo .slot-name-banner {
+      max-width: 100%;
+      margin-top: 4px;
+      padding: 3px 5px;
+      font-size: 10px;
+    }
+    #tab-compo .slot-backup-chip { max-width: 100%; font-size: 9px; padding: 3px 4px; }
+    #tab-compo .builder-side .side-by-side td { width: auto; }
+    #tab-compo .builder-side .side-by-side td:first-child { width: 100%; }
+    #tab-compo .builder-side .side-by-side tfoot td:first-child { width: auto; }
+    #tab-compo .builder-side .side-by-side tfoot tr { flex-wrap: wrap; }
+    #tab-compo .builder-side .section h2 { gap: 10px; }
+    #tab-compo .builder-side .departures-separator-row td {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .modal-overlay { padding: 12px; }
+    .modal-card { max-height: calc(100dvh - 24px); overflow-y: auto; }
+    .help-card { max-height: calc(100dvh - 40px); }
+    .add-form input, .add-form select { font-size: 16px; }
+  }
+  @media (max-width: 360px) {
+    .container { padding-left: 8px; padding-right: 8px; }
+    #tab-compo .section-lineup { padding-left: 8px; padding-right: 8px; }
+    #tab-compo .slot-avatar { width: 38px; height: 38px; }
+    #tab-compo .slot-name-banner, #tab-compo .slot-backup-chip { font-size: 8px; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
