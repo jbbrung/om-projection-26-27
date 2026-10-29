@@ -10267,7 +10267,7 @@ function createSlotElement(def, player, backupPlayer, appointPlayer) {
     chip.className = 'slot-backup-chip filled';
     chip.setAttribute('aria-label', `Gérer ${def.label} : choix ${index + 2}, ${choice.data.name}`);
     const last = choice.kind === 'placeholder' ? choice.data.name : choice.data.name.split(' ').filter(Boolean).pop();
-    chip.innerHTML = `<span class="chip-dot">${index + 2}</span><span>${last}</span>`;
+    chip.innerHTML = `<span>${last}</span>`;
     chip.addEventListener('click', e => { e.stopPropagation(); openLineupPicker(def.id); });
     chip.addEventListener('mousedown', e => e.stopPropagation());
     chip.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
