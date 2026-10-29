@@ -10701,10 +10701,6 @@ function scenarioAlerts(a, target, produits) {
   if (overCapArrivals.length) alerts.push({ level: 'warn', text: `Salary cap recrues dépassé : ${overCapArrivals.map(x => `${x.name} ${x.monthlySalary} k€`).join(', ')}.` });
   if (f.squadCostRatio > UEFA_SQUAD_COST_LIMIT) alerts.push({ level: 'danger', text: `Squad cost ratio au-dessus du seuil UEFA : ${f.squadCostRatio.toFixed(1)}%.` });
   if (a.finalEffectif < 20) alerts.push({ level: 'warn', text: `Effectif court : ${a.finalEffectif} joueurs, attention à la profondeur.` });
-  const counts = getPrimaryGroupCounts();
-  Object.entries(GROUP_TARGETS).forEach(([group, goal]) => {
-    if ((counts[group] || 0) < Math.max(1, goal - 1)) alerts.push({ level: 'warn', text: `${group} sous la cible DS : ${counts[group] || 0}/${goal}.` });
-  });
   if (!alerts.length) alerts.push({ level: 'ok', text: 'Scénario cohérent : les principaux garde-fous sportifs et financiers passent.' });
   return alerts.slice(0, 6);
 }
