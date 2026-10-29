@@ -2534,30 +2534,6 @@
   .subtotal-row td.numeric { text-align: right; }
   .side-by-side .subtotal-row td { padding: 14px 8px; }
 
-  /* Hint salaire moyen sortants — sous le tableau, hors layout table */
-  .dep-salary-hint {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: var(--bg-soft);
-    border-left: 2px solid var(--om-blue);
-  }
-  .dep-salary-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-  }
-  .dep-salary-val {
-    font-size: 14px;
-    color: var(--text);
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
   /* GRAND TOTAL */
   .grand-total {
     background: var(--text);
@@ -6564,9 +6540,6 @@
     line-height: 1.45;
   }
   .sell-player-summary strong { color: var(--text); }
-  .payroll-unlock-row.ok .dep-salary-val { color: var(--green); }
-  .payroll-unlock-row.warn .dep-salary-val { color: var(--orange); }
-  .payroll-unlock-row.danger .dep-salary-val { color: var(--red); }
   .sell-player-sort { display: flex; gap: 6px; margin: 0 0 12px; }
   .sell-player-sort button {
     flex: 1;
@@ -6975,7 +6948,6 @@
       font-size: 9px;
       letter-spacing: .08em;
     }
-    #tab-compo .builder-side .dep-salary-hint { margin-top: 10px; padding: 8px; }
   }
   @media (max-width: 720px) {
     #tab-compo #departures-body tr,
@@ -7568,10 +7540,6 @@
           </tr>
         </tfoot>
       </table>
-      </div>
-      <div class="dep-salary-hint payroll-unlock-row" id="payroll-unlock-row">
-        <span class="dep-salary-label">Marge MS vs cible</span>
-        <span class="dep-salary-val" id="payroll-unlock-value">—</span>
       </div>
     </div>
 
@@ -9137,25 +9105,11 @@ function renderSquad() {
 // ============================================================
 // RENDU DÉPARTS
 // ============================================================
-function renderPayrollUnlockSummary() {
-  const payroll = getMonthlyPayrollFreed();
-  const value = document.getElementById('payroll-unlock-value');
-  const row = document.getElementById('payroll-unlock-row');
-  if (!value || !row) return;
-  const available = payroll.availableMonthly;
-  value.textContent = available >= 0
-    ? `${available.toFixed(0)} k€/mois de marge vs cible`
-    : `${Math.abs(available).toFixed(0)} k€/mois à libérer vs cible`;
-  row.classList.remove('ok', 'warn', 'danger');
-  row.classList.add(available >= OM_NEW_SIGNING_MONTHLY_CAP ? 'ok' : (available >= 0 ? 'warn' : 'danger'));
-}
-
 function renderDepartures() {
   const tbody = document.getElementById('departures-body');
   const departingIds = getDepartureIds().filter(id => !isOfficialDeparture(id));
   const depCount = document.getElementById('dep-count');
   if (depCount) depCount.textContent = departingIds.length ? `(${departingIds.length})` : '';
-  renderPayrollUnlockSummary();
 
   if (departingIds.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun départ simulé.</td></tr>';
