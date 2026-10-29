@@ -7093,6 +7093,15 @@
     }
     #effectif-section .player-mobile-meta .salary-main { font-size: 11px; font-weight: 500; }
   }
+  /* Les simulations vides gardent leur action et leur récapitulatif estival. */
+  #departures-section.is-empty > .table-scroll,
+  #arrivals-section.is-empty > .table-scroll { display: none; }
+  .section.is-empty > .summer-recap { margin-bottom: 0; }
+  @media (max-width: 768px) {
+    #effectif-section .group-block { margin-bottom: 24px; }
+    #effectif-section .group-block:last-child { margin-bottom: 0; }
+    #effectif-section .group-title { margin-bottom: 8px; padding-bottom: 6px; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -7222,7 +7231,7 @@
   </div>
 </div>
 <nav class="dashboard-tabs" role="tablist" aria-label="Navigation principale">
-  <button type="button" class="dashboard-tab active" role="tab" aria-selected="true" aria-controls="tab-compo" data-tab-target="compo">Compo Builder</button>
+  <button type="button" class="dashboard-tab active" role="tab" aria-selected="true" aria-controls="tab-compo" data-tab-target="compo">Ma compo</button>
   <button type="button" class="dashboard-tab" role="tab" aria-selected="false" aria-controls="tab-effectif" data-tab-target="effectif">Effectif</button>
 </nav>
 <!-- MODAL RÉINITIALISATION SCÉNARIO -->
@@ -9215,6 +9224,7 @@ function renderSquad() {
 function renderDepartures() {
   const tbody = document.getElementById('departures-body');
   const departingIds = getDepartureIds().filter(id => !isOfficialDeparture(id));
+  document.getElementById('departures-section').classList.toggle('is-empty', departingIds.length === 0);
   const depCount = document.getElementById('dep-count');
   if (depCount) depCount.textContent = departingIds.length ? `(${departingIds.length})` : '';
 
@@ -9930,6 +9940,7 @@ function renderArrivals() {
       return String(a.id).localeCompare(String(b.id));
     });
   const totalArr = mercatoArrivals.length;
+  document.getElementById('arrivals-section').classList.toggle('is-empty', totalArr === 0);
   const arrCount = document.getElementById('arr-count');
   if (arrCount) arrCount.textContent = totalArr ? `(${totalArr})` : '';
 
@@ -10586,17 +10597,8 @@ function renderLineupPickerList(filterText) {
     if (isPlaceholder) {
       metaParts.push(`<span>${p.position}</span>`);
       metaParts.push(`<span>Joueur à définir</span>`);
-    } else if (isArrival) {
-      metaParts.push(`<span>${getPositionCode(p)}</span>`);
-      metaParts.push(`<span>${p.monthlySalary} k€/mois</span>`);
-      metaParts.push(`<span>Recrue</span>`);
-
     } else {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
-      const prospect = isPro2Player ? YOUTH_PROSPECTS.find(y => y.id === p.youthId) : null;
-      const age = p.age ?? prospect?.age;
-      if (age != null) metaParts.push(`<span>${age} ans</span>`);
-      metaParts.push(`<span>${(p.tmValue ?? prospect?.tmValue ?? 0).toFixed(1)} M€</span>`);
       if (isPro2Player) metaParts.push('<span class="lp-pro2-tag">PRO 2</span>');
 
 
