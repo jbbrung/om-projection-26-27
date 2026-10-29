@@ -7077,6 +7077,21 @@
       column-gap: 6px;
     }
     #effectif-section .effectif-player-tags:empty { display: none; }
+    #effectif-section .player-mobile-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px 8px;
+      margin-top: 5px;
+    }
+    #effectif-section .player-mobile-meta .meta-item { flex: none; white-space: nowrap; }
+    #effectif-section .player-mobile-meta .contract-cell {
+      min-width: 0;
+      padding: 2px 5px;
+      font-size: 10px;
+      border-radius: 3px;
+    }
+    #effectif-section .player-mobile-meta .salary-main { font-size: 11px; }
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -8438,12 +8453,15 @@ function formatSalaryWeight(item, isDeparting = false) {
   if (pct === null) return '—';
   return pct.toFixed(1) + '%';
 }
+function salaryMainClass(salary) {
+  return ['salary-main', salary >= 500 ? 'salary-heavy' : (salary >= 300 ? 'salary-watch' : '')].filter(Boolean).join(' ');
+}
 function salaryEffectifCell(item, isDeparting = false) {
   const salary = item?.monthlySalary || 0;
   const monthly = salary > 0 ? `${salary} k€/mois` : '—';
   const pct = getSalaryWeightPct(item, isDeparting);
   const weight = pct === null ? '—' : pct.toFixed(1) + '%';
-  const salaryClass = ['salary-main', salary >= 500 ? 'salary-heavy' : (salary >= 300 ? 'salary-watch' : '')].filter(Boolean).join(' ');
+  const salaryClass = salaryMainClass(salary);
   const weightClass = ['salary-weight', weight === '—' ? 'is-empty' : '', pct >= 10 ? 'ms-alert' : (pct >= 5 ? 'ms-heavy' : '')].filter(Boolean).join(' ');
   return `<span class="${salaryClass}">${monthly}</span><span class="${weightClass}">${weight === '—' ? '—' : weight + ' MS'}</span>`;
 }
@@ -8453,10 +8471,20 @@ function tmEffectifCell(value) {
   const valueClass = ['tm-value', v >= 15 ? 'tm-high' : (v >= 10 ? 'tm-solid' : '')].filter(Boolean).join(' ');
   return `<td class="${cellClass}"><span class="${valueClass}">${v.toFixed(1)}<span class="unit">M€</span></span></td>`;
 }
-function contractEffectifCell(contractEnd) {
+function contractEffectifCell(contractEnd, label = '') {
   const year = contractEnd ? contractEnd.slice(-4) : '—';
   const klass = year === '2027' ? 'contract-soon' : (year === '2028' ? 'contract-watch' : '');
-  return `<span class="contract-cell ${klass}">${year}</span>`;
+  return `<span class="contract-cell ${klass}">${label}${year}</span>`;
+}
+
+function mobileEffectifMeta(item, extra = '') {
+  const parts = [];
+  if (item.age) parts.push(`<span class="meta-item">${item.age} ans</span>`);
+  if (item.contractEnd) parts.push(`<span class="meta-item">${contractEffectifCell(item.contractEnd, 'FDC ')}</span>`);
+  const salary = item.monthlySalary || 0;
+  parts.push(`<span class="meta-item ${salaryMainClass(salary)}" title="Salaire mensuel brut">${salary} k€/mois brut</span>`);
+  if (extra) parts.push(`<span class="meta-item">${extra}</span>`);
+  return `<div class="player-mobile-meta">${parts.join('')}</div>`;
 }
 
 // Comparateurs de tri — clé dérivable d'un joueur
@@ -8900,7 +8928,7 @@ function appendPlayerRow(tbody, p, coef) {
   if (isOfficial) tr.classList.add('official-departure-row');
   if (isDeparting && !loanOut && cession === 0) tr.classList.add('free-departure');
 
-  const mobileMeta = `<div class="player-mobile-meta">${p.age} ans<span class="sep">·</span>FDC ${p.contractEnd.slice(-4)}<span class="sep">·</span>${p.monthlySalary} k€ brut/mois</div>`;
+  const mobileMeta = mobileEffectifMeta(p);
   tr.innerHTML = `
     <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
     <td class="jersey-cell">${getJerseyNumber(p)}</td>
@@ -8953,9 +8981,7 @@ function appendArrivalRow(tbody, a, coef) {
   const tr = document.createElement('tr');
   tr.classList.add('new-arrival');
   tr.classList.add(a.transferType === 'youth' ? 'youth-arrival' : 'manual-arrival');
-  const arrAgeMeta = a.age ? `${a.age} ans<span class="sep">·</span>` : '';
-  const arrContractMeta = a.contractEnd ? `FDC ${a.contractEnd.slice(-4)}<span class="sep">·</span>` : '';
-  const arrMobileMeta = `<div class="player-mobile-meta">${arrAgeMeta}${arrContractMeta}${a.monthlySalary} k€ brut/mois${a.transferType === 'permanent' && a.transferCost ? '<span class="sep">·</span>achat ' + a.transferCost.toFixed(1) + ' M€' : ''}</div>`;
+  const arrMobileMeta = mobileEffectifMeta(a, a.transferType === 'permanent' && a.transferCost ? 'Achat ' + a.transferCost.toFixed(1) + ' M€' : '');
   tr.innerHTML = `
     <td class="poste-cell"><span class="player-poste">${getPositionCode(a)}</span></td>
     <td class="jersey-cell">${getJerseyNumber(a)}</td>
@@ -9120,7 +9146,7 @@ function renderSquad() {
       const moveBtn = '';
       const tr = document.createElement('tr');
       tr.classList.add('supplement-row');
-      const suppMobileMeta = `<div class="player-mobile-meta">${p.age} ans<span class="sep">·</span>FDC ${p.contractEnd.slice(-4)}<span class="sep">·</span>base ${primaryGroup}</div>`;
+      const suppMobileMeta = mobileEffectifMeta(p, `Base ${primaryGroup}`);
       tr.innerHTML = `
         <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
         <td class="jersey-cell">${getJerseyNumber(p)}</td>
@@ -9141,7 +9167,7 @@ function renderSquad() {
       const moveBtn = '';
       const tr = document.createElement('tr');
       tr.classList.add('supplement-row', 'new-arrival', a.transferType === 'youth' ? 'youth-arrival' : 'manual-arrival');
-      const suppMobileMeta = `<div class="player-mobile-meta">${a.monthlySalary} k€ brut/mois<span class="sep">·</span>base ${primaryGroup}</div>`;
+      const suppMobileMeta = mobileEffectifMeta(a, `Base ${primaryGroup}`);
       tr.innerHTML = `
         <td class="poste-cell"><span class="player-poste">${getPositionCode(a)}</span></td>
         <td class="jersey-cell">${getJerseyNumber(a)}</td>
