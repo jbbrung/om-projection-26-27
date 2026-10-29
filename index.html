@@ -7026,6 +7026,33 @@
     #dep-cession-total::before,
     #arr-cash-total::before { content: none; }
   }
+  #effectif-section .effectif-player-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    width: 100%;
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+  #effectif-section .effectif-player-heading .player-name {
+    flex: 1 1 140px;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+  #effectif-section .effectif-player-tags {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-left: auto;
+    max-width: 100%;
+  }
+  #effectif-section .effectif-player-tags > span { margin: 0; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -8847,7 +8874,7 @@ function appendPlayerRow(tbody, p, coef) {
   tr.innerHTML = `
     <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
     <td class="jersey-cell">${getJerseyNumber(p)}</td>
-    <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}</span>${freeDepartureBadge}${moveBtn}${movedBadge}${oaBadge}${loanBadge}${mobileMeta}</td>
+    <td><span class="effectif-player-heading"><span class="player-name">${p.name}</span><span class="effectif-player-tags">${rightsBadge}${officialBadge}${freeDepartureBadge}${movedBadge}${oaBadge}${loanBadge}</span></span>${moveBtn}${mobileMeta}</td>
     <td>${p.age}</td>
     <td>${contractEffectifCell(p.contractEnd)}</td>
     ${tmEffectifCell(p.tmValue)}
@@ -8902,7 +8929,7 @@ function appendArrivalRow(tbody, a, coef) {
   tr.innerHTML = `
     <td class="poste-cell"><span class="player-poste">${getPositionCode(a)}</span></td>
     <td class="jersey-cell">${getJerseyNumber(a)}</td>
-    <td><span class="player-name">${a.name}</span>${moveBtn}${typeBadge}${movedBadge}${futureNote}${arrMobileMeta}</td>
+    <td><span class="effectif-player-heading"><span class="player-name">${a.name}</span><span class="effectif-player-tags">${typeBadge}${movedBadge}</span></span>${moveBtn}${futureNote}${arrMobileMeta}</td>
     <td>${a.age || '—'}</td>
     <td>${contractEffectifCell(a.contractEnd)}</td>
     <td class="numeric tm-cell">—</td>
@@ -9067,7 +9094,7 @@ function renderSquad() {
       tr.innerHTML = `
         <td class="poste-cell"><span class="player-poste">${getPositionCode(p)}</span></td>
         <td class="jersey-cell">${getJerseyNumber(p)}</td>
-        <td><span class="mobile-name-line"><span class="player-name">${p.name}</span>${rightsBadge}</span>${moveBtn}${suppBadge}${suppMobileMeta}</td>
+        <td><span class="effectif-player-heading"><span class="player-name">${p.name}</span><span class="effectif-player-tags">${rightsBadge}${suppBadge}</span></span>${moveBtn}${suppMobileMeta}</td>
         <td>${p.age}</td>
         <td>${contractEffectifCell(p.contractEnd)}</td>
         <td class="numeric tm-cell">—</td>
@@ -9088,7 +9115,7 @@ function renderSquad() {
       tr.innerHTML = `
         <td class="poste-cell"><span class="player-poste">${getPositionCode(a)}</span></td>
         <td class="jersey-cell">${getJerseyNumber(a)}</td>
-        <td><span class="player-name">${a.name}</span>${moveBtn}${typeBadge}${suppBadge}${suppMobileMeta}</td>
+        <td><span class="effectif-player-heading"><span class="player-name">${a.name}</span><span class="effectif-player-tags">${typeBadge}${suppBadge}</span></span>${moveBtn}${suppMobileMeta}</td>
         <td>${a.age || '—'}</td>
         <td>${contractEffectifCell(a.contractEnd)}</td>
         <td class="numeric tm-cell">—</td>
