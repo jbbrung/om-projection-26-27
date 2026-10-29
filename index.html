@@ -7133,7 +7133,8 @@
   #lineup-modal .lineup-picker-header h3 { font-size: 16px; }
   #lineup-modal .lineup-picker-eyebrow { display: none; }
   #lineup-modal #lineup-selection-status { margin: 0; font-size: 11px; white-space: nowrap; }
-  #lineup-modal #lineup-search { margin-bottom: 8px; }
+  #lineup-modal #lineup-search { height: 34px; min-height: 34px; padding: 5px 0; margin-bottom: 8px; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; text-align: left; box-shadow: none; }
+  #lineup-modal #lineup-search:focus { border-bottom-color: var(--om-blue); }
   #lineup-modal .lineup-picker-option .lineup-picker-row { box-sizing: border-box; min-height: 52px; padding: 7px 8px; gap: 8px; }
   #lineup-modal .lineup-picker-option.has-promotion .lineup-picker-row { min-height: 70px; padding-bottom: 25px; }
   #lineup-modal .lineup-promote { left: 8px; bottom: 3px; }
@@ -7569,7 +7570,7 @@
       </div>
       <button type="button" class="lineup-picker-close" id="lineup-picker-close" aria-label="Fermer">✕</button>
     </div>
-    <input type="text" id="lineup-search" class="lineup-search" placeholder="Rechercher…" autocomplete="off">
+    <input type="text" id="lineup-search" aria-label="Rechercher un joueur" class="lineup-search" placeholder="Rechercher…" autocomplete="off">
     <div class="lineup-picker-list" id="lineup-picker-list"></div>
     <div class="lineup-picker-footer">
       <button type="button" id="lineup-other-players" class="lineup-other-players" aria-expanded="false" aria-controls="lineup-picker-list">Choisir un autre joueur</button>
@@ -10518,7 +10519,8 @@ function openLineupPicker(slotId) {
   _lineupShowAll = false;
   const { def } = resolved;
   const modal = document.getElementById('lineup-modal');
-  document.getElementById('lineup-picker-title').textContent = `Joueurs · ${def.label}`;
+  const positionNames = { GB: 'Gardien', DC: 'Défenseur central', DG: 'Latéral gauche', DD: 'Latéral droit', MC: 'Milieu central', MO: 'Milieu offensif', AG: 'Ailier gauche', AD: 'Ailier droit', BU: 'Avant-centre' };
+  document.getElementById('lineup-picker-title').textContent = positionNames[getLineupSlotPosition(def)] || def.label;
   document.getElementById('lineup-picker-group').textContent = def.group;
   document.getElementById('lineup-search').value = '';
   renderLineupPickerList('');
