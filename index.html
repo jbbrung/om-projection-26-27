@@ -6836,6 +6836,22 @@
   }
   @media (max-width: 720px) {
     .container { padding: 16px 12px 32px; }
+    #builder-alerts .builder-kpi-grid { gap: 6px; }
+    #builder-alerts .builder-kpi-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 4px 10px;
+      min-height: 0;
+      padding: 10px 12px;
+    }
+    #builder-alerts .builder-kpi-label { gap: 6px; font-size: 9px; letter-spacing: .06em; }
+    #builder-alerts .builder-kpi-status { width: 6px; height: 6px; }
+    #builder-alerts .builder-kpi-value { margin: 0; font-size: 22px; text-align: right; }
+    #builder-alerts .builder-kpi-value small { font-size: 10px; }
+    #builder-alerts .builder-kpi-sub { margin: 0; font-size: 10px; }
+    #builder-alerts .builder-kpi-bar { display: none; }
+    #builder-alerts .builder-kpi-note { margin: 0; gap: 4px; font-size: 9px; justify-content: flex-end; }
     #effectif-section,
     #departures-section,
     #arrivals-section,
