@@ -7126,6 +7126,20 @@
   .lineup-picker-list { min-height: 44px; }
   .modal-card.lineup-picker { max-height: 90dvh; }
   .lineup-picker-header, .lineup-search, .lineup-picker-footer { flex-shrink: 0; }
+  /* Sélecteur compact : le contenu utile prime sur les libellés répétés. */
+  #lineup-modal .lineup-picker { padding: 16px; }
+  #lineup-modal .lineup-picker-header { align-items: center; margin-bottom: 10px; }
+  #lineup-modal .lineup-picker-header > div { display: flex; align-items: center; gap: 10px; }
+  #lineup-modal .lineup-picker-header h3 { font-size: 16px; }
+  #lineup-modal .lineup-picker-eyebrow { display: none; }
+  #lineup-modal #lineup-selection-status { margin: 0; font-size: 11px; white-space: nowrap; }
+  #lineup-modal #lineup-search { margin-bottom: 8px; }
+  #lineup-modal .lineup-picker-option .lineup-picker-row { box-sizing: border-box; min-height: 52px; padding: 7px 8px; gap: 8px; }
+  #lineup-modal .lineup-picker-option.has-promotion .lineup-picker-row { min-height: 70px; padding-bottom: 25px; }
+  #lineup-modal .lineup-promote { left: 8px; bottom: 3px; }
+  #lineup-modal .lp-name { font-size: 13px; }
+  #lineup-modal .lineup-picker-section { padding: 9px 8px 4px; font-size: 10px; }
+  #lineup-modal .lineup-picker-footer { margin-top: 8px; padding-top: 8px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -7550,12 +7564,12 @@
     <div class="lineup-picker-header">
       <div>
         <h3 id="lineup-picker-title">Sélectionner un joueur</h3>
+        <span id="lineup-selection-status" role="status" aria-live="polite" aria-label="Joueurs sélectionnés"></span>
         <div class="lineup-picker-eyebrow" id="lineup-picker-group"></div>
       </div>
       <button type="button" class="lineup-picker-close" id="lineup-picker-close" aria-label="Fermer">✕</button>
     </div>
-    <p id="lineup-selection-status" role="status" aria-live="polite"></p>
-    <input type="text" id="lineup-search" class="lineup-search" placeholder="Rechercher un joueur…" autocomplete="off">
+    <input type="text" id="lineup-search" class="lineup-search" placeholder="Rechercher…" autocomplete="off">
     <div class="lineup-picker-list" id="lineup-picker-list"></div>
     <div class="lineup-picker-footer">
       <button type="button" id="lineup-other-players" class="lineup-other-players" aria-expanded="false" aria-controls="lineup-picker-list">Choisir un autre joueur</button>
@@ -10526,7 +10540,7 @@ function renderLineupPickerList(filterText) {
   const choices = getLineupChoices(_activeSlotId);
 
   const otherBtn = document.getElementById('lineup-other-players');
-  otherBtn.textContent = _lineupShowAll ? 'Revenir aux suggestions' : 'Choisir un autre joueur';
+  otherBtn.textContent = _lineupShowAll ? 'Suggestions' : 'Tout l’effectif';
   otherBtn.setAttribute('aria-expanded', String(_lineupShowAll));
   const q = (filterText || '').trim().toLowerCase();
   const baseCandidates = getCandidatesForSlot(def, { includeOther: _lineupShowAll }).filter(c => {
@@ -10546,7 +10560,7 @@ function renderLineupPickerList(filterText) {
 
   let previousRelation = null;
   list.innerHTML = candidates.map(c => {
-    const groupLabels = { primary: 'Poste habituel', secondary: 'Peut aussi jouer ici', other: 'Autres joueurs' };
+    const groupLabels = { primary: '', secondary: 'Peut aussi jouer ici', other: 'Autres joueurs' };
     const heading = c.relation !== previousRelation && groupLabels[c.relation]
       ? `<div class="lineup-picker-section">${groupLabels[c.relation]}</div>` : '';
     previousRelation = c.relation;
@@ -10559,11 +10573,9 @@ function renderLineupPickerList(filterText) {
     const assignedElsewhere = assignedSlots.filter(sid => resolveSlotDef(sid)?.baseId !== _activeSlotId);
     const isAssignedElsewhere = assignedElsewhere.length > 0;
 
-    const initials = p.name.split(' ').filter(Boolean).slice(-2).map(s => s[0]).join('').toUpperCase();
     const metaParts = [];
     if (isPlaceholder) {
-      metaParts.push(`<span>${p.position}</span>`);
-      metaParts.push(`<span>Joueur à définir</span>`);
+      metaParts.push(`<span>À définir</span>`);
     } else {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
       if (isPro2Player) metaParts.push('<span class="lp-pro2-tag">PRO 2</span>');
@@ -10585,7 +10597,6 @@ function renderLineupPickerList(filterText) {
     return `${heading}
       <div class="lineup-picker-option ${choiceRank > 1 ? 'has-promotion' : ''}">
       <div role="button" aria-label="${isAssignedHere ? 'Retirer' : 'Ajouter'} ${p.name}${choiceRank ? ', choix ' + choiceRank : ''}" aria-pressed="${isAssignedHere}" aria-disabled="${!isAssignedHere && choices.length >= 3}" tabindex="0" class="lineup-picker-row ${isArrival ? 'is-arrival' : ''} ${isPlaceholder ? 'is-placeholder' : ''} ${isAssignedHere ? 'assigned-here' : ''}" data-player-id="${p.id}">
-        <div class="lp-avatar">${initials}</div>
         <div class="lp-info">
           <div class="lp-name">${p.name}</div>
           <div class="lp-meta">${metaParts.join('<span class="sep">·</span>')}</div>
@@ -10634,9 +10645,7 @@ function saveLineupChoices(choices) {
 function renderLineupChoices() {
   const choices = getLineupChoices(_activeSlotId);
   document.getElementById('lineup-clear-slot').hidden = choices.length === 0;
-  document.getElementById('lineup-selection-status').textContent = choices.length === 3
-    ? '3/3 · Touche un joueur sélectionné pour le retirer.'
-    : `${choices.length}/3 · Touche un joueur pour l’ajouter.`;
+  document.getElementById('lineup-selection-status').textContent = `${choices.length}/3`;
 }
 function assignPlayerToSlot(playerId) {
   if (!_activeSlotId || !playerId) return;
