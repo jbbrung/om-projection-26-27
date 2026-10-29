@@ -7025,6 +7025,17 @@
     #tab-compo .slot-avatar { width: 38px; height: 38px; }
     #tab-compo .slot-name-banner, #tab-compo .slot-backup-chip { font-size: 8px; }
   }
+  /* Une seule forme pour les contrôles, y compris leurs variantes mobiles. */
+  :root { --control-radius: 2px; }
+  button,
+  [role="button"]:not(.slot) {
+    border-radius: var(--control-radius) !important;
+  }
+  .scenario-toggle,
+  .formation-picker,
+  .modal-mode-selector {
+    border-radius: var(--control-radius);
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
