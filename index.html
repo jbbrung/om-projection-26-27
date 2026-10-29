@@ -6649,7 +6649,7 @@
     letter-spacing: .16em;
   }
   #tab-compo .pitch-wrap::after {
-    content: 'Clique un poste pour choisir un joueur ou RECRUE';
+    content: 'Clique un poste pour choisir un joueur ou Recrue';
     position: absolute;
     right: 18px;
     bottom: 12px;
@@ -6830,7 +6830,7 @@
     }
     #tab-compo .pitch-wrap::after {
       position: static;
-      content: 'Touche un poste pour choisir un joueur ou RECRUE';
+      content: 'Touche un poste pour choisir un joueur ou Recrue';
       margin-top: 12px;
       text-align: center;
       font-size: 10px;
@@ -9930,8 +9930,8 @@ function placeholderDataFromId(id) {
   if (!isPlaceholderLineupId(id)) return null;
   return {
     id,
-    name: 'RECRUE',
-    position: 'RECRUE',
+    name: 'Recrue',
+    position: 'Recrue',
     monthlySalary: 0,
     tmValue: 0,
   };
@@ -10397,7 +10397,7 @@ function renderLineupPickerList(filterText) {
     return c.data.name.toLowerCase().includes(q);
   });
   const placeholderOptions = [
-    { id: 'placeholder_RECRUE', name: 'RECRUE', position: 'RECRUE' },
+    { id: 'placeholder_RECRUE', name: 'Recrue', position: 'Recrue' },
   ].filter(p => !q || p.name.toLowerCase().includes(q))
    .map(data => ({ kind: 'placeholder', data, relation: 'placeholder' }));
   const candidates = placeholderOptions.concat(baseCandidates);
