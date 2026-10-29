@@ -7003,17 +7003,27 @@
     #tab-compo .slot-name-banner, #tab-compo .slot-backup-chip { font-size: 8px; }
   }
   @media (max-width: 720px) {
-    #tab-compo .builder-side .section-arrivals tfoot .subtotal-row {
+    #tab-compo .builder-side .side-by-side tfoot .subtotal-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: baseline;
       gap: 8px;
     }
-    #tab-compo .builder-side .section-arrivals tfoot td:first-child,
-    #tab-compo .builder-side .section-arrivals tfoot #arr-cash-total {
+    #tab-compo .builder-side .side-by-side tfoot td:first-child,
+    #tab-compo .builder-side .side-by-side tfoot #dep-cession-total,
+    #tab-compo .builder-side .side-by-side tfoot #arr-cash-total {
       width: auto;
       min-width: 0;
     }
+    #tab-compo .builder-side .side-by-side tfoot #dep-cession-total,
+    #tab-compo .builder-side .side-by-side tfoot #arr-cash-total {
+      display: block;
+      font-weight: 800;
+      white-space: nowrap;
+      text-align: right;
+    }
+    #tab-compo .builder-side .side-by-side tfoot #dep-plusvalue-total { display: none; }
+    #dep-cession-total::before,
     #arr-cash-total::before { content: none; }
   }
 </style>
@@ -7546,7 +7556,7 @@
         </tbody>
         <tfoot>
           <tr class="subtotal-row">
-            <td>Sous-total</td>
+            <td>Total ventes</td>
             <td class="numeric" id="dep-cession-total">0 M€</td>
             <td class="numeric" id="dep-omcash-total">0 M€</td>
             <td class="numeric" id="dep-plusvalue-total">0 M€</td>
@@ -7582,7 +7592,7 @@
         <tbody id="arrivals-body"></tbody>
         <tfoot>
           <tr class="subtotal-row">
-            <td>Total 26/27</td>
+            <td>Total coût 26/27</td>
             <td class="numeric" id="arr-cash-total">0 M€</td>
             <td class="numeric" id="arr-amort-total">0 M€</td>
             <td class="numeric" id="arr-oa-future-total">0 M€</td>
