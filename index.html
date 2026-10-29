@@ -1504,6 +1504,7 @@
     flex-wrap: wrap;
   }
   .lp-meta .sep { opacity: 0.5; }
+  .lp-pro2-tag { font-size: 9px; font-weight: 700; padding: 0 4px; border: 1px solid var(--border); border-radius: 3px; }
   .lineup-picker-empty {
     padding: 24px 12px;
     text-align: center;
@@ -10511,7 +10512,8 @@ function renderLineupPickerList(filterText) {
       ? `<div class="lineup-picker-section">${groupLabels[c.relation]}</div>` : '';
     previousRelation = c.relation;
     const p = c.data;
-    const isArrival = c.kind === 'arrival';
+    const isPro2Player = isPro2(p);
+    const isArrival = c.kind === 'arrival' && !isPro2Player;
     const isPlaceholder = c.kind === 'placeholder';
     const assignedSlots = findSlotsOfPlayer(p.id);
     const isAssignedHere = state.lineup[_activeSlotId] === p.id;
@@ -10530,8 +10532,11 @@ function renderLineupPickerList(filterText) {
 
     } else {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
-      metaParts.push(`<span>${p.age} ans</span>`);
-      metaParts.push(`<span>${p.tmValue.toFixed(1)} M€</span>`);
+      const prospect = isPro2Player ? YOUTH_PROSPECTS.find(y => y.id === p.youthId) : null;
+      const age = p.age ?? prospect?.age;
+      if (age != null) metaParts.push(`<span>${age} ans</span>`);
+      metaParts.push(`<span>${(p.tmValue ?? prospect?.tmValue ?? 0).toFixed(1)} M€</span>`);
+      if (isPro2Player) metaParts.push('<span class="lp-pro2-tag">PRO 2</span>');
 
 
       if (isAssignedElsewhere) {
