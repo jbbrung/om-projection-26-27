@@ -6864,7 +6864,7 @@
       gap: 8px;
       justify-content: flex-start;
     }
-    #tab-compo .builder-toolbar .btn-export { width: 100%; min-height: 44px; }
+
     .scenario-mode-btn, .appoint-toggle-btn { min-height: 44px; }
     .dashboard-tabs { padding: 0 12px; }
     .dashboard-tab { flex: 1; min-height: 44px; }
@@ -7092,6 +7092,14 @@
       border-radius: 3px;
     }
     #effectif-section .player-mobile-meta .salary-main { font-size: 11px; font-weight: 500; }
+  }
+  .lineup-heading-actions { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+  .lineup-heading-actions .btn-export { min-height: 44px; }
+  @media (max-width: 768px) {
+    #tab-compo .lineup-heading { gap: 6px; }
+    .lineup-heading-actions { gap: 6px; }
+    .lineup-heading-actions .btn-export { padding: 6px 10px; letter-spacing: normal; text-transform: none; }
+    .lineup-heading-actions .lineup-reset-btn { padding: 8px; }
   }
   /* Les simulations vides gardent leur action et leur récapitulatif estival. */
   #departures-section.is-empty > .table-scroll,
@@ -7689,7 +7697,13 @@
       <h2>
         <span class="h2-title lineup-heading">
           <span>Ma compo <span class="h2-count" id="lineup-count"></span></span>
-          <button type="button" class="lineup-reset-btn" data-reset-menu-trigger>↻ Réinitialiser</button>
+          <span class="lineup-heading-actions">
+            <button type="button" class="lineup-reset-btn" data-reset-menu-trigger>↻ Réinitialiser</button>
+          <button id="export-compo-btn" class="btn-export btn-export-inline" title="Export 1:1 — onze type + bilan mercato (Twitter / Insta)">
+            <span class="export-icon">⤓</span>
+            <span>Exporter</span>
+          </button>
+          </span>
         </span>
         <span class="h2-controls builder-toolbar">
           <span class="scenario-toggle" id="scenario-mode-toggle" role="tablist" aria-label="Mode mercato">
@@ -7697,11 +7711,7 @@
             <button type="button" class="scenario-mode-btn" data-scenario-mode="free" role="tab" aria-selected="false">Sans contrainte</button>
           </span>
           <button type="button" id="appoint-toggle-btn" class="appoint-toggle-btn" title="Afficher les + pour ajouter un troisième choix d'appoint">+ Appoints</button>
-          <button id="export-compo-btn" class="btn-export btn-export-inline" title="Export 1:1 — onze type + bilan mercato (Twitter / Insta)">
-            <span class="export-icon">⤓</span>
-            <span class="show-desktop">Exporter le mercato (1:1)</span>
-            <span class="show-mobile">Exporter</span>
-          </button>
+
         </span>
       </h2>
       <div class="pitch-layout builder-layout">
