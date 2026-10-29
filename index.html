@@ -1501,7 +1501,12 @@
     border-top: 1px solid var(--border);
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
   }
+  .lineup-picker-section { padding: 12px 8px 5px; color: var(--muted); font-size: 11px; font-weight: 700; }
+  .lineup-other-players { margin-right: auto; min-height: 44px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--om-blue); font: 600 12px var(--sans); cursor: pointer; }
+  .lineup-other-players:focus-visible, .lineup-picker-row:focus-visible { outline: 2px solid var(--om-blue); outline-offset: -2px; }
   .lineup-picker-footer .btn-cancel {
     color: var(--red);
     border-color: transparent;
@@ -7436,6 +7441,7 @@
     <input type="text" id="lineup-search" class="lineup-search" placeholder="Rechercher un joueur…" autocomplete="off">
     <div class="lineup-picker-list" id="lineup-picker-list"></div>
     <div class="lineup-picker-footer">
+      <button type="button" id="lineup-other-players" class="lineup-other-players" aria-expanded="false" aria-controls="lineup-picker-list">Choisir un autre joueur</button>
       <button type="button" class="btn-cancel" id="lineup-clear-slot" hidden>Vider ce slot</button>
     </div>
   </div>
@@ -10356,40 +10362,43 @@ function getAppointAllowedGroups(slotDef) {
   return rules[slotGroup] || [slotGroup];
 }
 
-// Candidats pour un slot : joueurs SQUAD (hors départs définitifs/prêts) + arrivées.
-// Titulaire/remplaçant : groupe du slot uniquement (+ suppléances déclarées).
-// Appoint : groupes compatibles selon getAppointAllowedGroups(), sans impact effectif/KPI.
+// Suggestions propres à la compo : elles ne reclassent pas l'effectif.
+const LINEUP_SECONDARY_POSITIONS = {
+  abdelli: ['MC'], gomes: ['MC'], harit: ['MC', 'AG'],
+  gouiri: ['AG', 'AD'], weah: ['AD', 'AG'],
+  emerson: ['AG'], garcia: ['AG'], eganriley: ['DD'],
+};
+
+function getLineupSlotPosition(slotDef) {
+  if (slotDef.group === 'Gardiens') return 'GB';
+  if (slotDef.group === 'Défenseurs') return 'DC';
+  if (slotDef.group === 'Milieux') return 'MC';
+  if (slotDef.group === 'Avants-centres') return 'BU';
+  if (slotDef.group === 'Latéraux') return / G$/.test(slotDef.label) ? 'DG' : 'DD';
+  return /AIL G/.test(slotDef.label) ? 'AG' : (/AIL D/.test(slotDef.label) ? 'AD' : 'MO');
+}
+
 function getCandidatesForSlot(slotDef, options = {}) {
-  const isAppoint = !!options.isAppoint;
-  const allowedAppointGroups = isAppoint ? getAppointAllowedGroups(slotDef) : null;
-  const candidates = [];
-  SQUAD.forEach(p => {
-    if (isDepartingId(p.id)) return; // joueur qui part (vente ou prêt) → hors-effectif
-    const primary = getEffectiveGroup(p);
-    const secondaries = getSecondaryGroups(p) || [];
-    const relation = primary === slotDef.group ? 'primary' : (secondaries.includes(slotDef.group) ? 'secondary' : 'other');
-    if (relation !== 'other' || (isAppoint && allowedAppointGroups.includes(primary))) {
-      candidates.push({ kind: 'squad', data: p, relation });
-    }
-  });
-  state.arrivals.forEach(a => {
-    const primary = getEffectiveGroup(a);
-    const secondaries = getSecondaryGroups(a) || [];
-    const relation = primary === slotDef.group ? 'primary' : (secondaries.includes(slotDef.group) ? 'secondary' : 'other');
-    if (relation !== 'other' || (isAppoint && allowedAppointGroups.includes(primary))) {
-      candidates.push({ kind: 'arrival', data: a, relation });
-    }
-  });
-  // Tri : naturels d'abord, puis suppléances déclarées, puis appoints hors poste ; valeur décroissante dans chaque bloc.
+  const position = getLineupSlotPosition(slotDef);
+  const candidates = [
+    ...SQUAD.filter(p => !isDepartingId(p.id)).map(data => ({ kind: 'squad', data })),
+    ...state.arrivals.map(data => ({ kind: 'arrival', data })),
+  ].map(candidate => {
+    const p = candidate.data;
+    const secondaryPositions = LINEUP_SECONDARY_POSITIONS[p.youthId || p.id] || [];
+    const sourceGroup = p.group || POSITION_TO_GROUP[p.position];
+    const effectiveGroup = getEffectiveGroup(p);
+    const canCover = secondaryPositions.includes(position)
+      || getSecondaryGroups(p).includes(slotDef.group)
+      || (effectiveGroup !== sourceGroup && effectiveGroup === slotDef.group)
+      || (options.isAppoint && getAppointAllowedGroups(slotDef).includes(effectiveGroup));
+    const relation = getPositionCode(p) === position ? 'primary' : (canCover ? 'secondary' : 'other');
+    return { ...candidate, relation };
+  }).filter(c => options.includeOther || c.relation !== 'other' || state.lineup[_activeSlotId] === c.data.id);
   const rank = { primary: 0, secondary: 1, other: 2 };
-  candidates.sort((x, y) => {
-    const rx = rank[x.relation] ?? 9;
-    const ry = rank[y.relation] ?? 9;
-    if (rx !== ry) return rx - ry;
-    const vx = x.kind === 'squad' ? (x.data.tmValue || 0) : (x.data.monthlySalary || 0) / 10;
-    const vy = y.kind === 'squad' ? (y.data.tmValue || 0) : (y.data.monthlySalary || 0) / 10;
-    return vy - vx;
-  });
+  candidates.sort((a, b) => rank[a.relation] - rank[b.relation]
+    || (b.data.tmValue || 0) - (a.data.tmValue || 0)
+    || a.data.name.localeCompare(b.data.name, 'fr'));
   return candidates;
 }
 
@@ -10406,6 +10415,7 @@ function findSlotOfPlayer(playerId) {
 }
 
 let _activeSlotId = null;
+let _lineupShowAll = false;
 
 // Résout un slot id (titulaire, remplaçant `_b` ou appoint `_a`) vers sa def de base.
 function resolveSlotDef(slotId) {
@@ -10423,11 +10433,12 @@ function openLineupPicker(slotId) {
   const resolved = resolveSlotDef(slotId);
   if (!resolved) return;
   _activeSlotId = slotId;
+  _lineupShowAll = false;
 
   const { def, isBackup, isAppoint } = resolved;
   const modal = document.getElementById('lineup-modal');
   const role = isAppoint ? 'Solution d\'appoint' : (isBackup ? 'Remplaçant' : 'Titulaire');
-  document.getElementById('lineup-picker-title').textContent = `${role} ${def.label} · choisir un joueur`;
+  document.getElementById('lineup-picker-title').textContent = `${role} · ${def.label}`;
   document.getElementById('lineup-picker-group').textContent = isAppoint ? `Solutions d'appoint · ${def.group}` : def.group;
 
   // Bouton "vider" visible seulement si le slot est rempli
@@ -10451,8 +10462,11 @@ function renderLineupPickerList(filterText) {
   const def = resolved.def;
   const isAppoint = !!resolved.isAppoint;
 
+  const otherBtn = document.getElementById('lineup-other-players');
+  otherBtn.textContent = _lineupShowAll ? 'Revenir aux suggestions' : 'Choisir un autre joueur';
+  otherBtn.setAttribute('aria-expanded', String(_lineupShowAll));
   const q = (filterText || '').trim().toLowerCase();
-  const baseCandidates = getCandidatesForSlot(def, { isAppoint }).filter(c => {
+  const baseCandidates = getCandidatesForSlot(def, { isAppoint, includeOther: _lineupShowAll }).filter(c => {
     if (!q) return true;
     return c.data.name.toLowerCase().includes(q);
   });
@@ -10467,7 +10481,12 @@ function renderLineupPickerList(filterText) {
     return;
   }
 
+  let previousRelation = null;
   list.innerHTML = candidates.map(c => {
+    const groupLabels = { primary: 'Poste habituel', secondary: 'Peut aussi jouer ici', other: 'Autres joueurs' };
+    const heading = c.relation !== previousRelation && groupLabels[c.relation]
+      ? `<div class="lineup-picker-section">${groupLabels[c.relation]}</div>` : '';
+    previousRelation = c.relation;
     const p = c.data;
     const isArrival = c.kind === 'arrival';
     const isPlaceholder = c.kind === 'placeholder';
@@ -10485,13 +10504,13 @@ function renderLineupPickerList(filterText) {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
       metaParts.push(`<span>${p.monthlySalary} k€/mois</span>`);
       metaParts.push(`<span>Recrue</span>`);
-      if (isAppoint && c.relation === 'other') metaParts.push(`<span style="color: var(--muted);">appoint hors poste</span>`);
+
     } else {
       metaParts.push(`<span>${getPositionCode(p)}</span>`);
       metaParts.push(`<span>${p.age} ans</span>`);
       metaParts.push(`<span>${p.tmValue.toFixed(1)} M€</span>`);
-      if (isAppoint && c.relation === 'secondary') metaParts.push(`<span style="color: var(--om-blue);">suppléance déclarée</span>`);
-      if (isAppoint && c.relation === 'other') metaParts.push(`<span style="color: var(--muted);">appoint hors poste</span>`);
+
+
       if (isAssignedElsewhere) {
         const labels = assignedElsewhere.slice(0, 2).map(sid => {
           const otherResolved = resolveSlotDef(sid);
@@ -10504,8 +10523,8 @@ function renderLineupPickerList(filterText) {
       }
     }
 
-    return `
-      <div class="lineup-picker-row ${isArrival ? 'is-arrival' : ''} ${isPlaceholder ? 'is-placeholder' : ''} ${isAssignedHere ? 'assigned-here' : ''}" data-player-id="${p.id}">
+    return `${heading}
+      <div role="button" tabindex="0" class="lineup-picker-row ${isArrival ? 'is-arrival' : ''} ${isPlaceholder ? 'is-placeholder' : ''} ${isAssignedHere ? 'assigned-here' : ''}" data-player-id="${p.id}">
         <div class="lp-avatar">${initials}</div>
         <div class="lp-info">
           <div class="lp-name">${p.name}</div>
@@ -10517,6 +10536,12 @@ function renderLineupPickerList(filterText) {
 
   list.querySelectorAll('.lineup-picker-row').forEach(row => {
     row.addEventListener('click', () => assignPlayerToSlot(row.getAttribute('data-player-id')));
+    row.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        assignPlayerToSlot(row.getAttribute('data-player-id'));
+      }
+    });
   });
 }
 
@@ -11532,6 +11557,11 @@ document.getElementById('lineup-modal').addEventListener('click', e => {
 });
 document.getElementById('lineup-modal').addEventListener('keydown', e => {
   if (e.key === 'Escape') closeLineupPicker();
+});
+document.getElementById('lineup-other-players').addEventListener('click', () => {
+  _lineupShowAll = !_lineupShowAll;
+  renderLineupPickerList(document.getElementById('lineup-search').value);
+  document.getElementById('lineup-picker-list').scrollTop = 0;
 });
 document.getElementById('lineup-search').addEventListener('input', e => {
   renderLineupPickerList(e.target.value);
