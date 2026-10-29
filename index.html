@@ -6860,6 +6860,70 @@
     .help-card { max-height: calc(100dvh - 40px); }
     .add-form input, .add-form select { font-size: 16px; }
   }
+  /* Mercato compact sur les écrans où les panneaux passent sous le terrain. */
+  @media (max-width: 1180px) {
+    #tab-compo .builder-side .section { padding: 14px 12px; }
+    #tab-compo .builder-side .side-by-side { gap: 12px !important; }
+    #tab-compo .builder-side .section h2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      font-size: 16px;
+    }
+    #tab-compo .builder-side .section h2::before { display: none; }
+    #tab-compo .builder-side .section-arrivals h2 {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+    #tab-compo .builder-side .window-note {
+      margin-top: 4px;
+      font-size: 8px;
+      letter-spacing: .04em;
+      line-height: 1.35;
+    }
+    #tab-compo .builder-side .arr-cta-btn { min-height: 44px; padding: 8px 10px; }
+    #tab-compo .builder-side .arr-help-btn { width: 36px; height: 44px; }
+    #tab-compo .builder-side tbody td { padding-top: 8px; padding-bottom: 8px; }
+    #tab-compo .builder-side .departures-separator-row td {
+      padding-top: 8px;
+      padding-bottom: 5px;
+      font-size: 9px;
+      letter-spacing: .08em;
+    }
+    #tab-compo .builder-side .dep-salary-hint { margin-top: 10px; padding: 8px; }
+  }
+  @media (max-width: 720px) {
+    #tab-compo #departures-body tr,
+    #tab-compo #arrivals-body tr {
+      gap: 3px 8px;
+      padding: 8px 0;
+      margin-bottom: 0;
+    }
+    #tab-compo #departures-body td,
+    #tab-compo #arrivals-body td { padding-top: 0; padding-bottom: 0; }
+    #tab-compo #departures-body tr.departures-separator-row,
+    #tab-compo #arrivals-body tr.departures-separator-row { padding: 8px 0 5px; }
+    #tab-compo #arrivals-body tr.departures-separator-row td {
+      display: block;
+      font-size: 9px;
+      letter-spacing: .08em;
+    }
+    #tab-compo #arrivals-body tr td:nth-child(2) {
+      margin-top: 2px;
+      padding-top: 0;
+      background: none;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    #tab-compo #arrivals-body tr td:nth-child(2)::before { margin-top: 2px; font-size: 9px; }
+    #tab-compo .builder-side .side-by-side tfoot tr.subtotal-row {
+      margin-top: 6px;
+      padding-top: 8px;
+      gap: 4px 8px;
+    }
+  }
   @media (max-width: 360px) {
     .container { padding-left: 8px; padding-right: 8px; }
     #tab-compo .section-lineup { padding-left: 8px; padding-right: 8px; }
