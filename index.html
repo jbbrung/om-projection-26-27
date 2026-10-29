@@ -6878,6 +6878,16 @@
     .help-card { max-height: calc(100dvh - 40px); }
     .add-form input, .add-form select { font-size: 16px; }
   }
+  .departure-salary { display: block; color: var(--green); font-size: 11px; font-weight: 700; margin-top: 4px; white-space: normal; }
+  .summer-recap { border: 1px solid var(--border); background: var(--card); padding: 14px; }
+  .summer-recap summary { cursor: pointer; color: var(--text-dim); font-weight: 700; }
+  .summer-recap summary small { display: block; margin-top: 3px; font-size: 11px; font-weight: 500; }
+  .summer-recap-group h3 { margin: 16px 0 6px; font-size: 12px; color: var(--muted); }
+  .summer-recap-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-soft); font-size: 12px; }
+  .summer-recap-row > span { min-width: 0; }
+  .summer-recap-row strong { white-space: nowrap; font-size: 11px; }
+  .toast.arrival .toast-name { white-space: normal; overflow-wrap: anywhere; }
+
   /* Mercato compact sur les écrans où les panneaux passent sous le terrain. */
   @media (max-width: 1180px) {
     #tab-compo .builder-side .section { padding: 14px 12px; }
@@ -7469,8 +7479,8 @@
     <!-- DEPARTURES -->
     <div class="section section-departures" id="departures-section">
       <h2>
-        <span class="h2-title">Départs <span class="h2-count" id="dep-count"></span><span class="window-note"><strong>Été</strong> = mouvements officiels · <strong>Hiver</strong> = sorties simulées</span></span>
-        <button type="button" class="arr-cta-btn" onclick="openSellPlayerModal()">+ Vendre cet hiver</button>
+        <span class="h2-title">Départs <span class="h2-count" id="dep-count"></span><span class="window-note">Sorties simulées cet hiver</span></span>
+        <button type="button" class="arr-cta-btn" onclick="openSellPlayerModal()">+ Vendre un joueur</button>
       </h2>
       <div class="table-scroll">
       <table>
@@ -7506,7 +7516,7 @@
     <!-- ARRIVALS (OA obligatoires + manuelles) -->
     <div class="section section-arrivals" id="arrivals-section">
       <h2>
-        <span class="h2-title">Arrivées <span class="h2-count" id="arr-count"></span><span class="window-note"><strong>Été</strong> = OA levées / arrivées actées · <strong>Hiver</strong> = recrues simulées</span></span>
+        <span class="h2-title">Arrivées <span class="h2-count" id="arr-count"></span><span class="window-note">Recrues simulées cet hiver</span></span>
         <button type="button" class="arr-help-btn" id="arr-help-btn" aria-label="Comment ajouter une recrue ?" title="Comment remplir une recrue ?">?</button>
         <button type="button" class="arr-cta-btn" onclick="openArrivalModal()">+ Recrue hiver</button>
       </h2>
@@ -7543,7 +7553,7 @@
     <!-- ONZE TYPE -->
     <div class="section section-lineup" id="lineup-section">
       <h2>
-        <span class="h2-title">COMPO BUILDER 4-2-3-1 <span class="h2-count" id="lineup-count"></span></span>
+        <span class="h2-title">Ma compo <span class="h2-count" id="lineup-count"></span></span>
         <span class="h2-controls builder-toolbar">
           <span class="scenario-toggle" id="scenario-mode-toggle" role="tablist" aria-label="Mode mercato">
             <button type="button" class="scenario-mode-btn active" data-scenario-mode="realistic" role="tab" aria-selected="true">Réaliste</button>
@@ -7567,6 +7577,10 @@
         <aside class="builder-side" aria-label="Mercato du scénario">
           <div class="builder-alerts" id="builder-alerts"></div>
           <div id="builder-mercato-side"></div>
+          <details class="summer-recap" id="summer-recap">
+            <summary><span>Mercato estival</span><small>Terminé · voir le récapitulatif</small></summary>
+            <div id="summer-recap-content"></div>
+          </details>
         </aside>
       </div>
     </div>
@@ -9073,13 +9087,13 @@ function renderPayrollUnlockSummary() {
 
 function renderDepartures() {
   const tbody = document.getElementById('departures-body');
-  const departingIds = getDepartureIds();
+  const departingIds = getDepartureIds().filter(id => !isOfficialDeparture(id));
   const depCount = document.getElementById('dep-count');
   if (depCount) depCount.textContent = departingIds.length ? `(${departingIds.length})` : '';
   renderPayrollUnlockSummary();
 
   if (departingIds.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun départ pour l\'instant. Utilise “Vendre un joueur” pour libérer de la masse salariale.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun départ pour l\'instant. Vends un joueur pour libérer du salaire.</td></tr>';
     document.getElementById('dep-cession-total').textContent = '0 M€';
     document.getElementById('dep-omcash-total').textContent = '0 M€';
     document.getElementById('dep-plusvalue-total').textContent = '0 M€';
@@ -9152,7 +9166,7 @@ function renderDepartures() {
       if (!loanOut && cession === 0) tr.classList.add('free-departure');
       tr.innerHTML = `
         <td><span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>${rightsBadge}${officialBadge}${freeDepartureBadge}${oaBadge}${loanBadge}</td>
-        <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}</td>
+        <td class="numeric">${loanOut ? (cession > 0 ? cession.toFixed(2) : '—') : cession.toFixed(2)}<span class="departure-salary">${p.monthlySalary} k€/mois libérés</span></td>
         <td class="numeric">${loanOut ? (omCash > 0 ? omCash.toFixed(2) : '—') : omCash.toFixed(2)}</td>
         <td class="numeric ${(!loanOut && pv > 0) ? 'plus-value-pos' : ((!loanOut && pv < 0) ? 'plus-value-neg' : '')}">${loanOut ? '—' : fmtM(pv, true)}</td>
         <td>${isOfficial ? '' : `<button type="button" class="delete-btn" data-cancel-departure="${id}" title="Annuler cette sortie simulée">✕</button>`}</td>
@@ -9161,7 +9175,6 @@ function renderDepartures() {
     });
   };
 
-  appendDepartureRows(departingPlayers.filter(({ id }) => isOfficialDeparture(id)), 'Départs officiels — mercato estival');
   appendDepartureRows(departingPlayers.filter(({ id }) => !isOfficialDeparture(id)), 'Départs simulés — mercato d’hiver');
 
   document.getElementById('dep-cession-total').textContent = totCession.toFixed(1) + ' M€';
@@ -9779,10 +9792,6 @@ function moveMenuEscape(e) {
 
 function renderArrivals() {
   const tbody = document.getElementById('arrivals-body');
-  const fixedOaOrder = ['medina', 'weah', 'traore'];
-  const oaPlayers = SQUAD
-    .filter(p => p.oaArrival)
-    .sort((a, b) => fixedOaOrder.indexOf(a.id) - fixedOaOrder.indexOf(b.id));
   const mercatoArrivals = state.arrivals
     .filter(a => a.transferType !== 'youth')
     .sort((a, b) => {
@@ -9794,7 +9803,7 @@ function renderArrivals() {
       if (pa !== pb) return (pa < 0 ? 99 : pa) - (pb < 0 ? 99 : pb);
       return String(a.id).localeCompare(String(b.id));
     });
-  const totalArr = oaPlayers.length + mercatoArrivals.length;
+  const totalArr = mercatoArrivals.length;
   const arrCount = document.getElementById('arr-count');
   if (arrCount) arrCount.textContent = totalArr ? `(${totalArr})` : '';
 
@@ -9809,28 +9818,8 @@ function renderArrivals() {
     tbody.appendChild(sep);
   };
 
-  // 1. OA obligatoires / arrivées actées du mercato estival (verrouillées, en tête)
-  appendArrivalHeader('Arrivées actées — mercato estival', oaPlayers.length);
-  oaPlayers.forEach(p => {
-    totCash += p.transferCost;
-    totAmort += p.annualAmort;
-    const tr = document.createElement('tr');
-    tr.className = 'arrival-oa-row';
-    tr.innerHTML = `
-      <td>
-        <span class="player-poste">${getPositionCode(p)}</span><span class="player-name">${p.name}</span>
-        <span class="oa-pill" title="Option d'achat obligatoire — activée au 01/07/2026">OA levée</span>
-      </td>
-      <td class="numeric">${p.transferCost.toFixed(2)}</td>
-      <td class="numeric">${p.annualAmort.toFixed(2)}</td>
-      <td class="numeric" style="color: var(--muted);"></td>
-      <td></td>
-    `;
-    tbody.appendChild(tr);
-  });
-
   // 2. Recrues mercato manuelles = simulation mercato d’hiver (les promotions PRO 2 sont visibles dans l'effectif, pas ici)
-  if (mercatoArrivals.length === 0 && oaPlayers.length === 0) {
+  if (mercatoArrivals.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucune arrivée pour l\'instant. Utilise le formulaire ci-dessus pour ajouter un joueur.</td></tr>';
     document.getElementById('arr-cash-total').textContent = '0 M€';
     document.getElementById('arr-amort-total').textContent = '0 M€';
@@ -11449,7 +11438,8 @@ function confirmCessionModal() {
   closeCessionModal();
   renderAll();
   if (player) {
-    showCessionToast(player, 'departure');
+    const action = currentModalMode === 'loan-out' ? 'prêté' : 'vendu';
+    showInfoToast(`${player.name} ${action} · ${player.monthlySalary} k€/mois libérés`);
     flashPlayerRow(flashedId);
   }
 }
@@ -11507,14 +11497,24 @@ function renderAll() {
   if (sanitizeScenarioState()) saveState();
   renderSquad();
   renderDepartures();
-  // renderOaArrivals supprimé : OA obligatoires sont désormais affichées dans le tableau Arrivées
   renderArrivals();
+  renderSummerRecap();
   renderLineup();
   updateAggregates();
   renderBuilderScenarioAlerts();
   syncScenarioModeToggle();
   syncMercatoActions();
   syncResetMenus();
+}
+
+function renderSummerRecap() {
+  const host = document.getElementById('summer-recap-content');
+  if (!host) return;
+  const departures = SQUAD.filter(p => isOfficialDeparture(p.id));
+  const arrivals = SQUAD.filter(p => p.oaArrival);
+  const group = (title, players, amount) => `<div class="summer-recap-group"><h3>${title} (${players.length})</h3>${players.map(p => `<div class="summer-recap-row"><span><span class="player-poste">${getPositionCode(p)}</span>${p.name}</span><strong>${fmtM(amount(p))}</strong></div>`).join('')}</div>`;
+  host.innerHTML = group('Départs officiels · indemnités', departures, p => depPrice(getDeparture(p.id)))
+    + group('Arrivées actées · coût de transfert', arrivals, p => p.transferCost);
 }
 
 function setupBuilderLayout() {
