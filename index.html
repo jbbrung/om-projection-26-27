@@ -7066,6 +7066,18 @@
     color: var(--muted);
     opacity: .7;
   }
+  @media (max-width: 720px) {
+    /* L'espace réservé à l'ancien bouton de déplacement est désormais libre. */
+    #effectif-section .group-block table tbody tr { padding-right: 8px; column-gap: 6px; }
+    #effectif-section .group-block table tbody td:nth-child(1),
+    #effectif-section .group-block table tbody td:nth-child(2) { margin-right: 2px; }
+    #effectif-section .effectif-player-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 6px;
+    }
+    #effectif-section .effectif-player-tags:empty { display: none; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -8863,7 +8875,7 @@ function appendPlayerRow(tbody, p, coef) {
         : `Prêt sortant avec OA optionnelle de ${loanOa.price.toFixed(1)} M€ — info indicative`;
       loanBadge = ` <span class="loan-out-badge ${cls}" title="${tip}">${lbl}</span>`;
     } else {
-      loanBadge = ` <span class="loan-out-badge" title="Joueur prêté — salaire retiré, mais OM conserve l'actif (VNC + amortissement)">Prêt sortant</span>`;
+      loanBadge = ` <span class="loan-out-badge" title="Joueur prêté — salaire retiré, mais OM conserve l'actif (VNC + amortissement)"><span class="show-desktop">Prêt sortant</span><span class="show-mobile">Prêt</span></span>`;
     }
   }
   const oaExercised = isOaExercised(dep);
@@ -8876,9 +8888,9 @@ function appendPlayerRow(tbody, p, coef) {
   const moveBtn = '';
   const movedBadge = (!isDeparting && !isGoalkeeper(p) && isMoved) ? ` <span class="moved-badge" title="Reclassé depuis ${p.group}">Reclassé</span>` : '';
   const freeDepartureBadge = (isDeparting && !loanOut && cession === 0)
-    ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat">Résiliation</span>`
+    ? ` <span class="free-departure-badge" title="Départ sans indemnité — résiliation ou fin de contrat"><span class="show-desktop">Résiliation</span><span class="show-mobile">Résilié</span></span>`
     : '';
-  const officialBadge = isOfficial
+  const officialBadge = isOfficial && !loanOut
     ? ` <span class="official-departure-badge" title="Transfert officiel — non modifiable dans le scénario">Off</span>`
     : '';
   const tr = document.createElement('tr');
