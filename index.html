@@ -6546,6 +6546,20 @@
   .payroll-unlock-row.ok .dep-salary-val { color: var(--green); }
   .payroll-unlock-row.warn .dep-salary-val { color: var(--orange); }
   .payroll-unlock-row.danger .dep-salary-val { color: var(--red); }
+  .sell-player-sort { display: flex; gap: 6px; margin: 0 0 12px; }
+  .sell-player-sort button {
+    flex: 1;
+    min-height: 44px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card);
+    color: var(--text-dim);
+    font: 700 12px var(--sans);
+    cursor: pointer;
+  }
+  .sell-player-sort button[aria-pressed="true"] { background: var(--om-blue-soft); border-color: var(--om-blue); color: var(--om-blue); }
+  .sell-player-sort button:focus-visible { outline: 2px solid var(--om-blue); outline-offset: 2px; }
   .sell-player-list {
     display: grid;
     gap: 8px;
@@ -7152,6 +7166,11 @@
     <h3>Vendre un joueur</h3>
     <div class="arr-step-hint">Choisis un joueur : la vente libère immédiatement son salaire dans le scénario et peut débloquer une recrue.</div>
     <div class="sell-player-summary" id="sell-player-summary">—</div>
+    <div class="sell-player-sort" role="group" aria-label="Trier les joueurs">
+      <button type="button" data-sell-sort="salary" aria-pressed="true" title="Salaire décroissant">Salaire ↓</button>
+      <button type="button" data-sell-sort="value" aria-pressed="false" title="Valeur Transfermarkt décroissante">Valeur TM ↓</button>
+      <button type="button" data-sell-sort="position" aria-pressed="false" title="Des gardiens aux attaquants">Poste</button>
+    </div>
     <div class="sell-player-list" id="sell-player-list"></div>
     <div class="modal-actions">
       <button class="btn-cancel" id="sell-player-cancel">Annuler</button>
@@ -11271,7 +11290,7 @@ function renderOaArrivals() {
 // ============================================================
 // MODAL VENTE — point d'entrée Mercato
 // ============================================================
-function openSellPlayerModal() {
+function openSellPlayerModal(sort = 'salary') {
   const modal = document.getElementById('sell-player-modal');
   const list = document.getElementById('sell-player-list');
   const summary = document.getElementById('sell-player-summary');
@@ -11282,15 +11301,22 @@ function openSellPlayerModal() {
       ? `Marge MS vs cible : <strong>${payroll.availableMonthly.toFixed(0)} k€/mois</strong>. Une recrue hors PRO 2 doit rester sous <strong>${OM_NEW_SIGNING_MONTHLY_CAP} k€/mois</strong>.`
       : `Travail MS restant : <strong>${Math.abs(payroll.availableMonthly).toFixed(0)} k€/mois</strong> à libérer vs cible. Vendre ici augmente immédiatement cette marge.`;
   }
-  const candidates = SQUAD
-    .filter(p => !isDepartingId(p.id))
-    .map(p => {
-      const cashPotential = (p.tmValue || 0) * getRights(p);
-      const score = (p.monthlySalary || 0) + cashPotential * 8;
-      return { p, score };
-    })
-    .sort((a, b) => b.score - a.score);
-  list.innerHTML = candidates.length ? candidates.map(({ p }) => `
+  modal.querySelectorAll('[data-sell-sort]').forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.sellSort === sort));
+  });
+  const candidates = SQUAD.filter(p => !isDepartingId(p.id)).sort((a, b) => {
+    let difference;
+    if (sort === 'value') difference = b.tmValue - a.tmValue;
+    else if (sort === 'position') {
+      const rank = p => {
+        const index = POSITION_CODE_ORDER.indexOf(getPositionCode(p));
+        return index < 0 ? POSITION_CODE_ORDER.length : index;
+      };
+      difference = rank(a) - rank(b);
+    } else difference = b.monthlySalary - a.monthlySalary;
+    return difference || b.monthlySalary - a.monthlySalary || a.name.localeCompare(b.name, 'fr');
+  });
+  list.innerHTML = candidates.length ? candidates.map(p => `
     <button type="button" class="sell-player-row" data-sell-player="${p.id}">
       <div class="sell-player-info">
         <div class="sell-player-name"><span class="player-poste">${getPositionCode(p)}</span><span class="sell-player-name-text">${p.name}</span></div>
@@ -11310,6 +11336,7 @@ function openSellPlayerModal() {
     });
   });
   modal.classList.add('active');
+  list.scrollTop = 0;
 }
 
 function closeSellPlayerModal() {
@@ -11444,6 +11471,9 @@ function confirmCessionModal() {
   }
 }
 
+document.querySelectorAll('[data-sell-sort]').forEach(btn => {
+  btn.addEventListener('click', () => openSellPlayerModal(btn.dataset.sellSort));
+});
 document.getElementById('sell-player-cancel').addEventListener('click', closeSellPlayerModal);
 document.getElementById('sell-player-modal').addEventListener('click', e => {
   if (e.target.id === 'sell-player-modal') closeSellPlayerModal();
