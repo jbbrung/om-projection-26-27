@@ -7052,7 +7052,20 @@
     margin-left: auto;
     max-width: 100%;
   }
-  #effectif-section .effectif-player-tags > span { margin: 0; }
+  #effectif-section .effectif-player-tags > span {
+    margin: 0;
+    flex: none;
+    white-space: nowrap;
+  }
+  #effectif-section tr.departing td:nth-child(3) {
+    text-decoration: none;
+    opacity: 1;
+  }
+  #effectif-section tr.departing .effectif-player-heading .player-name {
+    text-decoration: line-through;
+    color: var(--muted);
+    opacity: .7;
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
