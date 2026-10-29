@@ -1458,7 +1458,7 @@
     border: 1px solid var(--border-blue);
   }
   .lineup-picker-row.assigned-here::after {
-    content: 'Actuel';
+    content: '✓';
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -7110,6 +7110,20 @@
     #effectif-section .group-block:last-child { margin-bottom: 0; }
     #effectif-section .group-title { margin-bottom: 8px; padding-bottom: 6px; }
   }
+  #lineup-modal #lineup-search { font: 400 16px var(--sans); letter-spacing: normal; text-transform: none; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; }
+  .lineup-selected { flex: none; }
+  .lineup-selected-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .lineup-rank { flex: none; width: 20px; text-align: center; color: var(--om-blue); font-weight: 700; }
+  .lineup-selected-name { flex: 1; min-width: 0; font-size: 13px; }
+  .lineup-selected-name strong { display: block; overflow-wrap: anywhere; }
+  .lineup-selected-name small { display: block; color: var(--muted); margin-top: 2px; }
+  .lineup-selected-row button { flex: none; width: 36px; min-height: 44px; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); cursor: pointer; font-size: 16px; }
+  .lineup-selected-row button:disabled { opacity: .25; cursor: default; }
+  #lineup-selection-status { flex: none; margin: 10px 0; font-size: 11px; color: var(--muted); }
+  .lineup-picker-row[aria-disabled="true"] { opacity: .5; cursor: default; }
+  .lineup-picker-list { min-height: 44px; }
+  .modal-card.lineup-picker { max-height: 90dvh; }
+  .lineup-picker-header, .lineup-search, .lineup-picker-footer { flex-shrink: 0; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -7170,7 +7184,7 @@
         <span class="help-step-num">3</span>
         <div>
           <div class="help-step-title">Construis ton onze type</div>
-          <div class="help-step-desc">Choisis les titulaires et remplaçants sur le terrain. <strong>+ Appoints</strong> permet un troisième choix.</div>
+          <div class="help-step-desc">Touche un poste pour choisir jusqu’à trois joueurs, puis ajuste leur ordre avec les flèches.</div>
         </div>
       </li>
       <li>
@@ -7265,7 +7279,7 @@
       </button>
       <button type="button" class="reset-action-card" data-reset-action="lineup">
         <span class="reset-action-title">Composition type</span>
-        <span class="reset-action-desc">Titulaires, remplaçants, appoints et placement terrain.</span>
+        <span class="reset-action-desc">Joueurs par poste et placement terrain.</span>
         <span class="reset-action-icon">↻</span>
       </button>
     </div>
@@ -7538,11 +7552,13 @@
       </div>
       <button type="button" class="lineup-picker-close" id="lineup-picker-close" aria-label="Fermer">✕</button>
     </div>
+    <div id="lineup-selected" class="lineup-selected" aria-label="Joueurs retenus par ordre de priorité"></div>
+    <p id="lineup-selection-status" role="status" aria-live="polite"></p>
     <input type="text" id="lineup-search" class="lineup-search" placeholder="Rechercher un joueur…" autocomplete="off">
     <div class="lineup-picker-list" id="lineup-picker-list"></div>
     <div class="lineup-picker-footer">
       <button type="button" id="lineup-other-players" class="lineup-other-players" aria-expanded="false" aria-controls="lineup-picker-list">Choisir un autre joueur</button>
-      <button type="button" class="btn-cancel" id="lineup-clear-slot" hidden>Vider ce slot</button>
+      <button type="button" class="btn-cancel" id="lineup-clear-slot" hidden>Vider le poste</button>
     </div>
   </div>
 </div>
@@ -7710,7 +7726,7 @@
             <button type="button" class="scenario-mode-btn active" data-scenario-mode="realistic" role="tab" aria-selected="true">Réaliste</button>
             <button type="button" class="scenario-mode-btn" data-scenario-mode="free" role="tab" aria-selected="false">Sans contrainte</button>
           </span>
-          <button type="button" id="appoint-toggle-btn" class="appoint-toggle-btn" title="Afficher les + pour ajouter un troisième choix d'appoint">+ Appoints</button>
+
 
         </span>
       </h2>
@@ -8342,7 +8358,6 @@ const state = {
   formation: '4-2-3-1', // schéma fixe
   mercatoMode: 'realistic', // 'realistic' = alertes contraintes, 'free' = sans blocage
   lineupPositions: {},  // { formationId: { slotId: {x, y} } } — overrides drag fine-tune
-  showAppointControls: false, // mode édition : affiche les + vides du 3e choix
   youthDefaultsApplied: true, // les PRO 2 par défaut ont été injectés ; une suppression utilisateur reste persistée
 };
 
@@ -8715,6 +8730,20 @@ function sanitizeScenarioState() {
       delete state.lineup[slotId];
       changed = true;
     }
+  });
+
+  // Un départ libère un rang et fait remonter les choix suivants.
+  const lineupBases = new Set(Object.keys(state.lineup).map(key => key.replace(/_(b|a)$/, '')));
+  lineupBases.forEach(baseId => {
+    const keys = lineupChoiceKeys(baseId);
+    const choices = [...new Set(keys.map(key => state.lineup[key]).filter(Boolean))];
+    keys.forEach((key, index) => {
+      if (state.lineup[key] !== choices[index]) {
+        if (choices[index]) state.lineup[key] = choices[index];
+        else delete state.lineup[key];
+        changed = true;
+      }
+    });
   });
 
   // Nettoie les reclassements/suppléances devenus sans objet.
@@ -10131,22 +10160,6 @@ function renderFormationPicker() {
   });
 }
 
-function syncAppointToggle() {
-  const btn = document.getElementById('appoint-toggle-btn');
-  if (!btn) return;
-  const active = !!state.showAppointControls;
-  btn.classList.toggle('active', active);
-  btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  btn.textContent = active ? 'Masquer appoints' : '+ Appoints';
-  if (!btn.dataset.bound) {
-    btn.addEventListener('click', () => {
-      state.showAppointControls = !state.showAppointControls;
-      renderLineup();
-    });
-    btn.dataset.bound = '1';
-  }
-}
-
 function switchFormation(fid) {
   if (!FORMATIONS[fid] || fid === state.formation) return;
   state.formation = fid;
@@ -10244,61 +10257,28 @@ function createSlotElement(def, player, backupPlayer, appointPlayer) {
   }
   slot.innerHTML = html;
 
-  // Ligne de profondeur : remplaçant classique + troisième choix d'appoint.
+  // Seuls les choix renseignés sont visibles sous le titulaire.
   const depthRow = document.createElement('div');
   depthRow.className = 'slot-depth-row';
-
-  const backupChip = document.createElement('button');
-  backupChip.type = 'button';
-  backupChip.className = `slot-backup-chip ${backupPlayer ? 'filled' : 'empty'}`;
-  backupChip.setAttribute('data-backup-for', def.id);
-  if (backupPlayer) {
-    backupChip.title = `Remplaçant : ${backupPlayer.data.name}`;
-    backupChip.setAttribute('aria-label', `Modifier le remplaçant (${backupPlayer.data.name})`);
-    const last = backupPlayer.kind === 'placeholder' ? backupPlayer.data.name : backupPlayer.data.name.split(' ').filter(Boolean).pop();
-    backupChip.innerHTML = `<span class="chip-dot">●</span><span>${last}</span>`;
-  } else {
-    backupChip.title = `Ajouter un remplaçant pour ${def.label}`;
-    backupChip.setAttribute('aria-label', `Ajouter un remplaçant pour ${def.label}`);
-    backupChip.innerHTML = `<span class="chip-dot">+</span><span>Rempl.</span>`;
-  }
-  backupChip.addEventListener('click', e => {
-    e.stopPropagation();
-    openLineupPicker(def.id + '_b');
-  });
-
-  const chips = [backupChip];
-  const canShowAppoint = filled && !!backupPlayer && (state.showAppointControls || !!appointPlayer);
-  if (canShowAppoint) {
-    const appointChip = document.createElement('button');
-    appointChip.type = 'button';
-    appointChip.className = `slot-backup-chip slot-appoint-chip ${appointPlayer ? 'filled' : 'empty'}`;
-    appointChip.setAttribute('data-appoint-for', def.id);
-    if (appointPlayer) {
-      appointChip.title = `Solution d'appoint : ${appointPlayer.data.name}`;
-      appointChip.setAttribute('aria-label', `Modifier la solution d'appoint (${appointPlayer.data.name})`);
-      const last = appointPlayer.kind === 'placeholder' ? appointPlayer.data.name : appointPlayer.data.name.split(' ').filter(Boolean).pop();
-      appointChip.innerHTML = `<span class="chip-dot">↳</span><span>${last}</span>`;
-    } else {
-      appointChip.title = `Ajouter une solution d'appoint pour ${def.label}`;
-      appointChip.setAttribute('aria-label', `Ajouter une solution d'appoint pour ${def.label}`);
-      appointChip.innerHTML = `<span class="chip-dot">+</span>`;
-    }
-    appointChip.addEventListener('click', e => {
-      e.stopPropagation();
-      openLineupPicker(def.id + '_a');
-    });
-    chips.push(appointChip);
-  }
-
-  // Empêche le mousedown/touchstart de remonter au slot (qui démarrerait un drag)
-  const swallow = e => e.stopPropagation();
-  chips.forEach(chip => {
-    chip.addEventListener('mousedown', swallow);
-    chip.addEventListener('touchstart', swallow, { passive: true });
+  [backupPlayer, appointPlayer].forEach((choice, index) => {
+    if (!choice) return;
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'slot-backup-chip filled';
+    chip.setAttribute('aria-label', `Gérer ${def.label} : choix ${index + 2}, ${choice.data.name}`);
+    const last = choice.kind === 'placeholder' ? choice.data.name : choice.data.name.split(' ').filter(Boolean).pop();
+    chip.innerHTML = `<span class="chip-dot">${index + 2}</span><span>${last}</span>`;
+    chip.addEventListener('click', e => { e.stopPropagation(); openLineupPicker(def.id); });
+    chip.addEventListener('mousedown', e => e.stopPropagation());
+    chip.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
     depthRow.appendChild(chip);
   });
-  slot.appendChild(depthRow);
+  if (depthRow.children.length) slot.appendChild(depthRow);
+  slot.addEventListener('keydown', e => {
+    if (e.target === slot && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault(); openLineupPicker(def.id);
+    }
+  });
 
   return slot;
 }
@@ -10373,7 +10353,6 @@ function renderLineup() {
   if (!pitch) return;
 
   renderFormationPicker();
-  syncAppointToggle();
 
   // Marquages terrain : surfaces + buts (haut/bas) — créés une seule fois
   if (!pitch.dataset.markedUp) {
@@ -10449,24 +10428,6 @@ function resetLineupAll() {
 // LINEUP PICKER (modal)
 // ============================================================
 
-// Groupes autorisés pour le 3e choix d'appoint, par poste à couvrir.
-// Logique volontairement stricte : l'appoint reste occasionnel, mais crédible sportivement.
-function getAppointAllowedGroups(slotDef) {
-  const slotGroup = slotDef.group;
-  const isWingerSlot = slotGroup === 'Offensifs' && /^AIL\b/.test(slotDef.label || '');
-  const rules = {
-    'Gardiens': ['Gardiens'],
-    'Défenseurs': ['Défenseurs'],
-    'Latéraux': ['Latéraux', 'Défenseurs'],
-    'Milieux': ['Milieux', 'Défenseurs'],
-    // Un latéral peut seulement dépanner un vrai couloir offensif (AIL G/D),
-    // pas un offensif axial type N°10/MO.
-    'Offensifs': isWingerSlot ? ['Offensifs', 'Latéraux', 'Avants-centres'] : ['Offensifs', 'Avants-centres'],
-    'Avants-centres': ['Avants-centres', 'Offensifs'],
-  };
-  return rules[slotGroup] || [slotGroup];
-}
-
 // Suggestions propres à la compo : elles ne reclassent pas l'effectif.
 const LINEUP_SECONDARY_POSITIONS = {
   kondogbia: ['DC'],
@@ -10497,10 +10458,10 @@ function getCandidatesForSlot(slotDef, options = {}) {
     const canCover = secondaryPositions.includes(position)
       || getSecondaryGroups(p).includes(slotDef.group)
       || (effectiveGroup !== sourceGroup && effectiveGroup === slotDef.group)
-      || (options.isAppoint && getAppointAllowedGroups(slotDef).includes(effectiveGroup));
+;
     const relation = getPositionCode(p) === position ? 'primary' : (canCover ? 'secondary' : 'other');
     return { ...candidate, relation };
-  }).filter(c => options.includeOther || c.relation !== 'other' || state.lineup[_activeSlotId] === c.data.id);
+  }).filter(c => options.includeOther || c.relation !== 'other' || getLineupChoices(_activeSlotId).includes(c.data.id));
   const rank = { primary: 0, secondary: 1, other: 2 };
   candidates.sort((a, b) => rank[a.relation] - rank[b.relation]
     || (b.data.tmValue || 0) - (a.data.tmValue || 0)
@@ -10538,26 +10499,20 @@ function resolveSlotDef(slotId) {
 function openLineupPicker(slotId) {
   const resolved = resolveSlotDef(slotId);
   if (!resolved) return;
-  _activeSlotId = slotId;
+  _activeSlotId = resolved.baseId;
   _lineupShowAll = false;
-
-  const { def, isBackup, isAppoint } = resolved;
+  const { def } = resolved;
   const modal = document.getElementById('lineup-modal');
-  const role = isAppoint ? 'Solution d\'appoint' : (isBackup ? 'Remplaçant' : 'Titulaire');
-  document.getElementById('lineup-picker-title').textContent = `${role} · ${def.label}`;
-  document.getElementById('lineup-picker-group').textContent = isAppoint ? `Solutions d'appoint · ${def.group}` : def.group;
-
-  // Bouton "vider" visible seulement si le slot est rempli
-  const clearBtn = document.getElementById('lineup-clear-slot');
-  clearBtn.hidden = !state.lineup[slotId];
-
+  document.getElementById('lineup-picker-title').textContent = `Joueurs · ${def.label}`;
+  document.getElementById('lineup-picker-group').textContent = def.group;
+  document.getElementById('lineup-search').value = '';
   renderLineupPickerList('');
 
   modal.classList.add('active');
   setTimeout(() => {
     const search = document.getElementById('lineup-search');
     search.value = '';
-    search.focus();
+    if (window.matchMedia('(min-width: 769px)').matches) search.focus();
   }, 50);
 }
 
@@ -10566,13 +10521,14 @@ function renderLineupPickerList(filterText) {
   const resolved = resolveSlotDef(_activeSlotId);
   if (!resolved) return;
   const def = resolved.def;
-  const isAppoint = !!resolved.isAppoint;
+  renderLineupChoices();
+  const choices = getLineupChoices(_activeSlotId);
 
   const otherBtn = document.getElementById('lineup-other-players');
   otherBtn.textContent = _lineupShowAll ? 'Revenir aux suggestions' : 'Choisir un autre joueur';
   otherBtn.setAttribute('aria-expanded', String(_lineupShowAll));
   const q = (filterText || '').trim().toLowerCase();
-  const baseCandidates = getCandidatesForSlot(def, { isAppoint, includeOther: _lineupShowAll }).filter(c => {
+  const baseCandidates = getCandidatesForSlot(def, { includeOther: _lineupShowAll }).filter(c => {
     if (!q) return true;
     return c.data.name.toLowerCase().includes(q);
   });
@@ -10598,8 +10554,8 @@ function renderLineupPickerList(filterText) {
     const isArrival = c.kind === 'arrival' && !isPro2Player;
     const isPlaceholder = c.kind === 'placeholder';
     const assignedSlots = findSlotsOfPlayer(p.id);
-    const isAssignedHere = state.lineup[_activeSlotId] === p.id;
-    const assignedElsewhere = assignedSlots.filter(sid => sid !== _activeSlotId);
+    const isAssignedHere = choices.includes(p.id);
+    const assignedElsewhere = assignedSlots.filter(sid => resolveSlotDef(sid)?.baseId !== _activeSlotId);
     const isAssignedElsewhere = assignedElsewhere.length > 0;
 
     const initials = p.name.split(' ').filter(Boolean).slice(-2).map(s => s[0]).join('').toUpperCase();
@@ -10616,7 +10572,7 @@ function renderLineupPickerList(filterText) {
         const labels = assignedElsewhere.slice(0, 2).map(sid => {
           const otherResolved = resolveSlotDef(sid);
           return otherResolved
-            ? (otherResolved.isAppoint ? `Appoint ${otherResolved.def.label}` : (otherResolved.isBackup ? `Rempl. ${otherResolved.def.label}` : otherResolved.def.label))
+            ? (otherResolved.isAppoint ? `3e choix ${otherResolved.def.label}` : (otherResolved.isBackup ? `Rempl. ${otherResolved.def.label}` : otherResolved.def.label))
             : sid;
         });
         const suffix = assignedElsewhere.length > 2 ? ` +${assignedElsewhere.length - 2}` : '';
@@ -10625,7 +10581,7 @@ function renderLineupPickerList(filterText) {
     }
 
     return `${heading}
-      <div role="button" tabindex="0" class="lineup-picker-row ${isArrival ? 'is-arrival' : ''} ${isPlaceholder ? 'is-placeholder' : ''} ${isAssignedHere ? 'assigned-here' : ''}" data-player-id="${p.id}">
+      <div role="button" aria-pressed="${isAssignedHere}" aria-disabled="${!isAssignedHere && choices.length >= 3}" tabindex="0" class="lineup-picker-row ${isArrival ? 'is-arrival' : ''} ${isPlaceholder ? 'is-placeholder' : ''} ${isAssignedHere ? 'assigned-here' : ''}" data-player-id="${p.id}">
         <div class="lp-avatar">${initials}</div>
         <div class="lp-info">
           <div class="lp-name">${p.name}</div>
@@ -10646,26 +10602,57 @@ function renderLineupPickerList(filterText) {
   });
 }
 
+// Les clés historiques sont conservées pour les compos enregistrées et les exports.
+function lineupChoiceKeys(baseId) { return [baseId, baseId + '_b', baseId + '_a']; }
+function getLineupChoices(baseId) {
+  return [...new Set(lineupChoiceKeys(baseId).map(key => state.lineup[key]).filter(id => id && findLineupPlayer(id)))];
+}
+function saveLineupChoices(choices) {
+  lineupChoiceKeys(_activeSlotId).forEach((key, index) => {
+    if (choices[index]) state.lineup[key] = choices[index];
+    else delete state.lineup[key];
+  });
+  saveState();
+  renderLineup();
+  renderLineupPickerList(document.getElementById('lineup-search').value);
+}
+function renderLineupChoices() {
+  const choices = getLineupChoices(_activeSlotId);
+  const labels = ['Titulaire', 'Remplaçant', 'Troisième choix'];
+  document.getElementById('lineup-clear-slot').hidden = choices.length === 0;
+  document.getElementById('lineup-selection-status').textContent = choices.length === 3
+    ? '3/3 · Retire un joueur pour en ajouter un autre.'
+    : `${choices.length}/3 · Touche un joueur pour l’ajouter.`;
+  const container = document.getElementById('lineup-selected');
+  container.innerHTML = choices.map((id, index) => `
+    <div class="lineup-selected-row">
+      <span class="lineup-rank">${index + 1}</span>
+      <span class="lineup-selected-name"><strong>${findLineupPlayer(id).data.name}</strong><small>${labels[index]}</small></span>
+      <button type="button" data-choice="${index}" data-direction="-1" aria-label="Monter ${labels[index].toLowerCase()}" ${index === 0 ? 'disabled' : ''}>↑</button>
+      <button type="button" data-choice="${index}" data-direction="1" aria-label="Descendre ${labels[index].toLowerCase()}" ${index === choices.length - 1 ? 'disabled' : ''}>↓</button>
+      <button type="button" data-remove-choice="${index}" aria-label="Retirer ${findLineupPlayer(id).data.name}">×</button>
+    </div>`).join('');
+  container.querySelectorAll('[data-direction]').forEach(button => button.addEventListener('click', () => {
+    const index = Number(button.dataset.choice), target = index + Number(button.dataset.direction);
+    if (target < 0 || target >= choices.length) return;
+    [choices[index], choices[target]] = [choices[target], choices[index]];
+    saveLineupChoices(choices);
+  }));
+  container.querySelectorAll('[data-remove-choice]').forEach(button => button.addEventListener('click', () => {
+    choices.splice(Number(button.dataset.removeChoice), 1);
+    saveLineupChoices(choices);
+  }));
+}
 function assignPlayerToSlot(playerId) {
   if (!_activeSlotId || !playerId) return;
-  // On autorise volontairement les doublons : un joueur peut être titulaire
-  // à un poste et appoint ailleurs, ou couvrir plusieurs postes sur le terrain.
-  // Assigner ici ne libère donc plus ses autres slots.
-  state.lineup[_activeSlotId] = playerId;
-  saveState();
-  closeLineupPicker();
-  renderLineup();
+  const choices = getLineupChoices(_activeSlotId);
+  // Le clic sur une sélection cochée ne remplace ni ne retire le titulaire.
+  if (choices.includes(playerId) || choices.length >= 3) return;
+  choices.push(playerId);
+  saveLineupChoices(choices);
 }
-
 function clearLineupSlot() {
-  if (!_activeSlotId) return;
-  const resolved = resolveSlotDef(_activeSlotId);
-  delete state.lineup[_activeSlotId];
-  // Si on retire le titulaire ou le remplaçant, le 3e choix d'appoint n'est plus valide/visible.
-  if (resolved && !resolved.isAppoint) delete state.lineup[resolved.baseId + '_a'];
-  saveState();
-  closeLineupPicker();
-  renderLineup();
+  if (_activeSlotId) saveLineupChoices([]);
 }
 
 function closeLineupPicker() {
@@ -11911,7 +11898,7 @@ function resetMercatoState(confirmFirst = true) {
 
 function resetLineupState(confirmFirst = true) {
   if (!hasLineupState()) return;
-  if (confirmFirst && !confirm('Réinitialiser le onze type ?\n\nCela supprimera titulaires, remplaçants, appoints et placements personnalisés sur le terrain. Le mercato sera conservé.')) return;
+  if (confirmFirst && !confirm('Réinitialiser le onze type ?\n\nCela supprimera joueurs sélectionnés et placements personnalisés sur le terrain. Le mercato sera conservé.')) return;
   state.lineup = {};
   state.lineupPositions = {};
   saveState();
