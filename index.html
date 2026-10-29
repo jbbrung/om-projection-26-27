@@ -6921,6 +6921,23 @@
     }
     #tab-compo #departures-body td,
     #tab-compo #arrivals-body td { padding-top: 0; padding-bottom: 0; }
+    /* La cellule d'action suit le nom dans la ligne flex mobile. */
+    #tab-compo #departures-body tr:has([data-cancel-departure]) { align-items: center; }
+    #tab-compo #departures-body tr:has([data-cancel-departure]) td:first-child {
+      flex: 1 1 calc(100% - 52px);
+      width: auto;
+    }
+    #tab-compo #departures-body td:nth-child(5) {
+      order: 2;
+      flex: 0 0 44px;
+      text-align: right;
+    }
+    #tab-compo #departures-body td:nth-child(5):empty { display: none; }
+    #tab-compo #departures-body [data-cancel-departure] {
+      width: 44px;
+      height: 44px;
+      opacity: 1;
+    }
     #tab-compo #departures-body tr.departures-separator-row,
     #tab-compo #arrivals-body tr.departures-separator-row { padding: 8px 0 5px; }
     #tab-compo #arrivals-body tr.departures-separator-row td {
