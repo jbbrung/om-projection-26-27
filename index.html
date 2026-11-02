@@ -10449,7 +10449,8 @@ const LINEUP_SECONDARY_POSITIONS = {
   kondogbia: ['DC'], koum: ['DC'],
   abdelli: ['MC'], gomes: ['MC'], harit: ['MO', 'AG'],
   gouiri: ['AG'], weah: ['AD'],
-  garcia: ['MC'], eganriley: ['DD'],
+  garcia: ['MC'], eganriley: ['DD'], meite: ['DD'],
+  mmadi: ['AD'], abdallah: ['BU'],
 };
 
 function getLineupSlotPosition(slotDef) {
@@ -10579,7 +10580,8 @@ function renderLineupPickerList(filterText) {
     if (isPlaceholder) {
       metaParts.push(`<span>À définir</span>`);
     } else {
-      metaParts.push(`<span>${getPositionCode(p)}</span>`);
+      const positions = [...new Set([getPositionCode(p), ...(LINEUP_SECONDARY_POSITIONS[p.youthId || p.id] || [])])];
+      metaParts.push(`<span>${positions.join(' · ')}</span>`);
       if (isPro2Player) metaParts.push('<span class="lp-pro2-tag">PRO 2</span>');
 
 
